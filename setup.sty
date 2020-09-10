@@ -1,0 +1,132 @@
+% Author - Jon Arnt Kårstad, NTNU IMT
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{packages}[2020/04/15 Packages]
+
+% ------ Contents -------
+% Appendices
+% Bibliography & References
+% Code input
+% Flow charts
+% Front matter
+% General
+% Image
+% Language
+% Main matter
+% Mathematics
+% Page setup
+% -----------------------
+
+% --- Appendices ---
+\usepackage{appendix}
+\newcommand{\addappendix}{   % Self-created command to insert appendix with defined settings
+    \newpage
+    \appendix
+    \section*{Appendix}   % Name of appendix
+    \addcontentsline{toc}{section}{Appendix}  % Add appendix name to table of contents
+    \renewcommand{\thesubsection}{\Alph{subsection}}    % Change numbering of section to upper-case letters.
+}
+
+% --- Bibliography & References---
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\bibliographystyle{dinat}    % Choose style
+\usepackage[nottoc]{tocbibind}  % Includes Bibliography, Index, list of Listing etc. to table of contents
+\newcommand{\source}[1]{\vspace{-4pt} \caption*{\hfill \footnotesize{Source: {#1}} } }   % Easily insert sources in images
+\def\equationautorefname{Equation}  % Autoref-name for equations
+\def\figureautorefname{Figure}  % Autoref-name for figures
+\def\tableautorefname{Table}    % Autoref-name for tables
+\def\subsectionautorefname{\sectionautorefname} % Autoref-name for subsections
+\def\subsubsectionautorefname{\sectionautorefname} % Autoref-name for subsubsections
+
+% --- Code ---
+\usepackage{minted} % Includes a lot of languages and styles, info at: https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% --- Flow Charts ---
+% Keep in mind that you may customize these flow chart settings to fit your own preferences.
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+
+% --- Front matter ---
+% Front matter is located before the table of contents, e.g. preface (Norsk: forord) and has separate settings
+\newcommand{\frontmatter}{
+    \pagenumbering{roman}   % Setting page numbering to lower-case roman
+}
+% Edit title of lists (uncomment below)
+\renewcommand*\contentsname{Table of Contents}   % Rename table of contents
+\renewcommand{\listfigurename}{List of Figures}   % Rename list of figures
+\renewcommand{\listtablename}{List of Tables}  % Rename list of tables
+
+% --- General ---
+\usepackage{import}     % Enable importing of sections
+\usepackage{hyperref}   % Hyper-references, possible to change color
+\hypersetup{    % Color of hyper-references
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+\usepackage{comment}    % Comment blocks of text
+
+% --- Image ---
+\usepackage{graphicx}   % Handle images
+\usepackage{wrapfig}    % Wrap text around images
+\usepackage{float}      % Force image location using "H"
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}   % Ruler
+
+% --- Table ---
+\usepackage{csvsimple}
+\usepackage{booktabs}
+
+% --- Language ---
+\usepackage[utf8]{inputenc} % Character encoding
+\usepackage{siunitx}    % Enable SI units
+
+% --- Main matter ---
+% This is the main part of the paper.
+\newcommand{\mainmatter}{
+    \newpage
+    \pagenumbering{arabic}  % Setting page numbering to normal integers
+}
+
+% --- Mathematics ---
+\usepackage{bm}     % Bold text in math mode
+\usepackage{amsmath}    % Matrices
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+% --- Page setup ---
+\usepackage[a4paper, total={150mm, 245mm,footskip = 14mm}]{geometry}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.8em}
+
+% Customized header and footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.1ex}
+\renewcommand{\footrulewidth}{0.1ex}
+\fancyfoot[C]{\thepage}
+
+% Table of contents - limit to showing sub-sections at most
+\setcounter{tocdepth}{2}  
+
+% Enable verbatim in footnotes
+\usepackage{fancyvrb}
+\VerbatimFootnotes
+
+
+% --- Debug ----
+\usepackage[colorinlistoftodos,prependcaption,textsize=normalsize]{todonotes}

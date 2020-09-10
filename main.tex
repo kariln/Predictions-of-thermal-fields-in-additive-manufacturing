@@ -1,0 +1,53 @@
+% Based on template by Jon Arnt Kårstad, NTNU IMT
+\documentclass{article}
+
+% Importing settings from our file "setup.sty"
+\usepackage{setup}
+\usepackage{natbib}
+
+
+% Beginning of document
+\begin{document}
+
+% Inserting title page
+\import{./}{title}
+
+% Defining front matter settings 
+\frontmatter
+
+% Abstract 
+\begin{abstract}
+    \import{./Sections/}{0_abstract}
+\end{abstract}
+\clearpage
+
+
+% Inserting table of contents
+\tableofcontents
+
+% Inserting list of figures & list of tables
+\listoffigures
+\listoftables
+
+% Defining main matter settings 
+\mainmatter
+
+
+%Sections
+\import{./Sections/}{1_introduction}
+\import{./Sections/}{2_method}
+\import{./Sections/}{3_results}
+\import{./Sections/}{4_discussion}
+\import{./Sections/}{5_conclusion}
+
+% Inserting bibliography
+\newpage
+\bibliographystyle{plain}
+\bibliography{references}
+
+% Inserting appendix with separate settings
+\addappendix
+%\import{./Appendices/}{example_appendix}
+
+% End of document
+\end{document}
