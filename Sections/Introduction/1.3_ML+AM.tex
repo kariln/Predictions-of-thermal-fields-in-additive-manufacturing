@@ -1,5 +1,12 @@
 \subsection{Machine learning and additive manufacturing}
 \label{sec:ML+AM}
+As additive manufacturing is gaining popularity beyond prototyping, the interest in the dynamic process of AM is increasing. The mechanical properties of AM parts are in particular influenced by residual stresses due to the temperature gradients and cooling and heating rates in the temperature field of the part. The temperature field is influenced by several parameters such as deposition speed, road size, deposition pattern, deposition temperature and environment temperature \cite{data_driven}. Although significant progress has been made in the field, both experimentally and by modeling \todo{les og sett inn referanser fra data-driven}, the computation of thermal fields and mechanical properties of parts in additive manufacturing is still seen as a big challenge. The experimental results has given insight in the field, but they are expensive and due to physical restrictions, often have a limited scope. Simulations are widely used to analyse complex problems, and as the computing powers continuously increase, the models are seen to predict the real-world more and more accurately \cite{SM}. However, at the same time the models are increasing complex, and unavoidably more expensive. Computational modelling of additive manufacturing is no exception, and has problems with high computational cost, large memory requirements and long computing time, which makes the simulations demanding to perform in realistic computing \cite{data_driven}.
+
+This project will explore the prediction of thermal fields by replacing the computational model with a surrogate model (SM) trained with machine learning. A SM, also known as approximation models, are a model of a model, and replace expensive processing by approximation of input-output responses in the model \cite{SM}. 
+
+\nomenclature{SM}{Surrogate Model}
+
+
 \todo[inline, color=lightgray!40]
 {
     Describe how machine learning will be implemented in the prediction of thermal fields in additive manufacturing. Describe why it is useful, what has been done before and possible problems.

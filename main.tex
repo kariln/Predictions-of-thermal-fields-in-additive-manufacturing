@@ -3,7 +3,7 @@
 
 % Importing settings from our file "setup.sty"
 \usepackage{setup}
-\usepackage{natbib}
+
 
 
 % Beginning of document
@@ -21,13 +21,20 @@
 \end{abstract}
 \clearpage
 
-
 % Inserting table of contents
 \tableofcontents
 
 % Inserting list of figures & list of tables
 \listoffigures
 \listoftables
+
+%Inserting Nomenclature
+\begin{mdframed}
+\begin{multicols}{2}
+\printnomenclature
+\end{multicols}
+\vfill
+\end{mdframed}
 
 % Defining main matter settings 
 \mainmatter
@@ -43,7 +50,6 @@
 
 % Inserting bibliography
 \newpage
-\bibliographystyle{plain}
 \bibliography{references}
 
 % Inserting appendix with separate settings

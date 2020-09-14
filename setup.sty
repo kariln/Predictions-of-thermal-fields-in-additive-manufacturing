@@ -31,7 +31,7 @@
 \usepackage{natbib}
 \usepackage{caption}
 \usepackage{subcaption}
-\bibliographystyle{dinat}    % Choose style
+\bibliographystyle{plain}    % Choose style
 \usepackage[nottoc]{tocbibind}  % Includes Bibliography, Index, list of Listing etc. to table of contents
 \newcommand{\source}[1]{\vspace{-4pt} \caption*{\hfill \footnotesize{Source: {#1}} } }   % Easily insert sources in images
 \def\equationautorefname{Equation}  % Autoref-name for equations
@@ -40,6 +40,11 @@
 \def\subsectionautorefname{\sectionautorefname} % Autoref-name for subsections
 \def\subsubsectionautorefname{\sectionautorefname} % Autoref-name for subsubsections
 
+%---Nomenclature---
+\usepackage{nomencl}
+\usepackage{mdframed} %to be able to frame the nomenclature
+\makenomenclature
+\usepackage{multicol}%to have several columns in the nomenclature
 % --- Code ---
 \usepackage{minted} % Includes a lot of languages and styles, info at: https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
 \usepackage{algorithm}
