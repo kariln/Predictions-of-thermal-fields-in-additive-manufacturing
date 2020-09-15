@@ -642,3 +642,53 @@ mdb.models['thermal'].parts['thermal'].seedPart(deviationFactor=0.1,
     minSizeFactor=0.1, size=0.04)
 mdb.models['thermal'].rootAssembly.regenerate()
 # Save by kariln on 2020_09_15-11.30.23; build 2019 2018_09_24-20.41.51 157541
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.models['thermal'].ConstrainedSketch(name='__edit__', objectToCopy=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'].sketch)
+mdb.models['thermal'].parts['thermal'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__edit__'], 
+    upToFeature=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'])
+del mdb.models['thermal'].sketches['__edit__']
+mdb.models['thermal'].ConstrainedSketch(name='__edit__', objectToCopy=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'].sketch)
+mdb.models['thermal'].parts['thermal'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__edit__'], 
+    upToFeature=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'])
+del mdb.models['thermal'].sketches['__edit__']
+mdb.models['thermal'].ConstrainedSketch(name='__edit__', objectToCopy=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'].sketch)
+mdb.models['thermal'].parts['thermal'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__edit__'], 
+    upToFeature=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'])
+del mdb.models['thermal'].sketches['__edit__']
+mdb.models['thermal'].ConstrainedSketch(name='__edit__', objectToCopy=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'].sketch)
+mdb.models['thermal'].parts['thermal'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__edit__'], 
+    upToFeature=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'])
+del mdb.models['thermal'].sketches['__edit__']
+mdb.models['thermal'].parts['thermal'].regenerate()
+mdb.models['thermal'].ConstrainedSketch(name='__edit__', objectToCopy=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'].sketch)
+mdb.models['thermal'].parts['thermal'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__edit__'], 
+    upToFeature=
+    mdb.models['thermal'].parts['thermal'].features['Solid extrude-1'])
+del mdb.models['thermal'].sketches['__edit__']
+# Save by Kari Ness on 2020_09_15-15.31.28; build 2019 2018_09_24-20.41.51 157541
