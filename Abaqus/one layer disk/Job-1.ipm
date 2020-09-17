@@ -1,0 +1,4 @@
+<?xml version="1.0"?><msgwrapper><Started><phase type="symconst">BATCHPRE_PHASE</phase><jobName type="string">Job-1</jobName><clientHost type="string">iktutlaan12</clientHost><handle type="integer">0</handle></Started>
+<Error><message type="string">STRESS-DISPLACEMENT ELEMENTS OR OTHER ELEMENTS WITHOUT TEMPERATURE DEGREE OF FREEDOM ARE NOT ALLOWED IN A HEAT TRANSFER ANALYSIS</message><phase type="symconst">BATCHPRE_PHASE</phase><jobName type="string">Job-1</jobName></Error>
+<Aborted><message type="string">Analysis phase failed due to errors</message><phase type="symconst">BATCHPRE_PHASE</phase><jobName type="string">Job-1</jobName></Aborted>
+<ERROR><message type="string">Analysis Input File Processor exited with an error.</message><jobName type="string">Job-1</jobName></ERROR><JOB_ABORTED><message type="string">Analysis Input File Processor exited with an error.</message><jobName type="string">Job-1</jobName></JOB_ABORTED></msgwrapper>
