@@ -1,0 +1,34 @@
+<Description>
+   ***  ABAQUS/ABQcaeK rank 0 received the SIGABRT signal
+</Description>
+
+<Callstack>
+  1)  ucrtbase.dll                abort                                   
+  2)  ucrtbase.dll                terminate                               
+  3)  VCRUNTIME140.dll            memchr                                  
+  4)  VCRUNTIME140.dll            memchr                                  
+  5)  VCRUNTIME140.dll            _CxxFrameHandler3                       
+  6)  ntdll.dll                   RtlRaiseException                       
+  7)  ntdll.dll                   RtlRaiseException                       
+  8)  KERNELBASE.dll              RaiseException                          
+  9)  VCRUNTIME140.dll            CxxThrowException                       
+ 10)  ABQSMAInbVwrIPC.dll         ipc_Socket::Close                       
+</Callstack>
+
+<Memory>
+   <Current>            1000 MB </Current>
+   <Physical>          32677 MB </Physical>
+   <Limit>                 0 MB </Limit>
+   <Virtual>       134217728 MB </Virtual>
+   <Accessible>        32677 MB </Accessible>
+   <Allocator>            DL    </Allocator>
+</Memory>
+
+<Directories>
+  <current> C:\Users\kariln\Documents\GitHub\TKT4550---Structural-Engineering-Specialization-Project\Abaqus\One-layer disk </current> 
+     <temp> C:\Users\kariln\AppData\Local\Temp </temp>
+</Directories>
+
+<Installation>
+</Installation>
+
