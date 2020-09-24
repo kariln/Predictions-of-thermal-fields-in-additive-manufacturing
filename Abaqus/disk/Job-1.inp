@@ -693,10 +693,16 @@
  137,  236,    1
 *Elset, elset=Set-2, instance=thermal-1, generate
   1,  36,   1
+*Nset, nset=Set-6, instance=thermal-1, generate
+   1,  412,    1
+*Elset, elset=Set-6, instance=thermal-1, generate
+   1,  236,    1
 *Elset, elset=_AM-Model-1__AllBuildParts__, internal, instance=thermal-1, generate
    1,  236,    1
 *Elset, elset=addelement, instance=thermal-1, generate
   1,  36,   1
+*Nset, nset=all_nodes, instance=thermal-1, generate
+   1,  412,    1
 *ELEMENT PROGRESSIVE ACTIVATION,NAME="__AM-Model-1_Material Source -1_EPA__",ELSET=addelement,FOLLOW=No
 *End Assembly
 ** 
@@ -1897,7 +1903,7 @@ STRING,,Roller|Bead,"Deposition Process",
 	INPUT = "material_input.txt"
 *EVENT SERIES, NAME = "heat pathj" , TIME =TOTAL TIME, 
 	TYPE = "ABQ_AM.MaterialDeposition",
-	INPUT = "C:/temp/Master/One-layer disk/heat_input.txt"
+	INPUT = "heat_input.txt"
 **------------------------------------------------------------
 **-----Table Collections defined in the Abaqus AM-Interface---
 **------------------------------------------------------------
@@ -1906,6 +1912,8 @@ STRING,,Roller|Bead,"Deposition Process",
 "Z", 0.00115, 0.02, 0.005, "Below"
 *PARAMETER TABLE, TYPE = "ABQ_AM.MaterialDeposition"
 "material path", "Bead"
+*PARAMETER TABLE, TYPE = "ABQ_AM.MaterialDeposition.Advanced"
+"Full", 0.0, 0
 *TABLE COLLECTION, NAME = ABQ_AM_heat
 *PROPERTY TABLE, TYPE = "ABQ_AM.AbsorptionCoeff"
 **tempDependency = OFF
@@ -1915,14 +1923,20 @@ STRING,,Roller|Bead,"Deposition Process",
 *PARAMETER TABLE, TYPE = "ABQ_AM.MovingHeatSource"
 "heat pathj", "Goldak"
 *PARAMETER TABLE, TYPE = "ABQ_AM.MovingHeatSource.Goldak"
-9, 9, 9, 0.005, 0.0023, 0.002, 0.004, 0.6, 1.4, 1
+9, 9, 9, 0.02, 0.001725, 0.002, 0.004, 0.6, 1.4, 1
+** 
+** PREDEFINED FIELDS
+** 
+** Name: Predefined Field-1   Type: Temperature
+*Initial Conditions, type=TEMPERATURE
+Set-6, 20.
 ** ----------------------------------------------------------------
 ** 
 ** STEP: heat
 ** 
 *Step, name=heat, nlgeom=NO, inc=100000
 *Heat Transfer, end=PERIOD, deltmx=1000., mxdem=1.
-0.001, 144., 1e-06, 0.1, 
+0.001, 10., 1e-06, 0.1, 
 *ACTIVATE ELEMENTS , ACTIVATION = "__AM-Model-1_Material Source -1_EPA__"
 ABQ_AM_material
 *DFLUX
@@ -1962,32 +1976,4 @@ FTEMP, RADFL, RADFLA, RADTL, RADTLA, VFTOT
 *OUTPUT,FIELD,FREQ=1
 *ELEMENT OUTPUT
 EACTIVE
-*End Step
-** ----------------------------------------------------------------
-** 
-** STEP: cooling
-** 
-*Step, name=cooling, nlgeom=NO, inc=100000
-*Heat Transfer, end=PERIOD, deltmx=1000., mxdem=1.
-0.001, 5000., 1e-05, 0.1, 
-** 
-** OUTPUT REQUESTS
-** 
-*Restart, write, frequency=0
-** 
-** FIELD OUTPUT: F-Output-1
-** 
-*Output, field
-*Node Output
-NT, 
-*Element Output, directions=YES
-TEMP, 
-** 
-** HISTORY OUTPUT: H-Output-1
-** 
-*Output, history
-*Contact Output
-HFLA, HTL, HTLA, SJD, SJDA, SJDT, SJDTA, WEIGHT
-*Radiation Output
-FTEMP, RADFL, RADFLA, RADTL, RADTLA, VFTOT
 *End Step

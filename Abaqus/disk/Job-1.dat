@@ -1,6 +1,6 @@
 1
 
-   Abaqus 3DEXPERIENCE R2019x                                  Date 17-Sep-2020   Time 19:11:35
+   Abaqus 3DEXPERIENCE R2019x                                  Date 24-sep-2020   Time 16:37:57
    For use by NTNU NORGES TEKNISK NATURVITENSKAPELIGE UNIVERSITET under license from Dassault Systemes or its subsidiary.
 
 
@@ -70,6 +70,7 @@
      END PROCESSING PART, INSTANCE, AND ASSEMBLY INFORMATION
    ***********************************************************
 
+  *initialconditions, type=TEMPERATURE
 
 
 
@@ -84,10 +85,13 @@
   *Nset, nset=ASSEMBLY_THERMAL-1_SET-2
   *Elset, elset=ASSEMBLY_THERMAL-1_ADDELEMENT
   *Elset, elset=ASSEMBLY_THERMAL-1_SET-2
+  *Nset, nset=ASSEMBLY_ALL_NODES
   *Nset, nset=ASSEMBLY_SET-1
+  *Nset, nset=ASSEMBLY_SET-6
   *Elset, elset=ASSEMBLY_ADDELEMENT
   *Elset, elset=ASSEMBLY_SET-1
   *Elset, elset=ASSEMBLY_SET-2
+  *Elset, elset=ASSEMBLY_SET-6
   *Elset, elset=ASSEMBLY__AM-MODEL-1__ALLBUILDPARTS__
   *physicalconstants, absolutezero=-273.15, stefanboltzmann=5.67e-08
   *eventseriestype, fields=1, name="ABQ_AM.MaterialDeposition"
@@ -96,9 +100,9 @@
 
   *** INPUT DATA IS READ FROM FILE material_input.txt                                                                                                                                                                                                                                             
 
-  *eventseries, name="heat pathj", time=TOTALTIME, type="ABQ_AM.MaterialDeposition", input="C:/temp/Master/One-layer disk/heat_input.txt"
+  *eventseries, name="heat pathj", time=TOTALTIME, type="ABQ_AM.MaterialDeposition", input="heat_input.txt"
 
-  *** INPUT DATA IS READ FROM FILE C:/temp/Master/One-layer disk/heat_input.txt                                                                                                                                                                                                                   
+  *** INPUT DATA IS READ FROM FILE heat_input.txt                                                                                                                                                                                                                                                 
 
   *parametertabletype, name="ABQ_AM.MovingHeatSource", parameters=2
   *parametertabletype, name="ABQ_AM.MaterialDeposition.Advanced", parameters=3
@@ -112,6 +116,7 @@
   *tablecollection, name=ABQ_AM_MATERIAL
   *parametertable, type="ABQ_AM.MaterialDeposition.Bead"
   *parametertable, type="ABQ_AM.MaterialDeposition"
+  *parametertable, type="ABQ_AM.MaterialDeposition.Advanced"
   *tablecollection, name=ABQ_AM_HEAT
   *propertytable, type="ABQ_AM.AbsorptionCoeff"
   *parametertable, type="ABQ_AM.MovingHeatSource.Advanced"
@@ -125,47 +130,38 @@
   *latentheat
   *plastic
   *specificheat
+  *initialconditions, type=TEMPERATURE
   *solidsection, elset=ASSEMBLY_THERMAL-1_SET-2, material=MATERIAL-1
   *solidsection, elset=ASSEMBLY_THERMAL-1_SET-2, material=MATERIAL-1
 
  ***WARNING: OUTPUT VARIABLES FILMCOEF AND SINKTEMP ARE NOT SUPPORTED FOR 
              OUTPUT WITH LOAD LABEL FFS AND FFSNU.
+  *initialconditions, type=TEMPERATURE
   *boundary
   *boundary
   *output, field
   *output, history
   *output, field, frequency=1
-  *output, field
-  *output, history
   *elementoutput, directions=YES
   *elementoutput
-  *elementoutput, directions=YES
   *elementprogressiveactivation, name="__AM-Model-1_Material Source -1_EPA__", followdeformation=NO, elset=ASSEMBLY_ADDELEMENT
+  *initialconditions, type=TEMPERATURE
   *output, field
   *output, history
   *output, field, frequency=1
-  *output, field
-  *output, history
   *elementoutput, directions=YES
   *elementoutput
-  *elementoutput, directions=YES
+  *initialconditions, type=TEMPERATURE
   *output, field
   *output, history
   *output, field, frequency=1
-  *output, field
-  *output, history
   *elementoutput, directions=YES
   *elementoutput
-  *elementoutput, directions=YES
   *Step, name=heat, nlgeom=NO, inc=100000
   *output, field
   *output, history
   *output, field, frequency=1
-  *Step, name=cooling, nlgeom=NO, inc=100000
-  *output, field
-  *output, history
   *Step, name=heat, nlgeom=NO, inc=100000
-  *Step, name=cooling, nlgeom=NO, inc=100000
   *Step, name=heat, nlgeom=NO, inc=100000
   *heattransfer, end=PERIOD, deltmx=1000, mxdem=1
   *activateelements, activation="__AM-Model-1_Material Source -1_EPA__"
@@ -200,23 +196,8 @@
 
  ***WARNING: OUTPUT REQUEST EACTIVE IS ONLY AVAILABLE FOR ELEMENTS WITH 
              PROGRESSIVE ACTIVATION
-  *Step, name=cooling, nlgeom=NO, inc=100000
-  *heattransfer, end=PERIOD, deltmx=1000, mxdem=1
-  *output, field
-  *nodeoutput
-  *elementoutput, directions=YES
-  *output, history
-  *contactoutput
-  *radiationoutput
-  *endstep
-
- ***WARNING: NO VALID RADIATION OUTPUT REQUESTS HAVE BEEN GENERATED. THIS MAY 
-             BE BECAUSE NO VALID CAVITIES EXIST IN THE MODEL.
   *boundary
   *Step, name=heat, nlgeom=NO, inc=100000
-  *heattransfer, end=PERIOD, deltmx=1000, mxdem=1
-  *endstep
-  *Step, name=cooling, nlgeom=NO, inc=100000
   *heattransfer, end=PERIOD, deltmx=1000, mxdem=1
   *endstep
 
@@ -248,7 +229,7 @@
        WALLCLOCK TIME (SEC) =          1
 1
 
-   Abaqus 3DEXPERIENCE R2019x                                  Date 17-Sep-2020   Time 19:11:43
+   Abaqus 3DEXPERIENCE R2019x                                  Date 24-sep-2020   Time 16:38:06
    For use by NTNU NORGES TEKNISK NATURVITENSKAPELIGE UNIVERSITET under license from Dassault Systemes or its subsidiary.
 
                                                                                                STEP    1  INCREMENT    1
@@ -262,68 +243,8 @@
 
      AUTOMATIC TIME CONTROL WITH -
           A SUGGESTED INITIAL TIME INCREMENT OF                1.000E-03
-          AND A TOTAL TIME PERIOD OF                            144.    
+          AND A TOTAL TIME PERIOD OF                            10.0    
           THE MINIMUM TIME INCREMENT ALLOWED IS                1.000E-06
-          THE MAXIMUM TIME INCREMENT ALLOWED IS                0.100    
-
-     THE SIZE OF THE TIME INCREMENT IS CONTROLLED BY -
-          THE TEMPERATURE CHANGE PER INCREMENT NOT EXCEEDING           1.000E+03
-  
-                   M E M O R Y   E S T I M A T E
-  
- PROCESS      FLOATING PT       MINIMUM MEMORY        MEMORY TO
-              OPERATIONS           REQUIRED          MINIMIZE I/O
-             PER ITERATION           (MB)               (MB)
-  
-     1          4.79E+05               17                 24
-  
- NOTE:
-      (1) SINCE ABAQUS DOES NOT PRE-ALLOCATE MEMORY AND ONLY ALLOCATES MEMORY AS NEEDED DURING THE ANALYSIS,
-          THE MEMORY REQUIREMENT PRINTED HERE CAN ONLY BE VIEWED AS A GENERAL GUIDELINE BASED ON THE BEST
-          KNOWLEDGE AVAILABLE AT THE BEGINNING OF A STEP BEFORE THE SOLUTION PROCESS HAS BEGUN.
-      (2) THE ESTIMATE IS NORMALLY UPDATED AT THE BEGINNING OF EVERY STEP. IT IS THE MAXIMUM VALUE OF THE
-          ESTIMATE FROM THE CURRENT STEP TO THE LAST STEP OF THE ANALYSIS, WITH UNSYMMETRIC SOLUTION TAKEN
-          INTO ACCOUNT IF APPLICABLE. 
-      (3) SINCE THE ESTIMATE IS BASED ON THE ACTIVE DEGREES OF FREEDOM IN THE FIRST ITERATION OF THE 
-          CURRENT STEP, THE MEMORY ESTIMATE MIGHT BE SIGNIFICANTLY DIFFERENT THAN ACTUAL USAGE FOR 
-          PROBLEMS WITH SUBSTANTIAL CHANGES IN ACTIVE DEGREES OF FREEDOM BETWEEN STEPS (OR EVEN WITHIN
-          THE SAME STEP). EXAMPLES ARE: PROBLEMS WITH SIGNIFICANT CONTACT CHANGES, PROBLEMS WITH MODEL
-          CHANGE, PROBLEMS WITH BOTH STATIC STEP AND STEADY STATE DYNAMIC PROCEDURES WHERE ACOUSTIC 
-          ELEMENTS WILL ONLY BE ACTIVATED IN THE STEADY STATE DYNAMIC STEPS.
-      (4) FOR MULTI-PROCESS EXECUTION, THE ESTIMATED VALUE OF FLOATING POINT OPERATIONS FOR EACH PROCESS
-          IS BASED ON AN INITIAL SCHEDULING OF OPERATIONS AND MIGHT NOT REFLECT THE ACTUAL FLOATING 
-          POINT OPERATIONS COMPLETED ON EACH PROCESS. OPERATIONS ARE DYNAMICALLY BALANCED DURING EXECUTION, 
-          SO THE ACTUAL BALANCE OF OPERATIONS BETWEEN PROCESSES IS EXPECTED TO BE BETTER THAN THE ESTIMATE
-          PRINTED HERE.
-      (5) THE UPPER LIMIT OF MEMORY THAT CAN BE ALLOCATED BY ABAQUS WILL IN GENERAL DEPEND ON THE VALUE OF
-          THE "MEMORY" PARAMETER AND THE AMOUNT OF PHYSICAL MEMORY AVAILABLE ON THE MACHINE. PLEASE SEE
-          THE "ABAQUS ANALYSIS USER'S MANUAL" FOR MORE DETAILS. THE ACTUAL USAGE OF MEMORY AND OF DISK
-          SPACE FOR SCRATCH DATA WILL DEPEND ON THIS UPPER LIMIT AS WELL AS THE MEMORY REQUIRED TO MINIMIZE
-          I/O. IF THE MEMORY UPPER LIMIT IS GREATER THAN THE MEMORY REQUIRED TO MINIMIZE I/O, THEN THE ACTUAL
-          MEMORY USAGE WILL BE CLOSE TO THE ESTIMATED "MEMORY TO MINIMIZE I/O" VALUE, AND THE SCRATCH DISK
-          USAGE WILL BE CLOSE-TO-ZERO; OTHERWISE, THE ACTUAL MEMORY USED WILL BE CLOSE TO THE PREVIOUSLY
-          MENTIONED MEMORY LIMIT, AND THE SCRATCH DISK USAGE WILL BE ROUGHLY PROPORTIONAL TO THE DIFFERENCE
-          BETWEEN THE ESTIMATED "MEMORY TO MINIMIZE I/O" AND THE MEMORY UPPER LIMIT. HOWEVER ACCURATE
-          ESTIMATE OF THE SCRATCH DISK SPACE IS NOT POSSIBLE.
-      (6) USING "*RESTART, WRITE" CAN GENERATE A LARGE AMOUNT OF DATA WRITTEN IN THE WORK DIRECTORY.
-1
-
-   Abaqus 3DEXPERIENCE R2019x                                  Date 17-Sep-2020   Time 19:13:05
-   For use by NTNU NORGES TEKNISK NATURVITENSKAPELIGE UNIVERSITET under license from Dassault Systemes or its subsidiary.
-
-                                                                                               STEP    2  INCREMENT    1
-                                                                                          TIME COMPLETED IN THIS STEP   0.00    
-
-
-                        S T E P       2     T R A N S I E N T   H E A T   T R A N S F E R
-
-
-                                                                                          
-
-     AUTOMATIC TIME CONTROL WITH -
-          A SUGGESTED INITIAL TIME INCREMENT OF                1.000E-03
-          AND A TOTAL TIME PERIOD OF                           5.000E+03
-          THE MINIMUM TIME INCREMENT ALLOWED IS                1.000E-05
           THE MAXIMUM TIME INCREMENT ALLOWED IS                0.100    
 
      THE SIZE OF THE TIME INCREMENT IS CONTROLLED BY -
@@ -373,13 +294,12 @@
 
 
                               ANALYSIS COMPLETE
-                              WITH      7 WARNING MESSAGES ON THE DAT FILE
-                              AND       1 WARNING MESSAGES ON THE MSG FILE
+                              WITH      6 WARNING MESSAGES ON THE DAT FILE
 
 
 
      JOB TIME SUMMARY
-       USER TIME (SEC)      =   2366.0    
-       SYSTEM TIME (SEC)    =   486.10    
-       TOTAL CPU TIME (SEC) =   2852.1    
-       WALLCLOCK TIME (SEC) =       3896
+       USER TIME (SEC)      =   12.900    
+       SYSTEM TIME (SEC)    =   3.9000    
+       TOTAL CPU TIME (SEC) =   16.800    
+       WALLCLOCK TIME (SEC) =         16

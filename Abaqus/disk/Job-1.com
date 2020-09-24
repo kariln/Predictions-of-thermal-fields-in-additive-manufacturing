@@ -1,5 +1,5 @@
 from driverConstants import *
-from driverStandard import StandardAnalysis
+from driverStandardMPI import StandardMPIAnalysis
 import driverUtils, sys
 options = {
     'SIMExt':'.sim',
@@ -17,11 +17,11 @@ options = {
     'contact':OFF,
     'cosimulation':OFF,
     'coupledProcedure':OFF,
-    'cpus':1,
+    'cpus':2,
     'cse':OFF,
     'cyclicSymmetryModel':OFF,
     'directCyclic':OFF,
-    'direct_port':'50468',
+    'direct_port':'57491',
     'direct_solver':DMP,
     'dsa':OFF,
     'dynStepSenseAdj':OFF,
@@ -46,7 +46,7 @@ options = {
     'lanczos':OFF,
     'libs':[],
     'listener_name':'iktutlaan12.win.ntnu.no',
-    'listener_resource':'2004',
+    'listener_resource':'16336',
     'magnetostatic':OFF,
     'massDiffusion':OFF,
     'memory':'90%',
@@ -55,8 +55,14 @@ options = {
     'modifiedTet':OFF,
     'moldflowFiles':[],
     'moldflowMaterial':OFF,
-    'mp_mode':THREADS,
+    'mp_file_system':(DETECT, DETECT),
+    'mp_head_node':('iktutlaan12.win.ntnu.no', 'iktutlaan12', '10.53.24.125'),
+    'mp_host_list':(('iktutlaan12', 2),),
+    'mp_mode':MPI,
     'mp_mode_requested':MPI,
+    'mp_mpi_validate':OFF,
+    'mp_mpirun_path':'C:\\Program Files\\Microsoft MPI\\bin\\mpiexec.exe',
+    'mp_rsh_command':'dummy %H -l kariln -n %C',
     'multiphysics':OFF,
     'noDmpDirect':[],
     'noMultiHost':[],
@@ -78,7 +84,7 @@ options = {
     'runCalculator':OFF,
     'soils':OFF,
     'soliter':OFF,
-    'solverTypes':['DIRECT', 'DIRECT'],
+    'solverTypes':['DIRECT'],
     'standard_parallel':ALL,
     'staticNonlinear':OFF,
     'steadyStateTransport':OFF,
@@ -98,6 +104,6 @@ options = {
     'visco':OFF,
     'xplSelect':OFF,
 }
-analysis = StandardAnalysis(options)
+analysis = StandardMPIAnalysis(options)
 status = analysis.run()
 sys.exit(status)

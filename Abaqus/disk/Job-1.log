@@ -2,21 +2,21 @@ Analysis initiated from SIMULIA established products
 Abaqus JOB Job-1
 Abaqus 3DEXPERIENCE R2019x
 Abaqus License Manager checked out the following licenses:
-Abaqus/Standard checked out 5 tokens from Flexnet server abaqus.lisens.ntnu.no.
-<569 out of 1000 licenses remain available>.
+Abaqus/Standard checked out 6 tokens from Flexnet server abaqus.lisens.ntnu.no.
+<526 out of 1000 licenses remain available>.
 Begin Analysis Input File Processor
-9/17/2020 7:11:29 PM
+24.09.2020 16:37:50
 Run pre.exe
-9/17/2020 7:11:37 PM
+24.09.2020 16:37:59
 End Analysis Input File Processor
 Begin Abaqus/Standard Analysis
-9/17/2020 7:11:37 PM
+24.09.2020 16:37:59
 Run standard.exe
-9/17/2020 8:59:12 PM
+24.09.2020 16:38:24
 End Abaqus/Standard Analysis
 Begin Convert MFS to SFS
-9/17/2020 8:59:12 PM
+24.09.2020 16:38:27
 Run SMASimUtility.exe
-9/17/2020 8:59:13 PM
+24.09.2020 16:38:27
 End Convert MFS to SFS
 Abaqus JOB Job-1 COMPLETED
