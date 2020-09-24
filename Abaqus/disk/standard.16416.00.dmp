@@ -1,0 +1,41 @@
+<Description>
+    standard.exe / rank 0 / thread 4  encountered an unhandled exception
+ (code 5af)
+
+</Description>
+
+<Callstack>
+KERNELBASE.dll                 RaiseException                
+VCRUNTIME140.dll               CxxThrowException             
+ABQSMABasAlloc.dll             mem_OperatorNewThrowBuiltin   
+ABQSMARfmInterface.dll         rfm_IOBuffer::rfm_IOBuffer    
+ABQSMARfmInterface.dll         rfm_StringManagerFile::Flush  
+ABQSMARfmInterface.dll         rfm_DatabaseReprFile::Flush   
+ABQSMARfmInterface.dll         rom_Transporter::Flush        
+ABQSMAOdbCore.dll             ???
+ABQSMAOdbDdbOdb.dll           ???
+ABQSMAOdbDdbOdb.dll           ???
+ABQSMAOdbDdbOdb.dll           ???
+ABQSMAOdbDdbOdb.dll           ???
+ABQSMAStaCore.dll             ???
+ABQSMAAspSupport.dll          ???
+ABQSMAAspSupport.dll          ???
+ABQSMAAspSupport.dll          ???
+ABQSMAAspSupport.dll          ???
+ABQSMAAspSupport.dll          ???
+ABQSMAStaCore.dll             ???
+ABQSMABasAlloc.dll             mem_OperatorNewThrowBuiltin   
+ABQSMARfmInterface.dll         rfm_IOBuffer::rfm_IOBuffer    
+ABQSMARfmInterface.dll         rfm_StringManagerFile::Flush  
+ABQSMARfmInterface.dll         rfm_DatabaseReprFile::Flush   
+ABQSMARfmInterface.dll         rom_Transporter::Flush        
+ABQSMAOdbCore.dll             ???
+ABQSMAOdbDdbOdb.dll           ???
+ABQSMAStaCore.dll             ???
+ABQSMAStaCore.dll             ???
+ABQSMAStaCore.dll             ???
+ABQSMAAbuBasicUtils.dll       ???
+ucrtbase.dll                  ???
+KERNEL32.DLL                  ???
+ntdll.dll                     ???
+</Callstack>
