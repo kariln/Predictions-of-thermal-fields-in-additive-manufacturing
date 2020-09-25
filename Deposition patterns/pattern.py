@@ -4,9 +4,17 @@ Created on Thu Sep 24 21:33:09 2020
 
 @author: Kari Ness
 """
+#FUTURE IMPROVEMENTS:
+#check valid length, axis
+#implement negative axis and possibility to do alternate ply-dir
+#input 3 corners to span surface -> find normal for stack_dir
+#start dir generated from two points
+#number of layers instead of thickness
+#flip stack dir
+
 #Creating a parent class for all deposition patterns
 class Pattern:
-  def __init__(self, z_length, thickness, x_length, y_length, start_x, start_y, start_z, road_width):
+  def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
     #initializing geometry properties
     self.z_length = z_length
     self.thickness = thickness
@@ -14,17 +22,20 @@ class Pattern:
     self.y_length = y_length
     self.road_width = road_width
     
+    #initializing deposition velocity with default value 5
+    self.v = 5
+    
+    #energy deposition
+    self.P = P
+    
     #initializing the start coorsinate of the pattern
-    self.start_coord = (start_x, start_y, start_z)
+    self.start_coord = (corner_x, corner_y, corner_z)
     
     #initializing the stack direction of the layers. default choice is z-direction.
-    self.stack_dir = 2
+    self.stack_dir = 3
     
     #initializing the starting deposition direction. default choice is x-direction
-    self.start_dir = 0
-    
-    #initializing list for path coordinates
-    self.path = [self.start_coord]
+    self.start_dir = 1
     
 
 #Creating getters and setters
@@ -79,6 +90,10 @@ class Pattern:
   def set_stack_dir(self, stack_dir):
       if self.get_start_dir == stack_dir:
           raise ValueError("Start direction must be different from stack direction.")
+          
+      elif stack_dir not in {1,2,3}:
+          raise ValueError("Stack direction must be a value of 1 (x), 2 (y) or 3 (z).")
+          
       else:
           self.stack_dir = stack_dir    
       
@@ -88,5 +103,31 @@ class Pattern:
   def set_start_dir(self, start_dir):
       if start_dir == self.get_stack_dir:
           raise ValueError("Start direction must be different from stack direction.")
+          
+      elif start_dir not in {1,2,3}:
+          raise ValueError("Start direction must be a value of 1 (x), 2 (y) or 3 (z).")
+          
       else:
           self.start_dir = start_dir
+          
+  def get_power(self):
+      return self.P
+  
+  def set_power(self, P):
+      self.P = P
+      
+  def get_area(self):
+      return self.get_road_width*self.get_thickness
+  
+  def get_velocity(self):
+      return self.v
+  
+  def set_velocity(self,v):
+      self.v = v
+  
+  #creating text files for heat and material path
+  def create_files():
+    heat_path = open("heat_path.txt","w+")
+    material_path = open("heat_path.txt","w+")
+
+    
