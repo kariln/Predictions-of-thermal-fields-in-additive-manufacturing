@@ -11,6 +11,8 @@ Created on Thu Sep 24 21:33:09 2020
 #start dir generated from two points
 #number of layers instead of thickness
 #flip stack dir
+#finish get print start
+#map to local coordinate system
 
 #Creating a parent class for all deposition patterns
 class Pattern:
@@ -29,7 +31,7 @@ class Pattern:
     self.P = P
     
     #initializing the start coorsinate of the pattern
-    self.start_coord = (corner_x, corner_y, corner_z)
+    self.corner_coord = (corner_x, corner_y, corner_z)
     
     #initializing the stack direction of the layers. default choice is z-direction.
     self.stack_dir = 3
@@ -48,11 +50,11 @@ class Pattern:
     
   def get_layer_nr(self):
       if self.stack_dir == 0:
-          return self.get_x_length/self.get_thickness
+          return self.get_x_length()/self.get_thickness()
       elif self.stack_dir == 1:
-          return self.get_x_length/self.get_thickness
+          return self.get_x_length()/self.get_thickness()
       else:
-          return self.get_z_length/self.get_thickness
+          return self.get_z_length()/self.get_thickness()
         
   def get_thickness(self):
       return self.thickness
@@ -72,11 +74,11 @@ class Pattern:
   def set_y_length(self, y_length):
       self.y_length = y_length
       
-  def get_start_coord(self):
-      return self.start_coord
+  def get_corner_coord(self):
+      return self.corner_coord
   
-  def set_start_coord(self, x,y,z):
-      self.start_coord = (x,y,z)
+  def set_corner_coord(self, x,y,z):
+      self.corner_coord = (x,y,z)
 
   def get_road_width(self):
       return self.road_width
@@ -117,17 +119,16 @@ class Pattern:
       self.P = P
       
   def get_area(self):
-      return self.get_road_width*self.get_thickness
+      return self.get_road_width()*self.get_thickness()
   
   def get_velocity(self):
       return self.v
   
   def set_velocity(self,v):
       self.v = v
+      
+  def coord_string(self,t,x,y,z,p):
+      return '%(t),%(x),%(y),%(z),%(p)' % {"t": t, "x": x, "y" : y, "z": z, "p": p }
   
-  #creating text files for heat and material path
-  def create_files():
-    heat_path = open("heat_path.txt","w+")
-    material_path = open("heat_path.txt","w+")
 
     
