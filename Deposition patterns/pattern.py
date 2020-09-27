@@ -11,18 +11,17 @@ Created on Thu Sep 24 21:33:09 2020
 #start dir generated from two points
 #number of layers instead of thickness
 #flip stack dir
-#finish get print start
-#map to local coordinate system
+#combine get_material_path and get_heat_path
+#generalize directions in get_path raster
 
 #Creating a parent class for all deposition patterns
 class Pattern:
   def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
     #initializing geometry properties
-    self.z_length = z_length
     self.thickness = thickness
-    self.x_length = x_length
-    self.y_length = y_length
     self.road_width = road_width
+    
+    self.length = [x_length, y_length,z_length]
     
     #initializing deposition velocity with default value 5
     self.v = 5
@@ -33,28 +32,21 @@ class Pattern:
     #initializing the start coorsinate of the pattern
     self.corner_coord = (corner_x, corner_y, corner_z)
     
-    #initializing the stack direction of the layers. default choice is z-direction.
-    self.stack_dir = 3
-    
-    #initializing the starting deposition direction. default choice is x-direction
-    self.start_dir = 1
+    #initializing a dictionary with axes
+    self.axis = {'deposition': 0, 'transverse': 1, 'stack': 2}
     
 
 #Creating getters and setters
+    
+  def get_length(self):
+      return self.length
+
   def get_z_length(self):
-      return self.z_length
+      return self.get_length()[2]
   
-  def set_z_length(self,z_length):
-      self.z_length = z_length
-        
     
   def get_layer_nr(self):
-      if self.stack_dir == 0:
-          return self.get_x_length()/self.get_thickness()
-      elif self.stack_dir == 1:
-          return self.get_x_length()/self.get_thickness()
-      else:
-          return self.get_z_length()/self.get_thickness()
+      return self.get_length()[self.get_stack_dir()]/self.get_thickness()
         
   def get_thickness(self):
       return self.thickness
@@ -63,16 +55,10 @@ class Pattern:
       self.thickness = thickness
       
   def get_x_length(self):
-      return self.x_length
-  
-  def set_x_length(self, x_length):
-      self.x_length = x_length
-      
+      return self.get_length()[0]
+
   def get_y_length(self):
-      return self.y_length
-  
-  def set_y_length(self, y_length):
-      self.y_length = y_length
+      return self.get_length()[1]
       
   def get_corner_coord(self):
       return self.corner_coord
@@ -84,33 +70,35 @@ class Pattern:
       return self.road_width
   
   def set_road_width(self, road_width):
-      self.road_width = road_width    
+      self.road_width = road_width   
+      
+  def get_axis(self):
+      return self.axis
+  
+  def set_axis(self, deposition, transverse, stack):
+      if (deposition == 0 or deposition == 1 or deposition == 2):
+          self.axis['deposition'] = deposition
+      else:
+          raise ValueError("Invalid deposition axis!")
+          
+      if (transverse == 0 or transverse == 1 or transverse == 2) and (transverse != deposition):
+          self.axis['transverse'] = transverse
+      else:
+          raise ValueError("Invalid deposition axis!")
+          
+      if (stack == 0 or stack == 1 or stack == 2) and (stack != deposition and stack != transverse):
+          self.axis['stack'] = stack
+      else:
+          raise ValueError("Invalid deposition axis!")
       
   def get_stack_dir(self):
-      return self.stack_dir
-  
-  def set_stack_dir(self, stack_dir):
-      if self.get_start_dir == stack_dir:
-          raise ValueError("Start direction must be different from stack direction.")
-          
-      elif stack_dir not in {1,2,3}:
-          raise ValueError("Stack direction must be a value of 1 (x), 2 (y) or 3 (z).")
-          
-      else:
-          self.stack_dir = stack_dir    
+      return self.get_axis()['stack']   
       
-  def get_start_dir(self):
-      return self.start_dir
+  def get_deposition_dir(self):
+      return self.get_axis()['deposition']
   
-  def set_start_dir(self, start_dir):
-      if start_dir == self.get_stack_dir:
-          raise ValueError("Start direction must be different from stack direction.")
-          
-      elif start_dir not in {1,2,3}:
-          raise ValueError("Start direction must be a value of 1 (x), 2 (y) or 3 (z).")
-          
-      else:
-          self.start_dir = start_dir
+  def get_transverse_dir(self):
+      return self.get_axis()['transverse']
           
   def get_power(self):
       return self.P
@@ -128,7 +116,7 @@ class Pattern:
       self.v = v
       
   def coord_string(self,t,x,y,z,p):
-      return '%(t),%(x),%(y),%(z),%(p)' % {"t": t, "x": x, "y" : y, "z": z, "p": p }
-  
+      temp= "{},{},{},{},{}\n"
+      return temp.format(t,x,y,z,p)
 
     
