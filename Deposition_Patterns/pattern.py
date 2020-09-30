@@ -13,6 +13,7 @@ Created on Thu Sep 24 21:33:09 2020
 #flip stack dir
 #combine get_material_path and get_heat_path
 #generalize directions in get_path raster
+#make lenght and corner read-only
 
 #Creating a parent class for all deposition patterns
 class Pattern:
@@ -20,7 +21,6 @@ class Pattern:
     #initializing geometry properties
     self.thickness = thickness
     self.road_width = road_width
-    
     self.length = [x_length, y_length,z_length]
     
     #initializing deposition velocity with default value 5
@@ -62,9 +62,6 @@ class Pattern:
       
   def get_corner_coord(self):
       return self.corner_coord
-  
-  def set_corner_coord(self, x,y,z):
-      self.corner_coord = (x,y,z)
 
   def get_road_width(self):
       return self.road_width
