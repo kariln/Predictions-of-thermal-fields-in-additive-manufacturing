@@ -15,6 +15,8 @@ Created on Thu Sep 24 21:33:09 2020
 #generalize directions in get_path raster
 #make lenght and corner read-only
 
+import abc #for abstract methods
+
 #Creating a parent class for all deposition patterns
 class Pattern:
   def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
@@ -37,6 +39,31 @@ class Pattern:
     
 
 #Creating getters and setters
+  @abc.abstractmethod
+  def get_path(self):
+      pass
+  
+  def generate_heat_path(self):
+      path = self.get_path()
+      
+      #creating text files for heat and material path
+      heat_path = open("heat_path.txt","w+")
+      heat_path.truncate(0)  
+      
+      for elem in path:
+          heat_path.write(self.coord_string(elem[0], elem[1], elem[2], elem[3], elem[4]))
+          
+  def generate_material_path(self):
+      path = self.get_path()
+      
+      #creating text files for heat and material path
+      material_path = open("material_path.txt","w+")
+      material_path.truncate(0)  
+
+      for elem in path:
+          material_path.write(self.coord_string(elem[0], elem[1], elem[2], elem[3], elem[5]))
+
+      
     
   def get_length(self):
       return self.length
