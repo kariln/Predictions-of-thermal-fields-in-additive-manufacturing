@@ -7,6 +7,7 @@ Created on Sun Sep 27 20:50:49 2020
 import pattern
 import copy
 
+#Zig-Zag deposition pattern
 class Zigzag(pattern.Pattern):
     def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
         super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P)
@@ -23,7 +24,7 @@ class Zigzag(pattern.Pattern):
     def get_print_coord(self, inp):#input 0 for heat, 1 for material
         #coord = [x,y,z]
         coord = [self.get_corner_coord()[0],self.get_corner_coord()[1],self.get_corner_coord()[2],self.get_corner_coord()[2]]
-        coord[self.get_deposition_dir()] += self.get_road_width()/2
+        coord[self.get_transverse_dir()] += self.get_road_width()/2
         if inp == 0:
             coord[self.get_stack_dir()] += self.get_thickness()
         else:
