@@ -26,7 +26,9 @@ class Raster(zigzag.Zigzag):
         path = []
         
         layers = self.get_layer_nr()
+        print(layers)
         passes = self.nr_passes()
+        print(passes)
         pass_time = self.pass_time()
         up_time = self.up_time()
         
@@ -45,7 +47,7 @@ class Raster(zigzag.Zigzag):
         return path
                 
 def main():        
-    raster = Raster(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000)
+    raster = Raster(0.012, 0.002, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000)
     raster.generate_heat_path()
     raster.generate_material_path()
 main()

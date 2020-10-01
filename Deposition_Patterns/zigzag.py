@@ -42,6 +42,7 @@ class Zigzag(pattern.Pattern):
         
         layers = self.get_layer_nr()
         passes = self.nr_passes()
+        print(passes)
         pass_time = self.pass_time()
         up_time = self.up_time()
         

@@ -5,14 +5,12 @@ Created on Thu Sep 24 21:33:09 2020
 @author: Kari Ness
 """
 #FUTURE IMPROVEMENTS:
-#check valid length, axis
+#check valid length
 #implement negative axis and possibility to do alternate ply-dir
 #input 3 corners to span surface -> find normal for stack_dir
 #start dir generated from two points
 #number of layers instead of thickness
 #flip stack dir
-#combine get_material_path and get_heat_path
-#generalize directions in get_path raster
 #make lenght and corner read-only
 
 import abc #for abstract methods
@@ -26,7 +24,7 @@ class Pattern:
     self.length = [x_length, y_length,z_length]
     
     #initializing deposition velocity with default value 5
-    self.v = 5
+    self.v = 0.01
     
     #energy deposition
     self.P = P
@@ -73,7 +71,7 @@ class Pattern:
   
     
   def get_layer_nr(self):
-      return self.get_length()[self.get_stack_dir()]/self.get_thickness()
+      return int(self.get_length()[self.get_stack_dir()]/self.get_thickness())
         
   def get_thickness(self):
       return self.thickness
