@@ -27,30 +27,27 @@ sys.path.append( 'c:\\Users\\Kari Ness\\abaqus_plugins\\AM plugin\\AMModeler\\AM
 from customKernel import *
 from amModule import *
 
+session.journalOptions.setValues(recoverGeometry=COORDINATE)
+
 """Create sketch and part """
 #create model
-model1 = mdb.Model(name= 'Model_1')
+thermal = mdb.Model(name= 'Thermal')
 
 #create part
-part1 = model1.Part(dimensionality=THREE_D,name='Part_1', type = DEFORMABLE_BODY)
+part1 = thermal.Part(dimensionality=THREE_D,name='Part_1', type = DEFORMABLE_BODY)
+f, e = part1.faces, part1.edges #getting the edges and faces of part1
 
 #extrude substrate
-substrate_sketch = model1.ConstrainedSketch(name='__profile__',sheetSize=2.0)
+substrate_sketch = thermal.ConstrainedSketch(name='__profile__',sheetSize=2.0)
 substrate_sketch.rectangle(point1=(-1.0,-1.0),point2=(1.0,1.0))
 part1.BaseSolidExtrude(sketch=substrate_sketch,depth=0.5)
-del substrate_sketch
+del thermal.sketches['__profile__']
 
-
-#extrude layers
-layer_sketch=model1.ConstrainedSketch(name='__profile__',sheetSize=2.0)
-layer_sketch.rectangle(point1=(-0.6, -0.6), 
-    point2=(0.6, 0.6))
-top_face = part1.faces.findAt(((0.0,0.0,1.4),))
-sketch_UpEdge = part1.edges.findAt(((0.6,0.6,1.1),))
-part1.SolidExtrude(depth=0.8, 
-    flipExtrudeDirection=OFF, sketch=
-    layer_sketch, sketchOrientation=RIGHT, 
-    sketchPlane=top_face, 
-    sketchPlaneSide=SIDE1, sketchUpEdge=
-    sketch_UpEdge)
-del layer_sketch
+#extrude AM
+subs_top_plane = f.findAt(((0.7,0.7,500.E-03),))[0]
+sketch_UpEdge_AM = e.findAt(((0.,1.0,500.E-03),))[0]
+sketch_transform = part1.MakeSketchTransform(sketchPlane = subs_top_plane,sketchUpEdge=sketch_UpEdge_AM,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.5))
+AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=2.0,gridSpacing=0.14, transform=sketch_transform)
+AM_sketch.rectangle(point1=(-0.6,-0.6),point2=(0.6,0.6))
+part1.SolidExtrude(depth=0.8,sketchPlane=subs_top_plane,sketchUpEdge=sketch_UpEdge_AM,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
+del thermal.sketches['__profile__']

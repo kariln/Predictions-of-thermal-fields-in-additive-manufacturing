@@ -1,0 +1,149 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+sys.path.append( 'c:\\Users\\kariln\\abaqus_plugins\\AM plugin\\AMModeler\\AMModeler' )
+from customKernel import *
+from amModule import *
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+#* Invalid sketch plane.
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-0.6, -0.6), 
+    point2=(0.6, 0.6))
+mdb.models['Thermal'].parts['Part_1'].SolidExtrude(depth=0.8, 
+    flipExtrudeDirection=OFF, gridSpacing=0.14, sketch=
+    mdb.models['Thermal'].sketches['__profile__'], sketchOrientation=RIGHT, 
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, sketchUpEdge=
+    mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 0.5), ), 
+    transform=mdb.models['Thermal'].parts['Part_1'].MakeSketchTransform(
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 
+    0.5), ), sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.5)))
+#* TypeError: keyword error on gridSpacing
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-0.6, -0.6), 
+    point2=(0.6, 0.6))
+mdb.models['Thermal'].parts['Part_1'].SolidExtrude(depth=0.8, 
+    flipExtrudeDirection=OFF, sketch=
+    mdb.models['Thermal'].sketches['__profile__'], sketchOrientation=RIGHT, 
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, sketchUpEdge=
+    mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 0.5), ), 
+    transform=mdb.models['Thermal'].parts['Part_1'].MakeSketchTransform(
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 
+    0.5), ), sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.5)))
+#* TypeError: keyword error on transform
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+#* TypeError: keyword error on gridSpacing
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(gridSpacing=0.14, 
+    point1=(-0.6, -0.6), point2=(0.6, 0.6), transform=
+    mdb.models['Thermal'].parts['Part_1'].MakeSketchTransform(
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 
+    0.5), ), sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.5)))
+#* TypeError: keyword error on gridSpacing
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-0.6, -0.6), 
+    point2=(0.6, 0.6))
+mdb.models['Thermal'].parts['Part_1'].SolidExtrude(depth=0.8, 
+    flipExtrudeDirection=OFF, sketch=
+    mdb.models['Thermal'].sketches['__profile__'], sketchOrientation=RIGHT, 
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, sketchUpEdge=
+    mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 0.5), ))
+#* Solid extrude feature failed
+mdb.Model(name='Thermal')
+mdb.models['Thermal'].Part(dimensionality=THREE_D, name='Part_1', type=
+    DEFORMABLE_BODY)
+mdb.models['Thermal'].ConstrainedSketch(name='__profile__', sheetSize=2.0)
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-1.0, -1.0), 
+    point2=(1.0, 1.0))
+mdb.models['Thermal'].parts['Part_1'].BaseSolidExtrude(depth=0.5, sketch=
+    mdb.models['Thermal'].sketches['__profile__'])
+mdb.models['Thermal'].ConstrainedSketch(gridSpacing=0.14, name='__profile__', 
+    sheetSize=2.0, transform=
+    mdb.models['Thermal'].parts['Part_1'].MakeSketchTransform(
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 
+    0.5), ), sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.5)))
+mdb.models['Thermal'].sketches['__profile__'].rectangle(point1=(-0.6, -0.6), 
+    point2=(0.6, 0.6))
+mdb.models['Thermal'].parts['Part_1'].SolidExtrude(depth=0.8, 
+    flipExtrudeDirection=OFF, sketch=
+    mdb.models['Thermal'].sketches['__profile__'], sketchOrientation=RIGHT, 
+    sketchPlane=mdb.models['Thermal'].parts['Part_1'].faces.findAt((-0.333333, 
+    -0.333333, 0.5), ), sketchPlaneSide=SIDE1, sketchUpEdge=
+    mdb.models['Thermal'].parts['Part_1'].edges.findAt((-0.5, 1.0, 0.5), ))
+# Save by kariln on 2020_10_06-15.26.41; build 2019 2018_09_24-20.41.51 157541
