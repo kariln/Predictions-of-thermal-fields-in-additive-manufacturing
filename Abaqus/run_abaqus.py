@@ -4,7 +4,7 @@ Created on Mon Oct  5 14:01:35 2020
 
 @author: Kari Ness
 """
-import create_part
-abaqusPath = "C:\\SIMULIA\\Commands\\abaqus.cmd /C"
-args = abaqusPath + "abaqus python test.py"
-create_part.call(args)
+import subprocess as sp
+abaqus_path = "C:\\SIMULIA\\Commands\\abaqus.cmd"
+script_path = "C:\\Users\\Kari Ness\\Documents\\GitHub\\TKT4550---Structural-Engineering-Specialization-Project\\Abaqus\\create_part.py"
+sp.call([abaqus_path, 'cae', "noGui=C:\\temp\\create_part.py"],shell = True)
