@@ -47,7 +47,7 @@ class Raster(zigzag.Zigzag):
         return path
                 
 def main():        
-    raster = Raster(0.012, 0.002, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000)
+    raster = Raster(0.012, 0.002, 0.06, 0.06, -0.03, -0.03, 0.02, 0.002,5000)
     raster.generate_heat_path()
     raster.generate_material_path()
 main()
