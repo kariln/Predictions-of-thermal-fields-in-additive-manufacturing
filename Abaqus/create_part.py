@@ -9,6 +9,9 @@ import os
 clear = lambda: os.system('cls')  # On Windows System
 clear()
 
+#for opening text files
+from pathlib import Path
+
 #importing abaqus modules used in the script file
 from part import *
 from material import *
@@ -29,11 +32,11 @@ from amModule import *
 
 session.journalOptions.setValues(recoverGeometry=COORDINATE)
 
-"""Create sketch and part """
+
 #create model
 thermal = mdb.Model(name= 'Thermal')
 
-#create part
+"""PART"""
 part1 = thermal.Part(dimensionality=THREE_D,name='Part_1', type = DEFORMABLE_BODY)
 f, e = part1.faces, part1.edges #getting the edges and faces of part1
 
@@ -51,3 +54,25 @@ AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=2.0,gridSpa
 AM_sketch.rectangle(point1=(-0.6,-0.6),point2=(0.6,0.6))
 part1.SolidExtrude(depth=0.8,sketchPlane=subs_top_plane,sketchUpEdge=sketch_UpEdge_AM,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
 del thermal.sketches['__profile__']
+
+#partition AM into layers
+nr_layers = 4
+plane_offset = 0.5
+for i in range(0,nr_layers):
+    datum_id = part1.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id
+    plane = part1.datums[datum_id]
+    plane_offset += 0.2
+    part1_cells = part1.cells
+    top_cell = part1_cells.findAt(((0.,0.,1.3),))
+    part1.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)
+
+"""PROPERTY"""
+#Material
+data_folder = Path(r'C:\Users\Kari Ness\Documents\GitHub\TKT4550---Structural-Engineering-Specialization-Project\Materials\AA2319')
+conductivity = data_folder / "AA2319_conductivity.txt"
+f = open(conductivity)
+#thermal.Material(name='Material-1')
+#thermal.materials['AA2319'].Elastic(table=((10000.0, 0.5), ))#ikke riktig verdi
+
+
+
