@@ -69,81 +69,42 @@ for i in range(0,nr_layers):
 
 """PROPERTY"""
 #Material
+class Material:
+    def __init__(self,material_properties, material_name):
+        #The material_properties should be a list of strings containing material property types
+        self.material_properties = material_properties
+        
+        #The material should be a string
+        self.material_name = material_name
+        
+    def get_material_name(self):
+        return self.material_name
+        
+    def get_property_file(self, material_property):
+        file_name = self.get_material_name() + '_' + material_property + '.txt'
+        file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), file_name)
+        return file
+    
+    def get_property_table(self, material_property):
+        file = self.get_property_file(material_property)
+        table = []
+        with open(file,"r") as f:
+            for line in f:
+                tmp = line.strip().split(",")
+                for i in range(0,len(tmp)):
+                    tmp[i] = float(tmp[i])
+                tmp = tuple(tmp)
+                table.append(tmp)
+        return table
+    
 AA2319 = thermal.Material(name='AA2319')
-conductivity_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_conductivity.txt")
-conductivity_table = []
-with open(conductivity_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        conductivity_table.append(tmp)
-AA2319.Conductivity(temperatureDependency=ON,table=conductivity_table)
-
-density_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_density.txt")
-density_table = []
-with open(density_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        density_table.append(tmp)
+AA2319_object = Material(['conductivity','density','elasticity','expansion','latent_heat','plasticity','specific_heat'],'AA2319')
+property_table = AA2319_object.get_property_table('conductivity')
+AA2319.Conductivity(temperatureDependency=ON,table=property_table)
 AA2319.Density(temperatureDependency=OFF,table=density_table)
-
-elasticity_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_elasticity.txt")
-elasticity_table = []
-with open(elasticity_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        elasticity_table.append(tmp)
 AA2319.Elastic(temperatureDependency=ON,table=elasticity_table)
-
-expansion_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_expansion.txt")
-expansion_table = []
-with open(expansion_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        expansion_table.append(tmp)
 AA2319.Expansion(temperatureDependency=ON,table=expansion_table)
-
-latent_heat_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_latent_heat.txt")
-latent_heat_table = []
-with open(latent_heat_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        latent_heat_table.append(tmp)
 AA2319.LatentHeat(table=latent_heat_table)
-
-plasticity_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_plasticity.txt")
-plasticity_table = []
-with open(plasticity_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        plasticity_table.append(tmp)
 AA2319.Plastic(temperatureDependency=ON,table=plasticity_table)
-
-specific_heat_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_specific_heat.txt")
-specific_heat_table = []
-with open(specific_heat_file,"r") as file:
-    for line in file:
-        tmp = line.strip().split(",")
-        for i in range(0,len(tmp)):
-            tmp[i] = float(tmp[i])
-        tmp = tuple(tmp)
-        specific_heat_table.append(tmp)
 AA2319.SpecificHeat(temperatureDependency=ON,table=specific_heat_table)
 

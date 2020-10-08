@@ -315,3 +315,44 @@ session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
     referenceRepresentation=ON)
 p1 = mdb.models['Thermal'].parts['Part_1']
 session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+#: 
+#: Point 1: 600.E-03, 600.E-03, 1.3  Point 2: 600.E-03, 600.E-03, 1.1
+#:    Distance: 200.E-03  Components: 0., 0., -200.E-03
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#* ImportError: cannot import name Material
+#* File "C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py", line 
+#* 29, in <module>
+#*     from material import Material
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#* ImportError: cannot import name Material
+#* File "C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py", line 
+#* 29, in <module>
+#*     from material import Material
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#* ImportError: cannot import name Material
+#* File "C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py", line 
+#* 29, in <module>
+#*     from material import Material
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#* ImportError: cannot import name Material
+#* File "C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py", line 
+#* 29, in <module>
+#*     from material import Material
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#: The model "Thermal" has been created.
+session.viewports['Viewport: 1'].partDisplay.setValues(sectionAssignments=ON, 
+    engineeringFeatures=ON)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=OFF)
+p1 = mdb.models['Thermal'].parts['Part_1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#: The model "Thermal" has been created.
+p1 = mdb.models['Thermal'].parts['Part_1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
