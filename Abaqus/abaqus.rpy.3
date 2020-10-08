@@ -1,0 +1,21 @@
+# -*- coding: mbcs -*-
+#
+# Abaqus/CAE Release 2019 replay file
+# Internal Version: 2018_09_24-20.41.51 157541
+# Run by kariln on Thu Oct  8 13:12:42 2020
+#
+
+# from driverUtils import executeOnCaeGraphicsStartup
+# executeOnCaeGraphicsStartup()
+#: Executing "onCaeGraphicsStartup()" in the site directory ...
+from abaqus import *
+from abaqusConstants import *
+session.Viewport(name='Viewport: 1', origin=(1.34896, 1.35), width=198.567, 
+    height=133.92)
+session.viewports['Viewport: 1'].makeCurrent()
+from driverUtils import executeOnCaeStartup
+executeOnCaeStartup()
+execfile('create_part.py', __main__.__dict__)
+#* ImportError: No module named pathlib
+#* File "create_part.py", line 13, in <module>
+#*     from pathlib import Path

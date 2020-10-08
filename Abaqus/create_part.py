@@ -9,9 +9,6 @@ import os
 clear = lambda: os.system('cls')  # On Windows System
 clear()
 
-#for opening text files
-from pathlib import Path
-
 #importing abaqus modules used in the script file
 from part import *
 from material import *
@@ -26,7 +23,11 @@ from sketch import *
 from visualization import *
 from connectorBehavior import *
 
-sys.path.append( 'c:\\Users\\Kari Ness\\abaqus_plugins\\AM plugin\\AMModeler\\AMModeler' )
+#paths
+import sys
+sys.path.append('C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials')
+sys.path.append( 'C:\\Users\\Kari Ness\\abaqus_plugins\\AM plugin\\AMModeler\\AMModeler' )
+
 from customKernel import *
 from amModule import *
 
@@ -68,11 +69,81 @@ for i in range(0,nr_layers):
 
 """PROPERTY"""
 #Material
-data_folder = Path(r'C:\Users\Kari Ness\Documents\GitHub\TKT4550---Structural-Engineering-Specialization-Project\Materials\AA2319')
-conductivity = data_folder / "AA2319_conductivity.txt"
-f = open(conductivity)
-#thermal.Material(name='Material-1')
-#thermal.materials['AA2319'].Elastic(table=((10000.0, 0.5), ))#ikke riktig verdi
+AA2319 = thermal.Material(name='AA2319')
+conductivity_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_conductivity.txt")
+conductivity_table = []
+with open(conductivity_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        conductivity_table.append(tmp)
+AA2319.Conductivity(temperatureDependency=ON,table=conductivity_table)
 
+density_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_density.txt")
+density_table = []
+with open(density_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        density_table.append(tmp)
+AA2319.Density(temperatureDependency=OFF,table=density_table)
 
+elasticity_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_elasticity.txt")
+elasticity_table = []
+with open(elasticity_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        elasticity_table.append(tmp)
+AA2319.Elastic(temperatureDependency=ON,table=elasticity_table)
+
+expansion_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_expansion.txt")
+expansion_table = []
+with open(expansion_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        expansion_table.append(tmp)
+AA2319.Expansion(temperatureDependency=ON,table=expansion_table)
+
+latent_heat_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_latent_heat.txt")
+latent_heat_table = []
+with open(latent_heat_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        latent_heat_table.append(tmp)
+AA2319.LatentHeat(table=latent_heat_table)
+
+plasticity_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_plasticity.txt")
+plasticity_table = []
+with open(plasticity_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        plasticity_table.append(tmp)
+AA2319.Plastic(temperatureDependency=ON,table=plasticity_table)
+
+specific_heat_file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials", "AA2319_specific_heat.txt")
+specific_heat_table = []
+with open(specific_heat_file,"r") as file:
+    for line in file:
+        tmp = line.strip().split(",")
+        for i in range(0,len(tmp)):
+            tmp[i] = float(tmp[i])
+        tmp = tuple(tmp)
+        specific_heat_table.append(tmp)
+AA2319.SpecificHeat(temperatureDependency=ON,table=specific_heat_table)
 
