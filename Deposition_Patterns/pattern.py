@@ -23,7 +23,7 @@ class Pattern:
     self.road_width = road_width
     self.length = [x_length, y_length,z_length]
     
-    #initializing deposition velocity with default value 5
+    #initializing deposition velocity with default value 0.01
     self.v = 0.01
     
     #energy deposition

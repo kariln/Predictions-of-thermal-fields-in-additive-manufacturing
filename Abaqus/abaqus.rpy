@@ -306,3 +306,12 @@ execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py',
 #: The model "Thermal" has been created.
 p1 = mdb.models['Thermal'].parts['Part_1']
 session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#: The model "Thermal" has been created.
+session.viewports['Viewport: 1'].partDisplay.setValues(sectionAssignments=OFF, 
+    engineeringFeatures=OFF)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=ON)
+p1 = mdb.models['Thermal'].parts['Part_1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
