@@ -3,11 +3,18 @@
 Created on Fri Oct  9 13:14:46 2020
 
 @author: kariln
+
+Class created for automatic creation of AM CAD models. 
+Assumptions:
+    Features are rectangular
+    Midpoint of sketch is 0,0
+    Sketch plane is XY
 """
 #importing classes
 from model import Model
 from part import Part
 from feature import Feature
+
 
 class AM_CAD:
     def __init__(self, file_name):
@@ -72,8 +79,8 @@ class AM_CAD:
         self.seperate_sec()
         return part
         
-    def baseExtrude(self, feature_name, shape, point1, point2, depth, part):
-        baseExtrude = Feature(feature_name, part, depth)
+    def baseExtrude(self, feature_name, part, point1, point2, depth):
+        baseExtrude = Feature(feature_name, part, point1, point2, depth)
         model_name = part.get_model_name()
         part_name = part.get_part_name()
         self.write('#extrusion of base\n')
@@ -81,29 +88,27 @@ class AM_CAD:
         self.write('sketch_name = ' + model_name + ".ConstrainedSketch(name='__profile__',sheetSize= " + str(sheetSize) + ')\n')
         point1_str = str(point1)
         point2_str = str(point2)
-        if shape == 'rectangle':
-            self.write('sketch_name.rectangle(point1=' + point1_str + ',point2=(' + point2_str + '))\n')
-        else:
-            raise NotImplementedError
+        self.write('sketch_name.rectangle(point1=' + point1_str + ',point2=(' + point2_str + '))\n')
         self.write(part_name + '.BaseSolidExtrude(sketch=sketch_name,depth=' + str(depth) + ')\n')
         self.write('del ' + model_name + ".sketches['__profile__']\n")
         part.add_feature(baseExtrude)
         self.seperate_sec()
         
-    def add_extrude(self, feature_name,part):
-        add_extrude = Feature(feature_name, part)
+    def add_extrude(self, feature_name,part, point1, point2, depth):
+        add_extrude = Feature(feature_name, part, point1, point2, depth)
         base = part.get_features()['base_extrude']
-        sketch_plane = 
-        
-        
-# #extrude AM
-# subs_top_plane = f.findAt(((0.7,0.7,500.E-03),))[0]
-# sketch_UpEdge_AM = e.findAt(((0.,1.0,500.E-03),))[0]
-# sketch_transform = part1.MakeSketchTransform(sketchPlane = subs_top_plane,sketchUpEdge=sketch_UpEdge_AM,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.5))
-# AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=2.0,gridSpacing=0.14, transform=sketch_transform)
-# AM_sketch.rectangle(point1=(-0.6,-0.6),point2=(0.6,0.6))
-# part1.SolidExtrude(depth=0.8,sketchPlane=subs_top_plane,sketchUpEdge=sketch_UpEdge_AM,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
-# del thermal.sketches['__profile__']
+        sheetSize = abs(2*(base.get_point1()[0]-base.get_point2()[0])*(base.get_point1()[1]-base.get_point2()[1]))
+        sketch_plane = (0.,0.,base.get_depth())
+        self.write('substrate_top_plane = f.findAt((' + str(sketch_plane) + ',))[0]\n')
+        up_edge = (0.,base.get_point2()[1], base.get_depth())
+        part_name = part.get_part_name()
+        model_name = part.get_model_name()
+        self.write('sketch_UpEdge = e.findAt((' + str(up_edge) + ',))[0]\n')
+        self.write('sketch_transform = ' + part_name + '.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,' + str(base.get_depth()) + '))\n')
+        self.write('AM_sketch = ' + part.get_model_name() + ".ConstrainedSketch(name = '__profile__',sheetSize=" + str(sheetSize) + ',gridSpacing=0.14, transform=sketch_transform)\n')
+        self.write('AM_sketch.rectangle(point1=' + str(point1) + ',point2=' + str(point2) + ')\n')
+        self.write(part_name + '.SolidExtrude(depth=' + str(depth) + ',sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)\n')
+        self.write('del ' + model_name + ".sketches['__profile__']\n")
 
 # #partition AM into layers
 # nr_layers = 4
@@ -130,5 +135,6 @@ def main():
 
     #creating part
     part1 = scripted_part.create_part('part1', thermal, 'THREE_D','DEFORMABLE_BODY')
-    scripted_part.baseExtrude('base_extrude','rectangle', (-1.0,-1.0), (1.0,1.0), 0.5, part1)
+    scripted_part.baseExtrude('base_extrude', part1, (-1.0,-1.0), (1.0,1.0), 0.5)
+    scripted_part.add_extrude('add_element',part1,(-0.6,-0.6),(0.6,0.6),0.8)
 main()

@@ -36,3 +36,10 @@ sketch_name.rectangle(point1=(-1.0, -1.0),point2=((1.0, 1.0)))
 part1.BaseSolidExtrude(sketch=sketch_name,depth=0.5)
 del thermal.sketches['__profile__']
 
+substrate_top_plane = f.findAt(((0.0, 0.0, 0.5),))[0]
+sketch_UpEdge = e.findAt(((0.0, 1.0, 0.5),))[0]
+sketch_transform = part1.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.5))
+AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=8.0,gridSpacing=0.14, transform=sketch_transform)
+AM_sketch.rectangle(point1=(-0.6, -0.6),point2=(0.6, 0.6))
+part1.SolidExtrude(depth=0.8,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
+del thermal.sketches['__profile__']
