@@ -4,11 +4,10 @@ Created on Mon Oct  5 14:01:35 2020
 
 @author: Kari Ness
 """
-# import subprocess as sp
+import subprocess as sp
 # abaqus_path = "C:\\SIMULIA\\Commands\\abaqus.cmd"
 script_path = "C:\\Users\\Kari Ness\\Documents\\GitHub\\TKT4550---Structural-Engineering-Specialization-Project\\Abaqus\\create_part.py"
 # sp.call([abaqus_path, 'cae', "noGUI=C:\\temp\\create_part.py"],shell = True)
-
-import subprocess as sp 
+ 
 #pythonFilePath = "C:\\Temp\\DirectoryWithThePythonScript\\"
 sp.call(['abaqus.bat', 'python', script_path + 'create_part.py'])
