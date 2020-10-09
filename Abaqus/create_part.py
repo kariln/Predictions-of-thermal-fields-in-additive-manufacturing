@@ -34,7 +34,7 @@ from amModule import *
 session.journalOptions.setValues(recoverGeometry=COORDINATE)
 
 
-#create model
+"""MODEL"""
 thermal = mdb.Model(name= 'Thermal')
 
 """PART"""
@@ -48,7 +48,7 @@ part1.BaseSolidExtrude(sketch=substrate_sketch,depth=0.5)
 del thermal.sketches['__profile__']
 
 #extrude AM
-subs_top_plane = f.findAt(((0.7,0.7,500.E-03),))[0]
+subs_top_plane = f.findAt(((0.,0.,500.E-03),))[0]
 sketch_UpEdge_AM = e.findAt(((0.,1.0,500.E-03),))[0]
 sketch_transform = part1.MakeSketchTransform(sketchPlane = subs_top_plane,sketchUpEdge=sketch_UpEdge_AM,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.5))
 AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=2.0,gridSpacing=0.14, transform=sketch_transform)

@@ -356,3 +356,33 @@ execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py',
 #: The model "Thermal" has been created.
 p1 = mdb.models['Thermal'].parts['Part_1']
 session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+a = mdb.models['Thermal'].rootAssembly
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(
+    optimizationTasks=OFF, geometricRestrictions=OFF, stopConditions=OFF)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(
+    adaptiveMeshConstraints=ON)
+session.viewports['Viewport: 1'].partDisplay.setValues(sectionAssignments=OFF, 
+    engineeringFeatures=OFF)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=ON)
+p = mdb.models['Thermal'].parts['Part_1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p)
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/create_part.py', 
+    __main__.__dict__)
+#: The model "Thermal" has been created.
+session.viewports['Viewport: 1'].partDisplay.setValues(sectionAssignments=ON, 
+    engineeringFeatures=ON)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=OFF)
+p1 = mdb.models['Thermal'].parts['Part_1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+execfile('C:/Users/kariln/Documents/GitHub/Master/Abaqus/scripted_part.py', 
+    __main__.__dict__)
+#: The model "thermal" has been created.
+import sys
+sys.path.insert(15, 
+    r'c:/Users/kariln/abaqus_plugins/AM plugin/AMModeler/AMModeler')
+from abaqus import *
+from amConstants import *
+import customKernel, amModule, amKernelInit
