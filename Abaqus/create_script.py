@@ -139,7 +139,9 @@ class AM_CAD:
                 self.write(material_name + '.' + property_name + '(temperatureDependency=' + temperatureDependency + ',table=' + str(property_table) + ')\n')
             else:
                 self.write(material_name + '.' + property_name + '(table=' + str(property_table) + ')\n')
+        model.add_material(material)
         self.seperate_sec()
+        
 def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
@@ -148,13 +150,15 @@ def main():
     
     models = {}
     
-    #creating model
+    #MODEL
     thermal = scripted_part.create_model('thermal')
     models.update({thermal.get_model_name():thermal})
 
-    #creating part
+    #PART
     part1 = scripted_part.create_part('part1', thermal, 'THREE_D','DEFORMABLE_BODY')
     scripted_part.baseExtrude('base_extrude', part1, (-1.0,-1.0), (1.0,1.0), 0.5)
     scripted_part.add_extrude('add_element',part1,(-0.6,-0.6),(0.6,0.6),0.8,4)
+    
+    #PROPERTY
     scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], part1)
 main()
