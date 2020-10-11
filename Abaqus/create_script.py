@@ -126,6 +126,7 @@ class AM_CAD:
         self.seperate_sec()
         
     def assign_material(self, material_name, material_properties, model):
+        self.write('#PROPERTY\n')
         material = Material(material_properties, material_name)
         material_name = material.get_material_name()
         model_name = model.get_model_name()
@@ -138,19 +139,7 @@ class AM_CAD:
                 self.write(material_name + '.' + property_name + '(temperatureDependency=' + temperatureDependency + ',table=' + str(property_table) + ')\n')
             else:
                 self.write(material_name + '.' + property_name + '(table=' + str(property_table) + ')\n')
-        
-#AA2319 = thermal.Material(name='AA2319')
-#AA2319_object = Material(['conductivity','density','elasticity','expansion','latent_heat','plasticity','specific_heat'],'AA2319')
-#property_table = AA2319_object.get_property_table('conductivity')
-#AA2319.Conductivity(temperatureDependency=ON,table=property_table)
-#AA2319.Density(temperatureDependency=OFF,table=density_table)
-#AA2319.Elastic(temperatureDependency=ON,table=elasticity_table)
-#AA2319.Expansion(temperatureDependency=ON,table=expansion_table)
-#AA2319.LatentHeat(table=latent_heat_table)
-#AA2319.Plastic(temperatureDependency=ON,table=plasticity_table)
-#AA2319.SpecificHeat(temperatureDependency=ON,table=specific_heat_table)
-
-        
+        self.seperate_sec()
 def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
