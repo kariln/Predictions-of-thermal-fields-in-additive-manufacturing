@@ -14,6 +14,7 @@ Assumptions:
 from model import Model
 from part import Part
 from feature import Feature
+from material import Material
 
 
 class AM_CAD:
@@ -80,7 +81,7 @@ class AM_CAD:
         return part
         
     def baseExtrude(self, feature_name, part, point1, point2, depth):
-        baseExtrude = Feature(feature_name, part, point1, point2, depth)
+        baseExtrude = Feature(feature_name, part, point1, point2, depth, 1)
         model_name = part.get_model_name()
         part_name = part.get_part_name()
         self.write('#extrusion of base\n')
@@ -94,8 +95,8 @@ class AM_CAD:
         part.add_feature(baseExtrude)
         self.seperate_sec()
         
-    def add_extrude(self, feature_name,part, point1, point2, depth):
-        add_extrude = Feature(feature_name, part, point1, point2, depth)
+    def add_extrude(self, feature_name,part, point1, point2, depth, nr_layers):
+        add_extrude = Feature(feature_name, part, point1, point2, depth, nr_layers)
         base = part.get_features()['base_extrude']
         sheetSize = abs(2*(base.get_point1()[0]-base.get_point2()[0])*(base.get_point1()[1]-base.get_point2()[1]))
         sketch_plane = (0.,0.,base.get_depth())
@@ -109,17 +110,46 @@ class AM_CAD:
         self.write('AM_sketch.rectangle(point1=' + str(point1) + ',point2=' + str(point2) + ')\n')
         self.write(part_name + '.SolidExtrude(depth=' + str(depth) + ',sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)\n')
         self.write('del ' + model_name + ".sketches['__profile__']\n")
+        self.write('#partition AM into layers')
+        self.write('\nnr_layers = ' + str(nr_layers) + '\n')
+        plane_offset = base.get_depth()
+        layer_thickness = depth/nr_layers
+        self.write('plane_offset = ' + str(plane_offset) + '\n')
+        self.write('for i in range(0,nr_layers):\n')
+        self.write('\tdatum_id = '+ part_name + '.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id\n')
+        self.write('\tplane = ' + part_name + '.datums[datum_id]\n')
+        self.write('\tplane_offset += ' + str(layer_thickness) + '\n')
+        self.write('\t' + part_name + '_cells = ' + part_name + '.cells\n')
+        self.write('\ttop_cell = ' + part_name + '_cells.findAt(((0.,0.,' + str(base.get_depth() + depth) + '),))\n')
+        self.write('\t' + part_name + '.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)\n')
+        part.add_feature(add_extrude)
+        self.seperate_sec()
+        
+    def assign_material(self, material_name, material_properties, model):
+        material = Material(material_properties, material_name)
+        material_name = material.get_material_name()
+        model_name = model.get_model_name()
+        self.write(material_name + ' = ' + model_name + ".Material(name='" + material_name + "')\n")
+        for prop in material_properties:
+            property_name = prop[0]
+            temperatureDependency = prop[1]
+            property_table = material.get_property_table(property_name)
+            if temperatureDependency is not None:
+                self.write(material_name + '.' + property_name + '(temperatureDependency=' + temperatureDependency + ',table=' + str(property_table) + ')\n')
+            else:
+                self.write(material_name + '.' + property_name + '(table=' + str(property_table) + ')\n')
+        
+#AA2319 = thermal.Material(name='AA2319')
+#AA2319_object = Material(['conductivity','density','elasticity','expansion','latent_heat','plasticity','specific_heat'],'AA2319')
+#property_table = AA2319_object.get_property_table('conductivity')
+#AA2319.Conductivity(temperatureDependency=ON,table=property_table)
+#AA2319.Density(temperatureDependency=OFF,table=density_table)
+#AA2319.Elastic(temperatureDependency=ON,table=elasticity_table)
+#AA2319.Expansion(temperatureDependency=ON,table=expansion_table)
+#AA2319.LatentHeat(table=latent_heat_table)
+#AA2319.Plastic(temperatureDependency=ON,table=plasticity_table)
+#AA2319.SpecificHeat(temperatureDependency=ON,table=specific_heat_table)
 
-# #partition AM into layers
-# nr_layers = 4
-# plane_offset = 0.5
-# for i in range(0,nr_layers):
-#     datum_id = part1.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id
-#     plane = part1.datums[datum_id]
-#     plane_offset += 0.2
-#     part1_cells = part1.cells
-#     top_cell = part1_cells.findAt(((0.,0.,1.3),))
-#     part1.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)
         
 def main():
     scripted_part = AM_CAD('scripted_part.py')
@@ -136,5 +166,6 @@ def main():
     #creating part
     part1 = scripted_part.create_part('part1', thermal, 'THREE_D','DEFORMABLE_BODY')
     scripted_part.baseExtrude('base_extrude', part1, (-1.0,-1.0), (1.0,1.0), 0.5)
-    scripted_part.add_extrude('add_element',part1,(-0.6,-0.6),(0.6,0.6),0.8)
+    scripted_part.add_extrude('add_element',part1,(-0.6,-0.6),(0.6,0.6),0.8,4)
+    scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], part1)
 main()

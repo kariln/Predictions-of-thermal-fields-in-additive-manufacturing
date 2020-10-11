@@ -6,12 +6,14 @@ Created on Fri Oct  9 16:31:22 2020
 """
 
 class Feature:
-    def __init__(self, feature_name, part, point1, point2, depth):
+    def __init__(self, feature_name, part, point1, point2, depth, nr_layers):
         self.feature_name = feature_name
         self.part = part
         self.point1 = point1
         self.point2 = point2
         self.depth = depth
+        self.nr_layers = nr_layers
+        self.layer_thickness = depth/nr_layers
         
     def get_feature_name(self):
         return self.feature_name
@@ -27,3 +29,9 @@ class Feature:
     
     def get_point2(self):
         return self.point2
+    
+    def get_layers(self):
+        return self.nr_layers
+    
+    def get_layer_thickness(self):
+        return self.get_layer_thickness
