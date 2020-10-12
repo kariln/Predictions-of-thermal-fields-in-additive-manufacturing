@@ -142,6 +142,31 @@ class AM_CAD:
         model.add_material(material)
         self.seperate_sec()
         
+    def assign_section(self, material_name, part, section_name):
+        model_name = part.get_model_name()
+        part_name = part.get_part_name()
+        self.write(model_name + ".HomogeneousSolidSection(name='" + section_name + "', material='" + material_name + "', thickness=None)\n")
+        self.write('c = ' + part_name + '.cells\n')
+        self.write('region = ' + part_name + '.Set(cells = c, name = "full_part")\n')
+        self.write(part_name + ".SectionAssignment(region=region, sectionName='" + section_name + "', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)\n")
+        self.seperate_sec()
+        
+    def create_instance(self, part):
+        self.write('#ASSEMBLY\n')
+        model_name = part.get_model_name()
+        part_name = part.get_part_name()
+        self.write('a = ' + model_name + '.rootAssembly\n')
+        self.write('a.DatumCsysByDefault(CARTESIAN)\n')
+        self.write("a.Instance(name='" + part_name + "', part= " + part_name + ", dependent=ON)\n")
+        self.seperate_sec()
+        
+    def create_heat_step(self, step_name, previous, timePeriod, initialInc, minInc,maxInc,deltmx, model):
+        self.write('#STEP\n')
+        model_name = model.get_model_name()
+        self.write(model_name + ".HeatTransferStep(name='" + step_name + "', previous='" + previous +"', timePeriod=" + str(timePeriod) + ', initialInc=' + str(initialInc) + ', minInc=' + str(minInc) + ', maxInc=' + str(maxInc) + ',deltmx=' + str(deltmx) + ')\n')
+        self.seperate_sec()
+
+        
 def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
@@ -160,5 +185,13 @@ def main():
     scripted_part.add_extrude('add_element',part1,(-0.6,-0.6),(0.6,0.6),0.8,4)
     
     #PROPERTY
-    scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], part1)
+    scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], thermal)
+    scripted_part.assign_section('AA2319',part1,'Part_Section')
+    
+    #ASSEMBLY
+    scripted_part.create_instance(part1)
+    
+    #STEP
+    scripted_part.create_heat_step('heat','Initial',4000,0.01,1E-8,0.1,600, thermal)
+    
 main()
