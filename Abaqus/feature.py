@@ -6,8 +6,8 @@ Created on Fri Oct  9 16:31:22 2020
 """
 
 class Feature:
-    def __init__(self, feature_name, part, point1, point2, depth, nr_layers):
-        self.feature_name = feature_name
+    def __init__(self, part, point1, point2, depth, nr_layers):
+        self.feature_name = None
         self.part = part
         self.point1 = point1
         self.point2 = point2
@@ -35,3 +35,9 @@ class Feature:
     
     def get_layer_thickness(self):
         return self.get_layer_thickness
+    
+    def get_side_length(self):
+        return abs(self.get_point2()[0] - self.get_point1()[0])
+    
+    def set_feature_name(self,feature_name):
+        self.feature_name = feature_name

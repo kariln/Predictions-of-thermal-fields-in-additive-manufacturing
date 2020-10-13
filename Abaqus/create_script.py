@@ -80,8 +80,9 @@ class AM_CAD:
         self.seperate_sec()
         return part
         
-    def baseExtrude(self, feature_name, part, point1, point2, depth):
-        baseExtrude = Feature(feature_name, part, point1, point2, depth, 1)
+    def baseExtrude(self, part, point1, point2, depth):
+        baseExtrude = Feature(part, point1, point2, depth, 1)
+        baseExtrude.set_feature_name('base_element')
         model_name = part.get_model_name()
         part_name = part.get_part_name()
         self.write('#extrusion of base\n')
@@ -95,9 +96,10 @@ class AM_CAD:
         part.add_feature(baseExtrude)
         self.seperate_sec()
         
-    def add_extrude(self, feature_name,part, point1, point2, depth, nr_layers):
-        add_extrude = Feature(feature_name, part, point1, point2, depth, nr_layers)
-        base = part.get_features()['base_extrude']
+    def add_extrude(self,part, point1, point2, depth, nr_layers):
+        add_extrude = Feature(part, point1, point2, depth, nr_layers)
+        add_extrude.set_feature_name('add_element')
+        base = part.get_features()['base_element']
         sheetSize = abs(2*(base.get_point1()[0]-base.get_point2()[0])*(base.get_point1()[1]-base.get_point2()[1]))
         sketch_plane = (0.,0.,base.get_depth())
         self.write('substrate_top_plane = f.findAt((' + str(sketch_plane) + ',))[0]\n')
@@ -165,6 +167,37 @@ class AM_CAD:
         model_name = model.get_model_name()
         self.write(model_name + ".HeatTransferStep(name='" + step_name + "', previous='" + previous +"', timePeriod=" + str(timePeriod) + ', initialInc=' + str(initialInc) + ', minInc=' + str(minInc) + ', maxInc=' + str(maxInc) + ',deltmx=' + str(deltmx) + ')\n')
         self.seperate_sec()
+        
+    def create_mesh(self, part, road_width):
+        self.write('#MESH\n')
+        part_name = part.get_part_name()
+        #makes global seed half of the road width
+        globalSeed = road_width/2
+        self.write(part_name + '.seedPart(size=' + str(globalSeed) + ', deviationFactor=0.1, minSizeFactor=0.1)\n')
+        self.write('e = ' + part_name + '.edges\n')
+        self.write(part_name + '.generateMesh()\n')
+        #Hent inn hjørne-kanter for underlag og add_element for å skape en tilpasset mesh
+#        x=[1,2,3]
+#        y=[4,5,6]
+#        z=[7,8,9]
+#        pickedEdges=[]
+#        numedges=5
+#        for i in range(numedges):
+#            pickedEdges.append( findAt((x[i], y[i], z[i]),) )
+#        self.write('pickedEdges = e.findAt()), ))')
+#    p = mdb.models['thermal'].parts['part1']
+#    p.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
+#    e = p.edges
+        #størrelse til underlag:
+#    pickedEdges = e.getSequenceFromMask(mask=('[#0 #fff0 ]', ), )
+#    p.seedEdgeBySize(edges=pickedEdges, size=0.01, deviationFactor=0.1, 
+#        minSizeFactor=0.1, constraint=FINER)
+        #størrelse til add:
+#    pickedEdges = e.getSequenceFromMask(mask=('[#745516d0 #c ]', ), )
+#    p.seedEdgeBySize(edges=pickedEdges, size=0.00115, deviationFactor=0.1, 
+#        minSizeFactor=0.1, constraint=FINER)
+#    p.generateMesh()
+
 
         
 def main():
@@ -181,8 +214,8 @@ def main():
 
     #PART
     part1 = scripted_part.create_part('part1', thermal, 'THREE_D','DEFORMABLE_BODY')
-    scripted_part.baseExtrude('base_extrude', part1, (-1.0,-1.0), (1.0,1.0), 0.5)
-    scripted_part.add_extrude('add_element',part1,(-0.6,-0.6),(0.6,0.6),0.8,4)
+    scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), 0.02)
+    scripted_part.add_extrude(part1,(-0.06,-0.06),(0.06,0.06),0.0092,4)
     
     #PROPERTY
     scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], thermal)
@@ -192,6 +225,9 @@ def main():
     scripted_part.create_instance(part1)
     
     #STEP
-    scripted_part.create_heat_step('heat','Initial',4000,0.01,1E-8,0.1,600, thermal)
+    scripted_part.create_heat_step('heat','Initial',4000,0.01,1E-8,1,1000, thermal)
+    
+    #MESH
+    scripted_part.create_mesh(part1,0.01)
     
 main()

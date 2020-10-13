@@ -31,27 +31,27 @@ part1=thermal.Part(dimensionality =THREE_D , name= 'part1' , type = DEFORMABLE_B
 f, e = part1.faces, part1.edges #getting the edges and faces of the part
 
 #extrusion of base
-sketch_name = thermal.ConstrainedSketch(name='__profile__',sheetSize= 8.0)
-sketch_name.rectangle(point1=(-1.0, -1.0),point2=((1.0, 1.0)))
-part1.BaseSolidExtrude(sketch=sketch_name,depth=0.5)
+sketch_name = thermal.ConstrainedSketch(name='__profile__',sheetSize= 0.08000000000000002)
+sketch_name.rectangle(point1=(-0.1, -0.1),point2=((0.1, 0.1)))
+part1.BaseSolidExtrude(sketch=sketch_name,depth=0.02)
 del thermal.sketches['__profile__']
 
-substrate_top_plane = f.findAt(((0.0, 0.0, 0.5),))[0]
-sketch_UpEdge = e.findAt(((0.0, 1.0, 0.5),))[0]
-sketch_transform = part1.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.5))
-AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=8.0,gridSpacing=0.14, transform=sketch_transform)
-AM_sketch.rectangle(point1=(-0.6, -0.6),point2=(0.6, 0.6))
-part1.SolidExtrude(depth=0.8,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
+substrate_top_plane = f.findAt(((0.0, 0.0, 0.02),))[0]
+sketch_UpEdge = e.findAt(((0.0, 0.1, 0.02),))[0]
+sketch_transform = part1.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.02))
+AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=0.08000000000000002,gridSpacing=0.14, transform=sketch_transform)
+AM_sketch.rectangle(point1=(-0.06, -0.06),point2=(0.06, 0.06))
+part1.SolidExtrude(depth=0.0092,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
 del thermal.sketches['__profile__']
 #partition AM into layers
 nr_layers = 4
-plane_offset = 0.5
+plane_offset = 0.02
 for i in range(0,nr_layers):
 	datum_id = part1.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id
 	plane = part1.datums[datum_id]
-	plane_offset += 0.2
+	plane_offset += 0.0023
 	part1_cells = part1.cells
-	top_cell = part1_cells.findAt(((0.,0.,1.3),))
+	top_cell = part1_cells.findAt(((0.,0.,0.0292),))
 	part1.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)
 
 #PROPERTY
@@ -75,5 +75,9 @@ a.DatumCsysByDefault(CARTESIAN)
 a.Instance(name='part1', part= part1, dependent=ON)
 
 #STEP
-thermal.HeatTransferStep(name='heat', previous='Initial', timePeriod=4000, initialInc=0.01, minInc=1e-08, maxInc=0.1,deltmx=600)
+thermal.HeatTransferStep(name='heat', previous='Initial', timePeriod=4000, initialInc=0.01, minInc=1e-08, maxInc=1,deltmx=1000)
 
+#MESH
+part1.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
+e = part1.edges
+part1.generateMesh()
