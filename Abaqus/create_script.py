@@ -176,29 +176,41 @@ class AM_CAD:
         self.write(part_name + '.seedPart(size=' + str(globalSeed) + ', deviationFactor=0.1, minSizeFactor=0.1)\n')
         self.write('e = ' + part_name + '.edges\n')
         self.write(part_name + '.generateMesh()\n')
-        #Hent inn hjørne-kanter for underlag og add_element for å skape en tilpasset mesh
-#        x=[1,2,3]
-#        y=[4,5,6]
-#        z=[7,8,9]
-#        pickedEdges=[]
-#        numedges=5
-#        for i in range(numedges):
-#            pickedEdges.append( findAt((x[i], y[i], z[i]),) )
-#        self.write('pickedEdges = e.findAt()), ))')
-#    p = mdb.models['thermal'].parts['part1']
-#    p.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
-#    e = p.edges
-        #størrelse til underlag:
-#    pickedEdges = e.getSequenceFromMask(mask=('[#0 #fff0 ]', ), )
-#    p.seedEdgeBySize(edges=pickedEdges, size=0.01, deviationFactor=0.1, 
-#        minSizeFactor=0.1, constraint=FINER)
-        #størrelse til add:
-#    pickedEdges = e.getSequenceFromMask(mask=('[#745516d0 #c ]', ), )
-#    p.seedEdgeBySize(edges=pickedEdges, size=0.00115, deviationFactor=0.1, 
-#        minSizeFactor=0.1, constraint=FINER)
-#    p.generateMesh()
+        self.seperate_sec()
+        
+    def create_node_BC(self, part):
+        part_name = part.get_part_name()
+        model_name = part.get_model_name()
+        self.write('a = ' + model_name + '.rootAssembly\n')
+        self.write('n = a.instances["' + part_name + '"].nodes\n')
+        self.write('origo_node = n.getByBoundingBox(-0.01,0.01,-0.01,0.01,-0.01,0.01)\n')
+        #finner ikke node -> find nearest node plugin
+        self.write('a.Set(nodes=origo_node, name="origo_node")\n')
+        #må sette BC
+        self.seperate_sec()
+        
+    def set_room_temp(self,part):
+        part_name = part.get_part_name()
+        self.write('nodes1 = ' + part_name + '.nodes\n')
+        self.write(part_name + '.Set(nodes=nodes1, name="all_nodes")\n')
+        #må sette temp
+        self.seperate_sec()
+        
+        
+    
 
-
+#    a = mdb.models['thermal'].rootAssembly
+#    a.regenerate()
+#    a = mdb.models['thermal'].rootAssembly
+#    n1 = a.instances['part1'].nodes
+#    nodes1 = n1.getSequenceFromMask(mask=('[#ffffffff:367 #7fffffff ]', ), )
+#    a.Set(nodes=nodes1, name='Set-1')
+#    a = mdb.models['thermal'].rootAssembly
+#    n1 = a.instances['part1'].nodes
+#    nodes1 = n1.getSequenceFromMask(mask=('[#0:152 #800000 ]', ), )
+#    a.Set(nodes=nodes1, name='Set-2')
+        
+        #Predefined field, BC, AM, DepositionPattern
         
 def main():
     scripted_part = AM_CAD('scripted_part.py')
@@ -229,5 +241,11 @@ def main():
     
     #MESH
     scripted_part.create_mesh(part1,0.01)
+    
+    #LOAD
+    scripted_part.create_node_BC(part1)
+    
+    #PREDEFINED FIELD
+    scripted_part.set_room_temp(part1)
     
 main()
