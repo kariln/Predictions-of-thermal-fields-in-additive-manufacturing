@@ -82,10 +82,9 @@ part1.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
 e = part1.edges
 part1.generateMesh()
 
-a = thermal.rootAssembly
-n = a.instances["part1"].nodes
-origo_node = n.getByBoundingBox(-0.01,0.01,-0.01,0.01,-0.01,0.01)
-a.Set(nodes=origo_node, name="origo_node")
+n = part1.nodes
+origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.0025)
+part1.Set(nodes=origo_node, name="origo_node")
 
 nodes1 = part1.nodes
 part1.Set(nodes=nodes1, name="all_nodes")

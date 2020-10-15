@@ -15,6 +15,7 @@ from model import Model
 from part import Part
 from feature import Feature
 from material import Material
+from mesh import Mesh
 
 
 class AM_CAD:
@@ -173,6 +174,9 @@ class AM_CAD:
         part_name = part.get_part_name()
         #makes global seed half of the road width
         globalSeed = road_width/2
+        #creating mesh object
+        mesh = Mesh(part,globalSeed)
+        part.create_mesh(mesh)
         self.write(part_name + '.seedPart(size=' + str(globalSeed) + ', deviationFactor=0.1, minSizeFactor=0.1)\n')
         self.write('e = ' + part_name + '.edges\n')
         self.write(part_name + '.generateMesh()\n')
@@ -180,12 +184,12 @@ class AM_CAD:
         
     def create_node_BC(self, part):
         part_name = part.get_part_name()
-        model_name = part.get_model_name()
-        self.write('a = ' + model_name + '.rootAssembly\n')
-        self.write('n = a.instances["' + part_name + '"].nodes\n')
-        self.write('origo_node = n.getByBoundingBox(-0.01,0.01,-0.01,0.01,-0.01,0.01)\n')
-        #finner ikke node -> find nearest node plugin
-        self.write('a.Set(nodes=origo_node, name="origo_node")\n')
+        mesh = part.get_mesh()
+        globalSeed = mesh.get_global_seed()
+        radius = globalSeed/2 #radius of boundingsphere which is half of the globalSeed to ensure only getting the origo node
+        self.write('n = '+ part_name + '.nodes\n')
+        self.write('origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = ' + str(radius) +')\n')
+        self.write(part_name + '.Set(nodes=origo_node, name="origo_node")\n')
         #må sette BC
         self.seperate_sec()
         
@@ -195,20 +199,6 @@ class AM_CAD:
         self.write(part_name + '.Set(nodes=nodes1, name="all_nodes")\n')
         #må sette temp
         self.seperate_sec()
-        
-        
-    
-
-#    a = mdb.models['thermal'].rootAssembly
-#    a.regenerate()
-#    a = mdb.models['thermal'].rootAssembly
-#    n1 = a.instances['part1'].nodes
-#    nodes1 = n1.getSequenceFromMask(mask=('[#ffffffff:367 #7fffffff ]', ), )
-#    a.Set(nodes=nodes1, name='Set-1')
-#    a = mdb.models['thermal'].rootAssembly
-#    n1 = a.instances['part1'].nodes
-#    nodes1 = n1.getSequenceFromMask(mask=('[#0:152 #800000 ]', ), )
-#    a.Set(nodes=nodes1, name='Set-2')
         
         #Predefined field, BC, AM, DepositionPattern
         

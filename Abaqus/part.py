@@ -5,6 +5,7 @@ Created on Fri Oct  9 14:32:49 2020
 @author: kariln
 """
 from feature import Feature
+from mesh import Mesh
 
 class Part:
     def __init__(self, part_name, model, dimensionality, part_type):
@@ -13,6 +14,7 @@ class Part:
         self.dimensionality = dimensionality
         self.part_type = part_type
         self.features = {}
+        self.mesh = None
         
     def get_dimensionality(self):
         return self.dimensionality
@@ -37,3 +39,9 @@ class Part:
     def add_feature(self,feature):
         feature_name = feature.get_feature_name()
         self.get_features().update({feature_name:feature})
+        
+    def create_mesh(self,mesh):
+        self.mesh = mesh
+        
+    def get_mesh(self):
+        return self.mesh
