@@ -5,6 +5,10 @@ Created on Sun Oct 11 13:17:26 2020
 @author: Kari Ness
 """
 import os 
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import seaborn as sns
+
 
 class Material:
     def __init__(self,material_properties, material_name):
@@ -34,3 +38,72 @@ class Material:
                 tmp = tuple(tmp)
                 table.append(tmp)
         return table
+    
+    def plot_conductivity(self):
+        material_name = self.get_material_name()
+        degree_sign= u'\N{DEGREE SIGN}'
+        table_conductivity = self.get_property_table('Conductivity')
+        temp = [x[0] for x in table_conductivity]
+        conductivity = [x[1] for x in table_conductivity]
+        mpl.style.use('seaborn-dark-palette')
+        plt.plot(conductivity, temp, c= 'firebrick')
+        plt.xlabel('Temperature [C' + degree_sign + ']')
+        plt.ylabel('Conductivity [W/m' + degree_sign + 'C]')
+        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Conductivity.png'))
+        plt.show()
+        
+    def plot_specific_heat(self):
+        mpl.style.use('seaborn-dark-palette')
+        degree_sign= u'\N{DEGREE SIGN}'
+        material_name = self.get_material_name()
+        table_specific = self.get_property_table('SpecificHeat')
+        temp = [x[0] for x in table_specific]
+        specific_heat = [x[1] for x in table_specific]
+        plt.plot(specific_heat, temp, c='firebrick')
+        plt.xlabel('Temperature [C' + degree_sign + ']')
+        plt.ylabel("Specific heat [J/kg" + degree_sign + 'C]')
+        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_SpecificHeat.png'))
+        plt.show()
+        
+    def plot_yield_stress(self):
+        mpl.style.use('seaborn-dark-palette')
+        degree_sign= u'\N{DEGREE SIGN}'
+        material_name = self.get_material_name()
+        table_yield = self.get_property_table('Plastic')
+        yield_stress = [x[0] for x in table_yield]
+        print(yield_stress)
+        temp = [x[2] for x in table_yield]
+        print(temp)
+        plt.plot(temp, yield_stress,c='firebrick')
+        plt.xlabel('Temperature [C' + degree_sign + ']')
+        plt.ylabel("Yield stress [MPa]")
+        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Yield_Stress.png'))
+        plt.show()
+        
+    def plot_youngs_module(self):
+        mpl.style.use('seaborn-dark-palette')
+        degree_sign= u'\N{DEGREE SIGN}'
+        material_name = self.get_material_name()
+        table_E = self.get_property_table('Elastic')
+        E = [x[0] for x in table_E]
+        temp = [x[2] for x in table_E]
+        plt.plot(temp,E, c='firebrick')
+        plt.xlabel('Temperature [C' + degree_sign + ']')
+        plt.ylabel("Young's Modulus [GPa]")
+        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Yield_Stress.png'))
+        plt.show()
+        
+    def material_plot(self):
+        self.plot_conductivity()
+        self.plot_yield_stress()
+        self.plot_specific_heat()
+        self.plot_youngs_module()
+
+
+        
+        
+    
+def main():
+    AA2319 = Material([['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], 'AA2319')
+    AA2319.material_plot()
+main()
