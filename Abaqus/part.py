@@ -6,6 +6,7 @@ Created on Fri Oct  9 14:32:49 2020
 """
 from feature import Feature
 from mesh import Mesh
+from sets import Set
 
 class Part:
     def __init__(self, part_name, model, dimensionality, part_type):
@@ -15,6 +16,7 @@ class Part:
         self.part_type = part_type
         self.features = {}
         self.mesh = None
+        self.sets = {}
         
     def get_dimensionality(self):
         return self.dimensionality
@@ -45,3 +47,10 @@ class Part:
         
     def get_mesh(self):
         return self.mesh
+    
+    def get_sets(self):
+        return self.sets
+    
+    def add_set(self,sett):
+        set_name = sett.get_set_name()
+        self.get_sets().update({set_name:sett})

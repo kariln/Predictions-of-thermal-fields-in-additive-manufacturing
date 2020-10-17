@@ -70,10 +70,15 @@ class Material:
         degree_sign= u'\N{DEGREE SIGN}'
         material_name = self.get_material_name()
         table_yield = self.get_property_table('Plastic')
-        yield_stress = [x[0] for x in table_yield]
-        print(yield_stress)
-        temp = [x[2] for x in table_yield]
-        print(temp)
+        plastic_strain = [x[1] for x in table_yield]
+        yield_stress_tmp = [x[0] for x in table_yield]
+        temp_tmp = [x[2] for x in table_yield]
+        yield_stress = []
+        temp = []
+        for i in range(0,len(plastic_strain)):
+            if plastic_strain[i] != 0:
+                temp.append(temp_tmp[i])
+                yield_stress.append(yield_stress_tmp[i])
         plt.plot(temp, yield_stress,c='firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
         plt.ylabel("Yield stress [MPa]")

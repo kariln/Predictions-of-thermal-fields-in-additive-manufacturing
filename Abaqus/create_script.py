@@ -16,6 +16,7 @@ from part import Part
 from feature import Feature
 from material import Material
 from mesh import Mesh
+from sets import Set
 
 
 class AM_CAD:
@@ -151,6 +152,8 @@ class AM_CAD:
         self.write(model_name + ".HomogeneousSolidSection(name='" + section_name + "', material='" + material_name + "', thickness=None)\n")
         self.write('c = ' + part_name + '.cells\n')
         self.write('region = ' + part_name + '.Set(cells = c, name = "full_part")\n')
+        full_part = Set(part,'full_part')
+        part.add_set(full_part)
         self.write(part_name + ".SectionAssignment(region=region, sectionName='" + section_name + "', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)\n")
         self.seperate_sec()
         
@@ -174,12 +177,30 @@ class AM_CAD:
         part_name = part.get_part_name()
         #makes global seed half of the road width
         globalSeed = road_width/2
+        #substrate seeds
+        localSeed = 5*globalSeed
+        feature = part.get_features()['base_element']
+        depth = feature.get_depth()
+        z1 = 0.25*depth
+        z2 = 0.75*depth
+        point1 = feature.get_point1()
+        point2 = feature.get_point2()
+        self.write('f = ' + part_name + '.faces\n')
+        #må bruke findAt for å finne sider
+        self.write('sides = f.getByBoundingBox(' + str(1.5*point1[0]) + ',' + str(1.5*point1[1]) + ',' + str(z1) + ',' + str(1.5*point2[0]) + ',' + str(1.5*point2[1]) + ',' + str(z2) + ')\n')
+        self.write('substrate_sides = ' + part_name + '.Set(faces = sides, name = "substrate_sides")\n')
         #creating mesh object
         mesh = Mesh(part,globalSeed)
         part.create_mesh(mesh)
         self.write(part_name + '.seedPart(size=' + str(globalSeed) + ', deviationFactor=0.1, minSizeFactor=0.1)\n')
         self.write('e = ' + part_name + '.edges\n')
         self.write(part_name + '.generateMesh()\n')
+        self.write('elemType1 = mesh.ElemType(elemCode=DC3D8, elemLibrary=STANDARD)\n') #heat transfer element type
+        self.write('elemType2 = mesh.ElemType(elemCode=DC3D6, elemLibrary=STANDARD)\n')
+        self.write('elemType3 = mesh.ElemType(elemCode=DC3D4, elemLibrary=STANDARD)\n')
+        self.write('c = ' + part_name + '.cells\n')
+        self.write('region = ' + part_name + '.Set(cells = c, name = "part")\n')
+        self.write(part_name + '.setElementType(regions=region, elemTypes=(elemType1,elemType2,elemType3))\n')
         self.seperate_sec()
         
     def create_node_BC(self, part):

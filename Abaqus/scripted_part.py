@@ -78,9 +78,18 @@ a.Instance(name='part1', part= part1, dependent=ON)
 thermal.HeatTransferStep(name='heat', previous='Initial', timePeriod=4000, initialInc=0.01, minInc=1e-08, maxInc=1,deltmx=1000)
 
 #MESH
+f = part1.faces
+sides = f.getByBoundingBox(-0.15000000000000002,-0.15000000000000002,0.005,0.15000000000000002,0.15000000000000002,0.015)
+substrate_sides = part1.Set(faces = sides, name = "substrate_sides")
 part1.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
 e = part1.edges
 part1.generateMesh()
+elemType1 = mesh.ElemType(elemCode=DC3D8, elemLibrary=STANDARD)
+elemType2 = mesh.ElemType(elemCode=DC3D6, elemLibrary=STANDARD)
+elemType3 = mesh.ElemType(elemCode=DC3D4, elemLibrary=STANDARD)
+c = part1.cells
+region = part1.Set(cells = c, name = "part")
+part1.setElementType(regions=region, elemTypes=(elemType1,elemType2,elemType3))
 
 n = part1.nodes
 origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.0025)
