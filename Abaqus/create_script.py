@@ -94,6 +94,7 @@ class AM_CAD:
         point2_str = str(point2)
         self.write('sketch_name.rectangle(point1=' + point1_str + ',point2=(' + point2_str + '))\n')
         self.write(part_name + '.BaseSolidExtrude(sketch=sketch_name,depth=' + str(depth) + ')\n')
+        self.write('e = ' + part_name + '.edges\n')
         self.write('del ' + model_name + ".sketches['__profile__']\n")
         part.add_feature(baseExtrude)
         self.seperate_sec()
@@ -181,18 +182,22 @@ class AM_CAD:
         localSeed = 5*globalSeed
         feature = part.get_features()['base_element']
         depth = feature.get_depth()
-        z1 = 0.25*depth
-        z2 = 0.75*depth
+        z = 0.5*depth
         point1 = feature.get_point1()
         point2 = feature.get_point2()
-        self.write('f = ' + part_name + '.faces\n')
-        #må bruke findAt for å finne sider
-        self.write('sides = f.getByBoundingBox(' + str(1.5*point1[0]) + ',' + str(1.5*point1[1]) + ',' + str(z1) + ',' + str(1.5*point2[0]) + ',' + str(1.5*point2[1]) + ',' + str(z2) + ')\n')
-        self.write('substrate_sides = ' + part_name + '.Set(faces = sides, name = "substrate_sides")\n')
+#        self.write('f = ' + part_name + '.faces\n')
+#        self.write('sides = []\n')
+#        self.write('sides.append(f.findAt(((0,' + str(point1[1]) +','+ str(z) + '),)))\n')
+#        self.write('sides.append(f.findAt(((0,' + str(point2[1]) + ',' + str(z) + '),)))\n')
+#        self.write('sides.append(f.findAt(((' + str(point1[0]) + ',0,'  + str(z) + '),)))\n')
+#        self.write('sides.append(f.findAt(((' + str(point2[0]) + ',0,' + str(z) + '),)))\n')
+        
+#        self.write('substrate_sides = ' + part_name + '.Set(faces = sides, name = "substrate_sides")\n')
         #creating mesh object
         mesh = Mesh(part,globalSeed)
         part.create_mesh(mesh)
         self.write(part_name + '.seedPart(size=' + str(globalSeed) + ', deviationFactor=0.1, minSizeFactor=0.1)\n')
+        #self.write(part_name + '.seedEdgeBySize(edges=substrate_edges, size=' + str(localSeed) + ', deviationFactor=0.1, minSizeFactor=0.1, constraint=FINER)\n')
         self.write('e = ' + part_name + '.edges\n')
         self.write(part_name + '.generateMesh()\n')
         self.write('elemType1 = mesh.ElemType(elemCode=DC3D8, elemLibrary=STANDARD)\n') #heat transfer element type
@@ -204,6 +209,8 @@ class AM_CAD:
         self.seperate_sec()
         
     def create_node_BC(self, part):
+        self.write('#BOUNDARY CONDITION\n')
+        model_name = part.get_model_name()
         part_name = part.get_part_name()
         mesh = part.get_mesh()
         globalSeed = mesh.get_global_seed()
@@ -211,22 +218,35 @@ class AM_CAD:
         self.write('n = '+ part_name + '.nodes\n')
         self.write('origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = ' + str(radius) +')\n')
         self.write(part_name + '.Set(nodes=origo_node, name="origo_node")\n')
-        #må sette BC
+        self.write('a = ' + model_name + '.rootAssembly\n')
+        self.write('region = a.instances["' + part_name + '"].sets["origo_node"]\n')
+        self.write(model_name + '.DisplacementBC(name="origo_BC", createStepName="Initial", region=region, u1=SET, u2=SET, u3=SET, ur1=SET, ur2=SET, ur3=SET, amplitude=UNSET, distributionType=UNIFORM, fieldName="", localCsys=None)\n')
         self.seperate_sec()
         
-    def set_room_temp(self,part):
+    def set_room_temp(self,part, roomtemp):
+        self.write('#PREDEFINED FIELDS\n')
         part_name = part.get_part_name()
+        model_name = part.get_model_name()
         self.write('nodes1 = ' + part_name + '.nodes\n')
         self.write(part_name + '.Set(nodes=nodes1, name="all_nodes")\n')
-        #må sette temp
+        self.write(model_name + '.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(' + str(roomtemp) + ', ))\n')
         self.seperate_sec()
         
-        #Predefined field, BC, AM, DepositionPattern
+    def create_thermal_AM_model(self, part, AM_model_name):
+        self.write('#AM MODEL\n')
+        model_name = part.get_model_name()
+        part_name = part.get_part_name()
+        self.write("amModule.createAMModel(amModelName='" + AM_model_name + "', modelName1='" + model_name +"', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)\n")
+        self.write('highlight(' + model_name + '.rootAssembly.instances["' + part_name +'"])\n')
+        self.write('mdb.customData.am.amModels["' + AM_model_name + '"].assignAMPart(amPartsData=(("' + part_name + '", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))\n')
+        #solve problem with not meshed part instance
+        self.seperate_sec()
+        
         
 def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
-    scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule'])
+    scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants'])
     scripted_part.include_paths([r'C:\Users\kariln\Documents\GitHub\Master\Materials',r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
     
     models = {}
@@ -257,6 +277,9 @@ def main():
     scripted_part.create_node_BC(part1)
     
     #PREDEFINED FIELD
-    scripted_part.set_room_temp(part1)
+    scripted_part.set_room_temp(part1, 20)
+    
+    #AM MODEL
+    scripted_part.create_thermal_AM_model(part1, 'AM_thermal')
     
 main()

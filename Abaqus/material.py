@@ -95,7 +95,7 @@ class Material:
         plt.plot(temp,E, c='firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
         plt.ylabel("Young's Modulus [GPa]")
-        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Yield_Stress.png'))
+        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Youngs.png'))
         plt.show()
         
     def material_plot(self):

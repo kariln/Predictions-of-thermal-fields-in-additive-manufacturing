@@ -16,6 +16,8 @@ from visualization import *
 from connectorBehavior import *
 from customKernel import *
 from amModule import *
+from amKernelInit import *
+from amConstants import *
 session.journalOptions.setValues(recoverGeometry=COORDINATE)
 
 #Include paths
@@ -34,6 +36,7 @@ f, e = part1.faces, part1.edges #getting the edges and faces of the part
 sketch_name = thermal.ConstrainedSketch(name='__profile__',sheetSize= 0.08000000000000002)
 sketch_name.rectangle(point1=(-0.1, -0.1),point2=((0.1, 0.1)))
 part1.BaseSolidExtrude(sketch=sketch_name,depth=0.02)
+e = part1.edges
 del thermal.sketches['__profile__']
 
 substrate_top_plane = f.findAt(((0.0, 0.0, 0.02),))[0]
@@ -78,9 +81,6 @@ a.Instance(name='part1', part= part1, dependent=ON)
 thermal.HeatTransferStep(name='heat', previous='Initial', timePeriod=4000, initialInc=0.01, minInc=1e-08, maxInc=1,deltmx=1000)
 
 #MESH
-f = part1.faces
-sides = f.getByBoundingBox(-0.15000000000000002,-0.15000000000000002,0.005,0.15000000000000002,0.15000000000000002,0.015)
-substrate_sides = part1.Set(faces = sides, name = "substrate_sides")
 part1.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
 e = part1.edges
 part1.generateMesh()
@@ -91,10 +91,21 @@ c = part1.cells
 region = part1.Set(cells = c, name = "part")
 part1.setElementType(regions=region, elemTypes=(elemType1,elemType2,elemType3))
 
+#BOUNDARY CONDITION
 n = part1.nodes
 origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.0025)
 part1.Set(nodes=origo_node, name="origo_node")
+a = thermal.rootAssembly
+region = a.instances["part1"].sets["origo_node"]
+thermal.DisplacementBC(name="origo_BC", createStepName="Initial", region=region, u1=SET, u2=SET, u3=SET, ur1=SET, ur2=SET, ur3=SET, amplitude=UNSET, distributionType=UNIFORM, fieldName="", localCsys=None)
 
+#PREDEFINED FIELDS
 nodes1 = part1.nodes
 part1.Set(nodes=nodes1, name="all_nodes")
+thermal.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(20, ))
+
+#AM MODEL
+amModule.createAMModel(amModelName='AM_thermal', modelName1='thermal', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)
+highlight(thermal.rootAssembly.instances["part1"])
+mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
 
