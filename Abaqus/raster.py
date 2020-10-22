@@ -44,8 +44,8 @@ class Raster(zigzag.Zigzag):
           coord[self.get_stack_dir()] += self.get_thickness()
         return path
                 
-def main():        
-    raster = Raster(0.012, 0.002, 0.06, 0.06, -0.03, -0.03, 0.02, 0.002,500)
-    raster.generate_heat_path()
-    raster.generate_material_path()
-main()
+#def main():        
+#    raster = Raster(0.012, 0.002, 0.06, 0.06, -0.03, -0.03, 0.02, 0.002,500)
+#    raster.generate_heat_path()
+#    raster.generate_material_path()
+#main()

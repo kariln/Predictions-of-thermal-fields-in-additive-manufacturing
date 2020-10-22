@@ -4,15 +4,6 @@ Created on Thu Sep 24 21:33:09 2020
 
 @author: Kari Ness
 """
-#FUTURE IMPROVEMENTS:
-#check valid length
-#implement negative axis and possibility to do alternate ply-dir
-#input 3 corners to span surface -> find normal for stack_dir
-#start dir generated from two points
-#number of layers instead of thickness
-#flip stack dir
-#make lenght and corner read-only
-
 import abc #for abstract methods
 
 #Creating a parent class for all deposition patterns
@@ -29,7 +20,7 @@ class Pattern:
     #energy deposition
     self.P = P
     
-    #initializing the start coorsinate of the pattern
+    #initializing the start coordinate of the pattern
     self.corner_coord = (corner_x, corner_y, corner_z)
     
     #initializing a dictionary with axes
@@ -53,7 +44,6 @@ class Pattern:
           
   def generate_material_path(self):
       path = self.get_path()
-      
       #creating text files for heat and material path
       material_path = open("material_path.txt","w+")
       material_path.truncate(0)  

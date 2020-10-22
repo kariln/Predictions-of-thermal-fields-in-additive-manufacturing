@@ -39,6 +39,11 @@ session.journalOptions.setValues(recoverGeometry=COORDINATE)
 #Include paths
 import sys
 sys.path.append(r'C:\Users\kariln\Documents\GitHub\Master\Materials')
+sys.path.append(r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler')
+
+#Include paths
+import sys
+sys.path.append(r'C:\Users\Kari Ness\Documents\GitHub\Master\Materials')
 sys.path.append(r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler')
 
 #MODEL
@@ -125,4 +130,7 @@ amModule.createAMModel(amModelName='AM_thermal', modelName1='thermal', stepName1
 a = thermal.rootAssembly
 a.regenerate()
 mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
+#deposition paths
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\Kari Ness\Documents\GitHub\Master\Abaqus\material_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\Kari Ness\Documents\GitHub\Master\Abaqus\heat_path.txt", isFile=ON)
 

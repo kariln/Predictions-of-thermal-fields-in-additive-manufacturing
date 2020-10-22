@@ -42,7 +42,6 @@ class Zigzag(pattern.Pattern):
         
         layers = self.get_layer_nr()
         passes = self.nr_passes()
-        print(passes)
         pass_time = self.pass_time()
         up_time = self.up_time()
         
@@ -60,8 +59,8 @@ class Zigzag(pattern.Pattern):
           coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
         return path
                 
-def main():        
-    zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000)
-    zigzag.generate_heat_path()
-    zigzag.generate_material_path()
-main()
+#def main():        
+#    zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000)
+#    zigzag.generate_heat_path()
+#    zigzag.generate_material_path()
+#main()

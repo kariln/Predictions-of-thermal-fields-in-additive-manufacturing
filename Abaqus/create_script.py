@@ -10,6 +10,17 @@ Assumptions:
     Midpoint of sketch is 0,0
     Sketch plane is XY
 """
+#add paths
+import sys
+#laptop
+sys.path.append(r'C:\Users\Kari Ness\Documents\GitHub\Master\Materials')
+sys.path.append(r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler')
+
+#NTNU computer
+sys.path.append(r'C:\Users\kariln\Documents\GitHub\Master\Materials')
+sys.path.append(r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler')
+
+
 #importing classes
 from model import Model
 from part import Part
@@ -17,6 +28,9 @@ from feature import Feature
 from material import Material
 from mesh import Mesh
 from sets import Set
+from zigzag import Zigzag
+from raster import Raster
+import pathlib
 
 
 class AM_CAD:
@@ -179,21 +193,6 @@ class AM_CAD:
         part_name = part.get_part_name()
         #makes global seed half of the road width
         globalSeed = road_width/2
-        #substrate seeds
-        localSeed = 5*globalSeed
-        feature = part.get_features()['base_element']
-        depth = feature.get_depth()
-        z = 0.5*depth
-        point1 = feature.get_point1()
-        point2 = feature.get_point2()
-#        self.write('f = ' + part_name + '.faces\n')
-#        self.write('sides = []\n')
-#        self.write('sides.append(f.findAt(((0,' + str(point1[1]) +','+ str(z) + '),)))\n')
-#        self.write('sides.append(f.findAt(((0,' + str(point2[1]) + ',' + str(z) + '),)))\n')
-#        self.write('sides.append(f.findAt(((' + str(point1[0]) + ',0,'  + str(z) + '),)))\n')
-#        self.write('sides.append(f.findAt(((' + str(point2[0]) + ',0,' + str(z) + '),)))\n')
-        
-#        self.write('substrate_sides = ' + part_name + '.Set(faces = sides, name = "substrate_sides")\n')
         #creating mesh object
         mesh = Mesh(part,globalSeed)
         part.create_mesh(mesh)
@@ -233,14 +232,53 @@ class AM_CAD:
         self.write(model_name + '.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(' + str(roomtemp) + ', ))\n')
         self.seperate_sec()
         
-    def create_thermal_AM_model(self, part, AM_model_name):
+    def create_thermal_AM_model(self, part, AM_model_name, deposition_pattern, road_width, power):
         self.write('#AM MODEL\n')
         model_name = part.get_model_name()
         part_name = part.get_part_name()
         self.write("amModule.createAMModel(amModelName='" + AM_model_name + "', modelName1='" + model_name +"', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)\n")
         self.write('a = ' + model_name + '.rootAssembly\n')
         self.write('a.regenerate()\n')
-        self.write('mdb.customData.am.amModels["' + AM_model_name + '"].assignAMPart(amPartsData=(("' + part_name + '", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))\n')
+        AM_model_name = 'mdb.customData.am.amModels["' + AM_model_name + '"]'
+        self.write(AM_model_name + '.assignAMPart(amPartsData=(("' + part_name + '", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))\n')
+        
+        self.write('#deposition paths\n')
+        add_element = part.get_features()['add_element']
+        base_element = part.get_features()['base_element']
+        
+        #depth of add_element
+        depth = add_element.get_depth()
+        
+        #thickness of each layer
+        thickness = add_element.get_layer_thickness()
+        
+        #corner coordinate
+        point1 = add_element.get_point1()
+        corner_x = point1[0]
+        corner_y = point1[1]
+        corner_z = base_element.get_depth()
+        
+        #x and y length of add_element
+        point2 = add_element.get_point2()
+        x_length = abs(point1[0]-point2[0])
+        y_length = abs(point1[1]-point2[1])
+
+        if deposition_pattern.lower() == 'raster':
+            #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
+            dp_object = Raster(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power)
+        elif deposition_pattern.lower() == 'zigzag':
+            #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
+            dp_object = Zigzag(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power)
+        else: 
+            raise NotImplementedError('This deposition pattern is not implemented');
+        dp_object.generate_heat_path()
+        dp_object.generate_material_path()
+        material_path = pathlib.Path('material_path.txt')
+        material_path = material_path.resolve()
+        heat_path = pathlib.Path('heat_path.txt')
+        heat_path = heat_path.resolve()
+        self.write(AM_model_name + '.addEventSeries(eventSeriesName="material_path", eventSeriesTypeName=' + "'" + '"ABQ_AM.MaterialDeposition"' + "'" + ', timeSpan="TOTAL TIME", fileName="'+ str(material_path) +'", isFile=ON)\n')
+        self.write(AM_model_name + '.addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName=' + "'" + '"ABQ_AM.PowerMagnitude"' + "'" + ', timeSpan="TOTAL TIME", fileName="' + str(heat_path) + '", isFile=ON)\n')        
         self.seperate_sec()
         
         
@@ -248,8 +286,9 @@ def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
     scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants'])
-    scripted_part.include_paths([r'C:\Users\kariln\Documents\GitHub\Master\Materials',r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
-    
+    scripted_part.include_paths([r'C:\Users\kariln\Documents\GitHub\Master\Materials',r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
+    scripted_part.include_paths([r'C:\Users\Kari Ness\Documents\GitHub\Master\Materials',r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
+
     models = {}
     
     #MODEL
@@ -281,6 +320,6 @@ def main():
     scripted_part.set_room_temp(part1, 20)
     
     #AM MODEL
-    scripted_part.create_thermal_AM_model(part1, 'AM_thermal')
+    scripted_part.create_thermal_AM_model(part1, 'AM_thermal', 'raster', 0.02, 5000)#endre road_width og power til å matche Li's
     
 main()

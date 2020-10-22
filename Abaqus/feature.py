@@ -34,7 +34,7 @@ class Feature:
         return self.nr_layers
     
     def get_layer_thickness(self):
-        return self.get_layer_thickness
+        return self.layer_thickness
     
     def get_side_length(self):
         return abs(self.get_point2()[0] - self.get_point1()[0])
