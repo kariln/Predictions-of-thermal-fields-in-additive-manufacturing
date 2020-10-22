@@ -51,6 +51,7 @@ class AM_CAD:
     def imports(self,import_list):
         self.write('#importing modules')
         for elem in import_list:
+            self.write('import ' + str(elem) + '\n')
             self.write('from ' + str(elem) + " import *\n")
         self.write('session.journalOptions.setValues(recoverGeometry=COORDINATE)\n')
         self.seperate_sec()
@@ -237,9 +238,9 @@ class AM_CAD:
         model_name = part.get_model_name()
         part_name = part.get_part_name()
         self.write("amModule.createAMModel(amModelName='" + AM_model_name + "', modelName1='" + model_name +"', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)\n")
-        self.write('highlight(' + model_name + '.rootAssembly.instances["' + part_name +'"])\n')
+        self.write('a = ' + model_name + '.rootAssembly\n')
+        self.write('a.regenerate()\n')
         self.write('mdb.customData.am.amModels["' + AM_model_name + '"].assignAMPart(amPartsData=(("' + part_name + '", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))\n')
-        #solve problem with not meshed part instance
         self.seperate_sec()
         
         

@@ -2,21 +2,37 @@ import os
 clear = lambda: os.system('cls')
 clear()
 
-#importing modulesfrom part import *
+#importing modulesimport part
+from part import *
+import material
 from material import *
+import section
 from section import *
+import assembly
 from assembly import *
+import step
 from step import *
+import interaction
 from interaction import *
+import load
 from load import *
+import mesh
 from mesh import *
+import job
 from job import *
+import sketch
 from sketch import *
+import visualization
 from visualization import *
+import connectorBehavior
 from connectorBehavior import *
+import customKernel
 from customKernel import *
+import amModule
 from amModule import *
+import amKernelInit
 from amKernelInit import *
+import amConstants
 from amConstants import *
 session.journalOptions.setValues(recoverGeometry=COORDINATE)
 
@@ -106,6 +122,7 @@ thermal.Temperature(name="room_temp", createStepName="Initial", region=region, d
 
 #AM MODEL
 amModule.createAMModel(amModelName='AM_thermal', modelName1='thermal', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)
-highlight(thermal.rootAssembly.instances["part1"])
+a = thermal.rootAssembly
+a.regenerate()
 mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
 
