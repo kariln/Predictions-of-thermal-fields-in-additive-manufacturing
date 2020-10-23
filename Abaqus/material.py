@@ -8,7 +8,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
-
+from pathlib import Path
 
 class Material:
     def __init__(self,material_properties, material_name):
@@ -21,10 +21,15 @@ class Material:
     def get_material_name(self):
         return self.material_name
         
+    def get_path_string(self):
+        material_name = self.get_material_name()
+        p = Path('../Materials/' + material_name)
+        return p.resolve()
+    
     def get_property_file(self, material_property):
-        file_name = self.get_material_name() + '_' + material_property + '.txt'
-        #file = os.path.join("C:\\Users\\kariln\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), file_name)
-        file = os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), file_name)
+        material_name = self.get_material_name()
+        file_name = material_name + '_' + material_property + '.txt'
+        file = Path('../Materials/' + material_name + '/' + file_name)
         return file
     
     def get_property_table(self, material_property):
@@ -49,7 +54,8 @@ class Material:
         plt.plot(conductivity, temp, c= 'firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
         plt.ylabel('Conductivity [W/m' + degree_sign + 'C]')
-        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Conductivity.png'))
+        path = str(self.get_path_string()) + '/'
+        plt.savefig(path + '/' + material_name + '_Conductivity.png')
         plt.show()
         
     def plot_specific_heat(self):
@@ -62,7 +68,8 @@ class Material:
         plt.plot(specific_heat, temp, c='firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
         plt.ylabel("Specific heat [J/kg" + degree_sign + 'C]')
-        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_SpecificHeat.png'))
+        path = str(self.get_path_string()) + '/'
+        plt.savefig(path + '/' + material_name + '_SpecificHeat.png')
         plt.show()
         
     def plot_yield_stress(self):
@@ -82,7 +89,8 @@ class Material:
         plt.plot(temp, yield_stress,c='firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
         plt.ylabel("Yield stress [MPa]")
-        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Yield_Stress.png'))
+        path = str(self.get_path_string()) + '/'
+        plt.savefig(path +  '/' + material_name + '_Yield_Stress.png')
         plt.show()
         
     def plot_youngs_module(self):
@@ -95,7 +103,23 @@ class Material:
         plt.plot(temp,E, c='firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
         plt.ylabel("Young's Modulus [GPa]")
-        plt.savefig(os.path.join("C:\\Users\\Kari Ness\\Documents\\GitHub\\Master\\Materials\\" + self.get_material_name(), material_name + '_Youngs.png'))
+        path = str(self.get_path_string()) + '/'
+        plt.savefig(path + '/' + material_name + '_Elastic.png')
+        plt.show()
+        
+    def plot_expansion(self):
+        mpl.style.use('seaborn-dark-palette')
+        degree_sign = u'\N{DEGREE SIGN}'
+        alpha_sign = '\u03B1'
+        material_name = self.get_material_name()
+        table_exp = self.get_property_table('Expansion')
+        alpha = [x[1]*10**(-6) for x in table_exp]
+        T = [x[0] for x in table_exp]
+        plt.plot(T,alpha, c='firebrick')
+        plt.xlabel('Temperature [C' + degree_sign + ']')
+        plt.ylabel(alpha_sign + 'x10^-6[1/' + degree_sign + 'C]')
+        path = str(self.get_path_string()) + '/'
+        plt.savefig(path + '/' + material_name + '_Expansion.png')
         plt.show()
         
     def material_plot(self):
@@ -103,6 +127,7 @@ class Material:
         self.plot_yield_stress()
         self.plot_specific_heat()
         self.plot_youngs_module()
+        self.plot_expansion()
 
 
         
