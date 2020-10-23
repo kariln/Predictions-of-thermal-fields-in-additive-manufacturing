@@ -113,7 +113,7 @@ class Material:
         alpha_sign = '\u03B1'
         material_name = self.get_material_name()
         table_exp = self.get_property_table('Expansion')
-        alpha = [x[1]*10**(-6) for x in table_exp]
+        alpha = [x[1]*10**(6) for x in table_exp]
         T = [x[0] for x in table_exp]
         plt.plot(T,alpha, c='firebrick')
         plt.xlabel('Temperature [C' + degree_sign + ']')
