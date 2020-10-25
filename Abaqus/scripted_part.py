@@ -34,6 +34,8 @@ import amKernelInit
 from amKernelInit import *
 import amConstants
 from amConstants import *
+import copy
+from copy import *
 session.journalOptions.setValues(replayGeometry=COORDINATE,recoverGeometry=COORDINATE)
 
 #Include paths
@@ -119,16 +121,19 @@ nodes1 = part1.nodes
 part1.Set(nodes=nodes1, name="all_nodes")
 thermal.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(20, ))
 
+thermal.fieldOutputRequests['F-Output-1'].setValues(variables=('NT','TEMP'))
+
+#AM PART
 amModule.createAMModel(amModelName='AM_thermal', modelName1='thermal', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)
 a = thermal.rootAssembly
 a.regenerate()
 mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
 
-#deposition paths
+#EVENT SERIES
 mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\Kari Ness\Documents\GitHub\Master\Abaqus\material_path.txt", isFile=ON)
 mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\Kari Ness\Documents\GitHub\Master\Abaqus\heat_path.txt", isFile=ON)
 
-#table collections
+#TABLE COLLECTIONS
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Material")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name='_parameterTable_"ABQ_AM.MaterialDeposition.Advanced"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Advanced"', parameterData=(('Full', 0.0, 0.0), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.0023,0.01,0.005, 'Below'), ))
@@ -139,7 +144,19 @@ mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.005,0.0023, 0.002, 0.004, 0.6, 1.4, 1), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Advanced"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Advanced"', parameterData=(('False', 'False', 'Relative', 0.0, 0.0, -1.0, 1.0), ))
 
+#SIMULATION SETUP
 a = thermal.rootAssembly
 e = a.instances['part1'].elements
 add_elements = e.getByBoundingBox(-0.06,-0.06,0.02,0.06,0.06,0.0292)
 a.Set(elements=add_elements, name="add_element")
+f = a.instances["part1"].faces
+basement_face = f.findAt(((0.0,0.0,0.0) ,))
+a.Set(faces=basement_face, name = "basement")
+c = a.instances["part1"].cells
+film = c.findAt(((-0.06,-0.02,0.021150000000000002), ), ((-0.06,-0.02,0.02345), ),((-0.06,-0.02,0.025750000000000002),  ), ((-0.06,-0.02,0.02),  ))
+a.Set(cells = film, name = "film")
+mdb.customData.am.amModels["AM_thermal"].addMaterialArrival(materialArrivalName='Material Source -1', tableCollection='ABQ_AM_Material', followDeformation=OFF, useElementSet=ON, elementSetRegion=('add_element', ))
+mdb.customData.am.amModels["AM_thermal"].addHeatSourceDefinition(heatSourceName='Heat Source -1', dfluxDistribution='Moving-UserDefined', dfluxMagnitude=1, tableCollection='ABQ_AM_Heat', useElementSet=OFF, elementSetRegion=())
+mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Film', useElementSet=ON, elementSetRegion=('film', ), isConvectionActive=ON, isRadiationActive=OFF, filmDefinition='Embedded Coefficient', filmCoefficient=8.5, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
+mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
+mdb.Job(name='thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)

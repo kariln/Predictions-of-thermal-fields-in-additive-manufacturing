@@ -241,7 +241,18 @@ class AM_CAD:
         self.write(model_name + '.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(' + str(roomtemp) + ', ))\n')
         self.seperate_sec()
         
+    def set_field_output(self, model, variables):
+        model_name = model.get_model_name()
+        self.write(model_name + ".fieldOutputRequests['F-Output-1'].setValues(variables=(")
+        for variable in variables:
+            self.write("'" + variable + "'")
+            if variable != variables[-1]:
+                self.write(',')
+        self.write('))\n')
+        self.seperate_sec()
+
     def create_thermal_AM_model(self,part,amModel_name):
+        self.write('#AM PART\n')
         am_Model = AmModel(part,amModel_name)
         part.add_amModel(am_Model)
         model_name = part.get_model_name()
@@ -255,7 +266,7 @@ class AM_CAD:
         return am_Model
         
     def add_event_series(self,am_Model, road_width, deposition_pattern, power, layer_break):
-        self.write('#deposition paths\n')
+        self.write('#EVENT SERIES\n')
         part = am_Model.get_part()
         amModel_name = am_Model.get_amModel_name()
         AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
@@ -303,7 +314,7 @@ class AM_CAD:
         self.seperate_sec()
         
     def add_table_collections(self,am_Model, absorption_coefficient):
-        self.write('#table collections\n')
+        self.write('#TABLE COLLECTIONS\n')
         part = am_Model.get_part()
         amModel_name = am_Model.get_amModel_name()
         AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
@@ -337,27 +348,52 @@ class AM_CAD:
         self.seperate_sec()
         
     def add_simulation_setup(self, amModel):
+        self.write("#SIMULATION SETUP\n")
         part = amModel.get_part()
         add_element = part.get_features()['add_element']
         base_element = part.get_features()['base_element']
         base_depth = base_element.get_depth()
         add_depth = add_element.get_depth()
+        thickness = add_element.get_layer_thickness()
         total_depth = base_depth + add_depth
         point1 = add_element.get_point1()
         point2 = add_element.get_point2()
         part_name = part.get_part_name()
         model_name = part.get_model_name()
+        amModel_name = amModel.get_amModel_name()
+        AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
         self.write('a = ' + model_name + '.rootAssembly\n')
         self.write("e = a.instances['" + part_name + "'].elements\n")
         self.write('add_elements = e.getByBoundingBox(' + str(point1[0]) + ',' + str(point1[1]) + ',' + str(base_depth) + ',' + str(point2[0]) + ',' + str(point2[1]) + ',' + str(total_depth) + ')\n')
         self.write('a.Set(elements=add_elements, name="add_element")\n')
+        self.write('f = a.instances["' + part_name + '"].faces\n')
+        self.write('basement_face = f.findAt(((0.0,0.0,0.0) ,))\n')
+        self.write('a.Set(faces=basement_face, name = "basement")\n')
+        self.write('c = a.instances["' + part_name + '"].cells\n')
+        #film contains basement
+        self.write('film = c.findAt(((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth + thickness/2) + '), ), ((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth + 3*thickness/2) + '), ),((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth + 5*thickness/2) + '),  ), ((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth) + '),  ))\n')
+        self.write('a.Set(cells = film, name = "film")\n')
+        #Material arrival:
+        self.write(AM_model_name + ".addMaterialArrival(materialArrivalName='Material Source -1', tableCollection='ABQ_AM_Material', followDeformation=OFF, useElementSet=ON, elementSetRegion=('add_element', ))\n")
+        
+        #Heat source
+        self.write(AM_model_name + ".addHeatSourceDefinition(heatSourceName='Heat Source -1', dfluxDistribution='Moving-UserDefined', dfluxMagnitude=1, tableCollection='ABQ_AM_Heat', useElementSet=OFF, elementSetRegion=())\n")
+        
+        #Cooling
+        self.write(AM_model_name + ".addCoolingInteractions(coolingInteractionName='Film', useElementSet=ON, elementSetRegion=('film', ), isConvectionActive=ON, isRadiationActive=OFF, filmDefinition='Embedded Coefficient', filmCoefficient=8.5, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')\n")
+        self.write(AM_model_name + ".addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')\n")
 
+    def create_job(self, model, job_name):
+        model_name = model.get_model_name()
+        self.write("mdb.Job(name='" + job_name + "', model='" + model_name + "', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)\n")
+
+    def submit_job(self,job_name):
+        self.write("mdb.jobs['" + job_name + "'].submit(consistencyChecking=OFF)\n")
 
 def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
-    scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants'])
-    #scripted_part.include_paths([r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
+    scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy'])
     scripted_part.include_paths([])
     models = {}
     
@@ -389,10 +425,16 @@ def main():
     #PREDEFINED FIELD
     scripted_part.set_room_temp(part1, 20)
     
+    #FIELD OUTPUT
+    scripted_part.set_field_output(thermal, ['NT','TEMP'])
+
     #AM MODEL
     am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
     scripted_part.add_event_series(am_Model, 0.01,'zigzag',5000,10)
     scripted_part.add_table_collections(am_Model,0.9)
     scripted_part.add_simulation_setup(am_Model)
+    
+    #JOB
+    scripted_part.create_job(thermal, 'thermal')
     
 main()
