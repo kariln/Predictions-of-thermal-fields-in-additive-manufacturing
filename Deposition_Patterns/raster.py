@@ -9,8 +9,8 @@ import zigzag
 
 class Raster(zigzag.Zigzag):
     
-    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
-        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P)
+    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break):
+        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break)
         
     
     def get_path(self):
@@ -42,6 +42,7 @@ class Raster(zigzag.Zigzag):
           coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
           coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
           coord[self.get_stack_dir()] += self.get_thickness()
+          time += self.get_layer_break()
         return path
                 
 #def main():        

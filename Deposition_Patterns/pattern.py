@@ -8,14 +8,17 @@ import abc #for abstract methods
 
 #Creating a parent class for all deposition patterns
 class Pattern:
-  def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
+  def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break):
     #initializing geometry properties
     self.thickness = thickness
     self.road_width = road_width
     self.length = [x_length, y_length,z_length]
     
-    #initializing deposition velocity with default value 0.01
-    self.v = 0.01
+    #initializing deposition velocity with default value 0.01 
+    self.v = 0.015
+    
+    #initializing the a time intervall between each deposited layer
+    self.layer_break = layer_break
     
     #energy deposition
     self.P = P
@@ -31,6 +34,9 @@ class Pattern:
   @abc.abstractmethod
   def get_path(self):
       pass
+  
+  def get_layer_break(self):
+      return self.layer_break
   
   def generate_heat_path(self):
       path = self.get_path()

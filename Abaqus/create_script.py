@@ -12,14 +12,13 @@ Assumptions:
 """
 #add paths
 import sys
-#laptop
-sys.path.append(r'C:\Users\Kari Ness\Documents\GitHub\Master\Materials')
-sys.path.append(r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler')
+from pathlib import Path
 
-#NTNU computer
-sys.path.append(r'C:\Users\kariln\Documents\GitHub\Master\Materials')
-sys.path.append(r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler')
+material_path = Path('../Materials')
+sys.path.append(material_path.resolve())
 
+deposition_path = Path('../Deposition_Patterns')
+sys.path.append(deposition_path.resolve())
 
 #importing classes
 from model import Model
@@ -31,6 +30,7 @@ from sets import Set
 from zigzag import Zigzag
 from raster import Raster
 import pathlib
+from amModel import AmModel
 
 
 class AM_CAD:
@@ -67,14 +67,19 @@ class AM_CAD:
         for elem in import_list:
             self.write('import ' + str(elem) + '\n')
             self.write('from ' + str(elem) + " import *\n")
-        self.write('session.journalOptions.setValues(recoverGeometry=COORDINATE)\n')
+        self.write('session.journalOptions.setValues(replayGeometry=COORDINATE,recoverGeometry=COORDINATE)\n')
         self.seperate_sec()
         
     def include_paths(self,path_list):
         self.write('#Include paths\n')
         self.write('import sys\n')
+        user_path = Path('../../../..')
+
         for elem in path_list:
             self.write("sys.path.append(r'" + elem +"')\n")
+            
+        plugin_path = Path(user_path / 'abagus_plugins' / 'AM plugin' / 'AMModeler' / 'AMModeler')
+        self.write("sys.path.append(r'" + str(plugin_path.resolve()) + "')\n" )
         self.seperate_sec()
             
     def create_model(self,model_name):
@@ -205,6 +210,8 @@ class AM_CAD:
         self.write('elemType3 = mesh.ElemType(elemCode=DC3D4, elemLibrary=STANDARD)\n')
         self.write('c = ' + part_name + '.cells\n')
         self.write('region = ' + part_name + '.Set(cells = c, name = "part")\n')
+        part_set = Set(part, 'part')
+        part.add_set(part_set)
         self.write(part_name + '.setElementType(regions=region, elemTypes=(elemType1,elemType2,elemType3))\n')
         self.seperate_sec()
         
@@ -229,20 +236,30 @@ class AM_CAD:
         model_name = part.get_model_name()
         self.write('nodes1 = ' + part_name + '.nodes\n')
         self.write(part_name + '.Set(nodes=nodes1, name="all_nodes")\n')
+        all_nodes = Set(part, 'all_nodes')
+        part.add_set(all_nodes)
         self.write(model_name + '.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(' + str(roomtemp) + ', ))\n')
         self.seperate_sec()
         
-    def create_thermal_AM_model(self, part, AM_model_name, deposition_pattern, road_width, power):
-        self.write('#AM MODEL\n')
+    def create_thermal_AM_model(self,part,amModel_name):
+        am_Model = AmModel(part,amModel_name)
+        part.add_amModel(am_Model)
         model_name = part.get_model_name()
         part_name = part.get_part_name()
-        self.write("amModule.createAMModel(amModelName='" + AM_model_name + "', modelName1='" + model_name +"', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)\n")
+        self.write("amModule.createAMModel(amModelName='" + amModel_name + "', modelName1='" + model_name +"', stepName1='heat', analysisType1=HEAT_TRANSFER, isSequential=OFF, modelName2='', stepName2='', analysisType2=STRUCTURAL, processType=AMPROC_ABAQUS_BUILTIN)\n")
         self.write('a = ' + model_name + '.rootAssembly\n')
         self.write('a.regenerate()\n')
-        AM_model_name = 'mdb.customData.am.amModels["' + AM_model_name + '"]'
+        AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
         self.write(AM_model_name + '.assignAMPart(amPartsData=(("' + part_name + '", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))\n')
+        self.seperate_sec()
+        return am_Model
         
+    def add_event_series(self,am_Model, road_width, deposition_pattern, power, layer_break):
         self.write('#deposition paths\n')
+        part = am_Model.get_part()
+        amModel_name = am_Model.get_amModel_name()
+        AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
+        
         add_element = part.get_features()['add_element']
         base_element = part.get_features()['base_element']
         
@@ -251,6 +268,9 @@ class AM_CAD:
         
         #thickness of each layer
         thickness = add_element.get_layer_thickness()
+        
+        #road_width
+        am_Model.set_road_width(road_width)
         
         #corner coordinate
         point1 = add_element.get_point1()
@@ -265,12 +285,13 @@ class AM_CAD:
 
         if deposition_pattern.lower() == 'raster':
             #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
-            dp_object = Raster(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power)
+            dp_object = Raster(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
         elif deposition_pattern.lower() == 'zigzag':
             #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
-            dp_object = Zigzag(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power)
+            dp_object = Zigzag(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
         else: 
             raise NotImplementedError('This deposition pattern is not implemented');
+            
         dp_object.generate_heat_path()
         dp_object.generate_material_path()
         material_path = pathlib.Path('material_path.txt')
@@ -281,14 +302,63 @@ class AM_CAD:
         self.write(AM_model_name + '.addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName=' + "'" + '"ABQ_AM.PowerMagnitude"' + "'" + ', timeSpan="TOTAL TIME", fileName="' + str(heat_path) + '", isFile=ON)\n')        
         self.seperate_sec()
         
+    def add_table_collections(self,am_Model, absorption_coefficient):
+        self.write('#table collections\n')
+        part = am_Model.get_part()
+        amModel_name = am_Model.get_amModel_name()
+        AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
+        add_element = part.get_features()['add_element']
         
+        #thickness of each layer in add_element
+        thickness = add_element.get_layer_thickness()
+        
+        #road_width of each layer
+        road_width = am_Model.get_road_width()
+        if road_width == None:
+            raise Exception("Must create event series before table collections")
+            
+        #activation offset - how much each bead is offseted
+        activation_offset = road_width/2
+        am_Model.set_activation_offset(activation_offset)
+        
+        #absorption coefficient
+        am_Model.set_absorption_coefficient(absorption_coefficient)
+        
+        self.write(AM_model_name + '.addTableCollection(tableCollectionName="ABQ_AM_Material")\n')
+        self.write(AM_model_name + '.dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name=' + "'_parameterTable_" + '"ABQ_AM.MaterialDeposition.Advanced"_' + "', parameterTabletype='" + '"ABQ_AM.MaterialDeposition.Advanced"' + "', parameterData=(('Full', 0.0, 0.0), ))\n")
+        self.write(AM_model_name + '.dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = ' + "'_parameterTable_" + '"ABQ_AM.MaterialDeposition.Bead"_' + "', parameterTabletype='" + '"ABQ_AM.MaterialDeposition.Bead"' + "', parameterData=(('Z', " + str(thickness) + "," + str(road_width) +"," + str(activation_offset) + ", 'Below'), ))\n")
+        self.write(AM_model_name + '.dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = ' + "'_parameterTable_" + '"ABQ_AM.MaterialDeposition"_' + "', parameterTabletype='" + '"ABQ_AM.MaterialDeposition"' + "', parameterData=(('material_path', 'Bead'), ))\n")
+        
+        self.write(AM_model_name + '.addTableCollection(tableCollectionName="ABQ_AM_Heat")\n')
+        self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].PropertyTable(name='_propertyTable_" + '"ABQ_AM.AbsorptionCoeff"_' + ', propertyTableType=' + '"ABQ_AM.AbsorptionCoeff"' + "', propertyTableData=((" + str(absorption_coefficient) +", ), ), numDependencies=0, temperatureDependency=OFF)\n")
+        self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_" + '"ABQ_AM.MovingHeatSource"_' + "', parameterTabletype='" + '"ABQ_AM.MovingHeatSource"' + "', parameterData=(('heat_path', 'Goldak'), ))\n")
+        self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_" + '"ABQ_AM.MovingHeatSource.Goldak"_' + "', parameterTabletype='" + '"ABQ_AM.MovingHeatSource.Goldak"' + "', parameterData=(('9', '9', '9', " + str(activation_offset) + ',' + str(thickness) + ', 0.002, 0.004, 0.6, 1.4, 1), ))\n')
+        self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_" + '"ABQ_AM.MovingHeatSource.Advanced"_' + "', parameterTabletype='" + '"ABQ_AM.MovingHeatSource.Advanced"' + "', parameterData=(('False', 'False', 'Relative', 0.0, 0.0, -1.0, 1.0), ))\n")
+        self.seperate_sec()
+        
+    def add_simulation_setup(self, amModel):
+        part = amModel.get_part()
+        add_element = part.get_features()['add_element']
+        base_element = part.get_features()['base_element']
+        base_depth = base_element.get_depth()
+        add_depth = add_element.get_depth()
+        total_depth = base_depth + add_depth
+        point1 = add_element.get_point1()
+        point2 = add_element.get_point2()
+        part_name = part.get_part_name()
+        model_name = part.get_model_name()
+        self.write('a = ' + model_name + '.rootAssembly\n')
+        self.write("e = a.instances['" + part_name + "'].elements\n")
+        self.write('add_elements = e.getByBoundingBox(' + str(point1[0]) + ',' + str(point1[1]) + ',' + str(base_depth) + ',' + str(point2[0]) + ',' + str(point2[1]) + ',' + str(total_depth) + ')\n')
+        self.write('a.Set(elements=add_elements, name="add_element")\n')
+
+
 def main():
     scripted_part = AM_CAD('scripted_part.py')
     scripted_part.clear_variables()
     scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants'])
-    scripted_part.include_paths([r'C:\Users\kariln\Documents\GitHub\Master\Materials',r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
-    scripted_part.include_paths([r'C:\Users\Kari Ness\Documents\GitHub\Master\Materials',r'C:\Users\Kari Ness\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
-
+    #scripted_part.include_paths([r'C:\Users\kariln\abaqus_plugins\AM plugin\AMModeler\AMModeler'])
+    scripted_part.include_paths([])
     models = {}
     
     #MODEL
@@ -320,6 +390,9 @@ def main():
     scripted_part.set_room_temp(part1, 20)
     
     #AM MODEL
-    scripted_part.create_thermal_AM_model(part1, 'AM_thermal', 'raster', 0.02, 5000)#endre road_width og power til å matche Li's
+    am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
+    scripted_part.add_event_series(am_Model, 0.01,'zigzag',5000,10)
+    scripted_part.add_table_collections(am_Model,0.9)
+    scripted_part.add_simulation_setup(am_Model)
     
 main()

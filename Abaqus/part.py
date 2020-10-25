@@ -17,6 +17,7 @@ class Part:
         self.features = {}
         self.mesh = None
         self.sets = {}
+        self.amModels = {}
         
     def get_dimensionality(self):
         return self.dimensionality
@@ -54,3 +55,10 @@ class Part:
     def add_set(self,sett):
         set_name = sett.get_set_name()
         self.get_sets().update({set_name:sett})
+        
+    def get_amModels(self):
+        return self.amModels
+        
+    def add_amModel(self,amModel):
+        amModel_name = amModel.get_amModel_name()
+        self.get_amModels().update({amModel_name:amModel})

@@ -133,7 +133,7 @@ class Material:
         
         
     
-def main():
-    AA2319 = Material([['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], 'AA2319')
-    AA2319.material_plot()
-main()
+#def main():
+#    AA2319 = Material([['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], 'AA2319')
+#    AA2319.material_plot()
+#main()
