@@ -341,7 +341,7 @@ class AM_CAD:
         self.write(AM_model_name + '.dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = ' + "'_parameterTable_" + '"ABQ_AM.MaterialDeposition"_' + "', parameterTabletype='" + '"ABQ_AM.MaterialDeposition"' + "', parameterData=(('material_path', 'Bead'), ))\n")
         
         self.write(AM_model_name + '.addTableCollection(tableCollectionName="ABQ_AM_Heat")\n')
-        self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].PropertyTable(name='_propertyTable_" + '"ABQ_AM.AbsorptionCoeff"_' + ', propertyTableType=' + '"ABQ_AM.AbsorptionCoeff"' + "', propertyTableData=((" + str(absorption_coefficient) +", ), ), numDependencies=0, temperatureDependency=OFF)\n")
+        self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].PropertyTable(name='_propertyTable_" + '"ABQ_AM.AbsorptionCoeff"_' + "', propertyTableType='" + '"ABQ_AM.AbsorptionCoeff"' + "', propertyTableData=((" + str(absorption_coefficient) +", ), ), numDependencies=0, temperatureDependency=OFF)\n")
         self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_" + '"ABQ_AM.MovingHeatSource"_' + "', parameterTabletype='" + '"ABQ_AM.MovingHeatSource"' + "', parameterData=(('heat_path', 'Goldak'), ))\n")
         self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_" + '"ABQ_AM.MovingHeatSource.Goldak"_' + "', parameterTabletype='" + '"ABQ_AM.MovingHeatSource.Goldak"' + "', parameterData=(('9', '9', '9', " + str(activation_offset) + ',' + str(thickness) + ', 0.002, 0.004, 0.6, 1.4, 1), ))\n')
         self.write(AM_model_name + ".dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_" + '"ABQ_AM.MovingHeatSource.Advanced"_' + "', parameterTabletype='" + '"ABQ_AM.MovingHeatSource.Advanced"' + "', parameterData=(('False', 'False', 'Relative', 0.0, 0.0, -1.0, 1.0), ))\n")
@@ -438,3 +438,5 @@ def main():
     scripted_part.create_job(thermal, 'thermal')
     
 main()
+#endre Expansion
+#legg til modell-parametre
