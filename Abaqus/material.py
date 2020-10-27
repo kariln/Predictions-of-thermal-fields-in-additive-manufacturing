@@ -26,16 +26,16 @@ class Material:
         p = Path('../Materials/' + material_name)
         return p.resolve()
     
-    def get_property_file(self, material_property):
+    def get_property_file_path(self, material_property):
         material_name = self.get_material_name()
         file_name = material_name + '_' + material_property + '.txt'
         file = Path('../Materials/' + material_name + '/' + file_name)
-        return file
+        return file.resolve()
     
     def get_property_table(self, material_property):
-        file = self.get_property_file(material_property)
+        file_path = str(self.get_property_file_path(material_property)).replace('/','//')
         table = []
-        with open(file,"r") as f:
+        with open(file_path,"r") as f:
             for line in f:
                 tmp = line.strip().split(",")
                 for i in range(0,len(tmp)):
@@ -128,12 +128,3 @@ class Material:
         self.plot_specific_heat()
         self.plot_youngs_module()
         self.plot_expansion()
-
-
-        
-        
-    
-#def main():
-#    AA2319 = Material([['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], 'AA2319')
-#    AA2319.material_plot()
-#main()

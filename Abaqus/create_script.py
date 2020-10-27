@@ -15,10 +15,10 @@ import sys
 from pathlib import Path
 
 material_path = Path('../Materials')
-sys.path.append(material_path.resolve())
+sys.path.append(str(material_path.resolve()).replace('/','//'))
 
 deposition_path = Path('../Deposition_Patterns')
-sys.path.append(deposition_path.resolve())
+sys.path.append(str(deposition_path.resolve()).replace('/','//'))
 
 #importing classes
 from model import Model
@@ -86,6 +86,7 @@ class AM_CAD:
         self.write('#MODEL\n')
         model = Model(model_name)
         self.write(model.get_model_name() +" = mdb.Model(name= '" + model.get_model_name() + "')\n")
+        self.write("mdb.models['" + model_name + "'].setValues(absoluteZero=-273.15, stefanBoltzmann=5.67E-08)\n")
         self.seperate_sec()
         return model
         
@@ -350,6 +351,8 @@ class AM_CAD:
     def add_simulation_setup(self, amModel):
         self.write("#SIMULATION SETUP\n")
         part = amModel.get_part()
+        mesh = part.get_mesh()
+        global_seed = mesh.get_global_seed()
         add_element = part.get_features()['add_element']
         base_element = part.get_features()['base_element']
         base_depth = base_element.get_depth()
@@ -364,7 +367,7 @@ class AM_CAD:
         AM_model_name = 'mdb.customData.am.amModels["' + amModel_name + '"]'
         self.write('a = ' + model_name + '.rootAssembly\n')
         self.write("e = a.instances['" + part_name + "'].elements\n")
-        self.write('add_elements = e.getByBoundingBox(' + str(point1[0]) + ',' + str(point1[1]) + ',' + str(base_depth) + ',' + str(point2[0]) + ',' + str(point2[1]) + ',' + str(total_depth) + ')\n')
+        self.write('add_elements = e.getByBoundingBox(' + str(point1[0]) + ',' + str(point1[1]) + ',' + str(base_depth - global_seed/2) + ',' + str(point2[0]) + ',' + str(point2[1]) + ',' + str(total_depth + global_seed/2) + ')\n')
         self.write('a.Set(elements=add_elements, name="add_element")\n')
         self.write('f = a.instances["' + part_name + '"].faces\n')
         self.write('basement_face = f.findAt(((0.0,0.0,0.0) ,))\n')
@@ -390,53 +393,12 @@ class AM_CAD:
     def submit_job(self,job_name):
         self.write("mdb.jobs['" + job_name + "'].submit(consistencyChecking=OFF)\n")
 
-def main():
-    scripted_part = AM_CAD('scripted_part.py')
-    scripted_part.clear_variables()
-    scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy'])
-    scripted_part.include_paths([])
-    models = {}
-    
-    #MODEL
-    thermal = scripted_part.create_model('thermal')
-    models.update({thermal.get_model_name():thermal})
-
-    #PART
-    part1 = scripted_part.create_part('part1', thermal, 'THREE_D','DEFORMABLE_BODY')
-    scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), 0.02)
-    scripted_part.add_extrude(part1,(-0.06,-0.06),(0.06,0.06),0.0092,4)
-    
-    #PROPERTY
-    scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], thermal)
-    scripted_part.assign_section('AA2319',part1,'Part_Section')
-    
-    #ASSEMBLY
-    scripted_part.create_instance(part1)
-    
-    #STEP
-    scripted_part.create_heat_step('heat','Initial',4000,0.01,1E-8,1,1000, thermal)
-    
-    #MESH
-    scripted_part.create_mesh(part1,0.01)
-    
-    #LOAD
-    scripted_part.create_node_BC(part1)
-    
-    #PREDEFINED FIELD
-    scripted_part.set_room_temp(part1, 20)
-    
-    #FIELD OUTPUT
-    scripted_part.set_field_output(thermal, ['NT','TEMP'])
-
-    #AM MODEL
-    am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
-    scripted_part.add_event_series(am_Model, 0.01,'zigzag',5000,10)
-    scripted_part.add_table_collections(am_Model,0.9)
-    scripted_part.add_simulation_setup(am_Model)
-    
-    #JOB
-    scripted_part.create_job(thermal, 'thermal')
-    
-main()
-#endre Expansion
-#legg til modell-parametre
+    def create_mechanical(self, model_name, thermal_model_name):
+        self.write("mdb.Model(name='" + model_name + "', objectToCopy=mdb.models['" + thermal_model_name + "'])\n")
+        #kopiere modell
+        #endre predefined fields: putt inn frames og odb
+        #endre BC: substrate
+        #endre steps
+        #lag ny amModell med thermo-structural
+        #endre element type
+        #
