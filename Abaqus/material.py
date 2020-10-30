@@ -29,13 +29,13 @@ class Material:
     def get_property_file_path(self, material_property):
         material_name = self.get_material_name()
         file_name = material_name + '_' + material_property + '.txt'
-        file = Path('../Materials/' + material_name + '/' + file_name)
-        return file.resolve()
-    
+        file = os.path.join(os.path.dirname(os.path.abspath(__file__ + "/../")),"Materials", material_name, file_name)
+        return file
+
     def get_property_table(self, material_property):
-        file_path = str(self.get_property_file_path(material_property)).replace('/','//')
+        file_path = self.get_property_file_path(material_property)
         table = []
-        with open(file_path,"r") as f:
+        with open(file_path, "r") as f: 
             for line in f:
                 tmp = line.strip().split(",")
                 for i in range(0,len(tmp)):

@@ -15,10 +15,10 @@ import sys
 from pathlib import Path
 
 material_path = Path('../Materials')
-sys.path.append(str(material_path.resolve()).replace('/','//'))
+sys.path.append(str(material_path.resolve()))
 
 deposition_path = Path('../Deposition_Patterns')
-sys.path.append(str(deposition_path.resolve()).replace('/','//'))
+sys.path.append(str(deposition_path.resolve()))
 
 #importing classes
 from model import Model
@@ -29,6 +29,7 @@ from mesh import Mesh
 from sets import Set
 from zigzag import Zigzag
 from raster import Raster
+from job import Job
 import pathlib
 from amModel import AmModel
 
@@ -39,10 +40,9 @@ class AM_CAD:
         self.file = open(file_name,"w+")
         self.file.truncate(0) 
         self.file.close()
-        
-    def get_file(self):
-        return self.file
-    
+        self.work_dir=None
+        self.jobs = {}
+
     def get_file_name(self):
         return self.file_name
         
@@ -63,7 +63,7 @@ class AM_CAD:
         self.seperate_sec()
         
     def imports(self,import_list):
-        self.write('#importing modules')
+        self.write('#importing modules\n')
         for elem in import_list:
             self.write('import ' + str(elem) + '\n')
             self.write('from ' + str(elem) + " import *\n")
@@ -188,10 +188,10 @@ class AM_CAD:
         self.write("a.Instance(name='" + part_name + "', part= " + part_name + ", dependent=ON)\n")
         self.seperate_sec()
         
-    def create_heat_step(self, step_name, previous, timePeriod, initialInc, minInc,maxInc,deltmx, model):
+    def create_heat_step(self, step_name, previous, timePeriod, initialInc, minInc,maxInc,deltmx, maxNumInc, model):
         self.write('#STEP\n')
         model_name = model.get_model_name()
-        self.write(model_name + ".HeatTransferStep(name='" + step_name + "', previous='" + previous +"', timePeriod=" + str(timePeriod) + ', initialInc=' + str(initialInc) + ', minInc=' + str(minInc) + ', maxInc=' + str(maxInc) + ',deltmx=' + str(deltmx) + ')\n')
+        self.write(model_name + ".HeatTransferStep(name='" + step_name + "', previous='" + previous +"', timePeriod=" + str(timePeriod) + ', initialInc=' + str(initialInc) + ', minInc=' + str(minInc) + ', maxInc=' + str(maxInc) + ',deltmx=' + str(deltmx) + ',maxNumInc=' + str(maxNumInc) +')\n')
         self.seperate_sec()
         
     def create_mesh(self, part, road_width):
@@ -385,13 +385,34 @@ class AM_CAD:
         #Cooling
         self.write(AM_model_name + ".addCoolingInteractions(coolingInteractionName='Film', useElementSet=ON, elementSetRegion=('film', ), isConvectionActive=ON, isRadiationActive=OFF, filmDefinition='Embedded Coefficient', filmCoefficient=8.5, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')\n")
         self.write(AM_model_name + ".addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')\n")
-
+        
+    def get_jobs(self):
+        return self.jobs
+        
+    def add_job(self,job):
+        job_name = job.get_job_name()
+        self.get_jobs().update({job_name:job})
+        
     def create_job(self, model, job_name):
         model_name = model.get_model_name()
+        job = Job(job_name,model_name)
+        self.add:job(job)
         self.write("mdb.Job(name='" + job_name + "', model='" + model_name + "', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)\n")
 
     def submit_job(self,job_name):
         self.write("mdb.jobs['" + job_name + "'].submit(consistencyChecking=OFF)\n")
+        
+    def set_work_dir(self, path):
+        self.work_dir = path
+        path.replace('/','//')
+        self.write('os.chdir(' + path + ')\n')
+        
+    def get_work_dir(self):
+        return self.work_dir
+        
+    def save(self):
+        path = self.get_work_dir()
+        self.write("mdb.saveAs(pathName='" + path + "')\n")
 
     def create_mechanical(self, model_name, thermal_model_name):
         self.write("mdb.Model(name='" + model_name + "', objectToCopy=mdb.models['" + thermal_model_name + "'])\n")
@@ -401,4 +422,4 @@ class AM_CAD:
         #endre steps
         #lag ny amModell med thermo-structural
         #endre element type
-        #
+        #endre field output
