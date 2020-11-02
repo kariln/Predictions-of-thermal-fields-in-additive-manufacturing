@@ -31,10 +31,10 @@ from zigzag import Zigzag
 from raster import Raster
 from job import Job
 import pathlib
-from amModel import AmModel
+from amModel import AM
 
 
-class AM_CAD:
+class AM_MODEL:
     def __init__(self, file_name):
         self.file_name = file_name
         self.file = open(file_name,"w+")
@@ -254,7 +254,7 @@ class AM_CAD:
 
     def create_thermal_AM_model(self,part,amModel_name):
         self.write('#AM PART\n')
-        am_Model = AmModel(part,amModel_name)
+        am_Model = AM(part,amModel_name)
         part.add_amModel(am_Model)
         model_name = part.get_model_name()
         part_name = part.get_part_name()

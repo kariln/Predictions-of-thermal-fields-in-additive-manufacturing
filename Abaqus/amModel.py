@@ -5,7 +5,7 @@ Created on Sun Oct 25 10:17:14 2020
 @author: Kari Ness
 """
 
-class AmModel:
+class AM:
     def __init__(self,part, amModel_name):
         self.part = part
         self.amModel_name = amModel_name 

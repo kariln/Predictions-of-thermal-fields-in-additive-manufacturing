@@ -12,11 +12,11 @@ from pathlib import Path
 abaqus_path = Path('../')
 sys.path.append(str(abaqus_path.resolve()))
 
-from create_script import AM_CAD
+from create_script import FEA_MODEL
 from get_odb import Odb
 
 """THERMAL MODEL"""
-scripted_part = AM_CAD('experiment_2.py')
+scripted_part = FEA_MODEL('experiment_2.py')
 scripted_part.clear_variables()
 scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy','os'])
 scripted_part.include_paths([])
