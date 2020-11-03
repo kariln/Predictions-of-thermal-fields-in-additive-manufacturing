@@ -123,6 +123,8 @@ thermal.DisplacementBC(name="origo_BC", createStepName="Initial", region=region,
 #PREDEFINED FIELDS
 nodes1 = part1.nodes
 part1.Set(nodes=nodes1, name="all_nodes")
+a = thermal.rootAssembly
+region = a.instances["part1"].sets["all_nodes"]
 thermal.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(20, ))
 
 thermal.fieldOutputRequests['F-Output-1'].setValues(variables=('NT','TEMP'))
@@ -134,8 +136,8 @@ a.regenerate()
 mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
 
 #EVENT SERIES
-mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\Experiments\Experiment 2\material_path.txt", isFile=ON)
-mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\Experiments\Experiment 2\heat_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp3\material_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp3\heat_path.txt", isFile=ON)
 
 #TABLE COLLECTIONS
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Material")
@@ -163,4 +165,4 @@ mdb.customData.am.amModels["AM_thermal"].addMaterialArrival(materialArrivalName=
 mdb.customData.am.amModels["AM_thermal"].addHeatSourceDefinition(heatSourceName='Heat Source -1', dfluxDistribution='Moving-UserDefined', dfluxMagnitude=1, tableCollection='ABQ_AM_Heat', useElementSet=OFF, elementSetRegion=())
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Film', useElementSet=ON, elementSetRegion=('film', ), isConvectionActive=ON, isRadiationActive=OFF, filmDefinition='Embedded Coefficient', filmCoefficient=8.5, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
-mdb.Job(name='experiment2_thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)
+mdb.Job(name='experiment1_thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)

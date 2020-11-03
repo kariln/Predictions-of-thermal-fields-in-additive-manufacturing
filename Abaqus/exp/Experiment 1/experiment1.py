@@ -4,7 +4,7 @@ Created on Tue Oct 27 13:22:28 2020
 
 @author: kariln
 
-Thermal experiment with zigzag pattern and cooling time 10s. between each layer
+Thermal experiment with zigzag pattern and cooling time 0s. between each layer
 """
 #add paths
 import sys
@@ -13,11 +13,11 @@ from pathlib import Path
 abaqus_path = Path('../')
 sys.path.append(str(abaqus_path.resolve()))
 
-from create_script import AM_MODEL
+from create_script import FEA_MODEL
 from get_odb import Odb
 
 """THERMAL MODEL"""
-scripted_part = AM_MODEL('experiment_1.py')
+scripted_part = FEA_MODEL('experiment_1.py')
 scripted_part.clear_variables()
 scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy','os'])
 scripted_part.include_paths([])
@@ -56,7 +56,7 @@ scripted_part.set_field_output(thermal, ['NT','TEMP'])
 
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
-scripted_part.add_event_series(am_Model, 0.01,'zigzag',5000,10)
+scripted_part.add_event_series(am_Model, 0.01,'zigzag',5000,0)
 scripted_part.add_table_collections(am_Model,0.9)
 scripted_part.add_simulation_setup(am_Model)
 

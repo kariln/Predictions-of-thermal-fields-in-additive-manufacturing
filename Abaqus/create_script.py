@@ -12,6 +12,7 @@ Assumptions:
 """
 #add paths
 import sys
+import os
 from pathlib import Path
 
 material_path = Path('../Materials')
@@ -34,7 +35,7 @@ import pathlib
 from amModel import AM
 
 
-class AM_MODEL:
+class FEA_MODEL:
     def __init__(self, file_name):
         self.file_name = file_name
         self.file = open(file_name,"w+")
@@ -239,6 +240,8 @@ class AM_MODEL:
         self.write(part_name + '.Set(nodes=nodes1, name="all_nodes")\n')
         all_nodes = Set(part, 'all_nodes')
         part.add_set(all_nodes)
+        self.write('a = ' + model_name + '.rootAssembly\n')
+        self.write('region = a.instances["' + part_name + '"].sets["all_nodes"]\n')
         self.write(model_name + '.Temperature(name="room_temp", createStepName="Initial", region=region, distributionType=UNIFORM, crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, magnitudes=(' + str(roomtemp) + ', ))\n')
         self.seperate_sec()
         
@@ -310,6 +313,8 @@ class AM_MODEL:
         material_path = material_path.resolve()
         heat_path = pathlib.Path('heat_path.txt')
         heat_path = heat_path.resolve()
+        print(heat_path)
+        print(material_path)
         self.write(AM_model_name + '.addEventSeries(eventSeriesName="material_path", eventSeriesTypeName=' + "'" + '"ABQ_AM.MaterialDeposition"' + "'" + ', timeSpan="TOTAL TIME", fileName="'+ str(material_path) +'", isFile=ON)\n')
         self.write(AM_model_name + '.addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName=' + "'" + '"ABQ_AM.PowerMagnitude"' + "'" + ', timeSpan="TOTAL TIME", fileName="' + str(heat_path) + '", isFile=ON)\n')        
         self.seperate_sec()

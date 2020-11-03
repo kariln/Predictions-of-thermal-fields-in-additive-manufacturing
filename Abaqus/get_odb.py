@@ -9,7 +9,7 @@ This is a temporary script file.
 #
 import sys
 import os
-from create_script import AM_CAD
+from create_script import FEA_MODEL
 
 class Odb:
     def __init__(self, job_name,CAD, part):
