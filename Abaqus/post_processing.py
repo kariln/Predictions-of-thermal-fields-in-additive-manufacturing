@@ -70,9 +70,9 @@ def main():
     plt.ylabel('Temperature [C' + degree_sign + ']')
     plt.legend(['zigzag','raster'])
     axes = plt.gca()
-    axes.set_xlim([100,200])
-    axes.set_ylim([125,300])
-    plt.savefig('cornernode_layer2')
+    axes.set_xlim([300,500])
+    axes.set_ylim([260,350])
+    plt.savefig('cornernode_layer4')
     plt.show()
     
     
