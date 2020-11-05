@@ -122,9 +122,51 @@ class Material:
         plt.savefig(path + '/' + material_name + '_Expansion.png')
         plt.show()
         
-    def material_plot(self):
+    def plot_strain_hardening(self, temperatures):
+        #x: Strain
+        #y: True stress [MPa]
+        material_name = self.get_material_name()
+        degree_sign= u'\N{DEGREE SIGN}'
+        legends = []
+        strain = []
+        stress = []
+        fig, ax = plt.subplots()
+        for index, t in enumerate(temperatures):
+            legends.append(str(t) + degree_sign + 'C')
+            material_property = 'StrainHardening_' + str(t)
+            table = self.get_property_table(material_property)
+            strain.append([x[0] for x in table])
+            stress.append([x[1] for x in table])
+            ax.plot(strain[index],stress[index])
+            plt.draw()
+        for var in stress:
+            biggest = 0
+            for elem in var:
+                if elem > biggest:
+                    biggest = elem
+            plt.annotate('%0.2f' % biggest, xy=(1, biggest), xytext=(8, 0), 
+                 xycoords=('axes fraction', 'data'), textcoords='offset points')
+        plt.rcParams.update({'font.size': 15})
+        plt.xlabel('Strain')
+        plt.ylabel('Stress [MPa]')
+        plt.legend(legends)
+        path = str(self.get_path_string()) + '/'
+        plt.savefig(path + '/' + material_name + '_StrainHardening.png')
+        plt.show()
+        
+        
+    def material_plot(self, temperatures):
         self.plot_conductivity()
         self.plot_yield_stress()
         self.plot_specific_heat()
         self.plot_youngs_module()
         self.plot_expansion()
+        self.plot_strain_hardening(self, temperatures)
+
+def main():
+    material_name = 'AA2319'
+    material_properties = ['Conductivity','Density','Elastic','Expansion','LatentHeat', 'Plastic','SpecificHeat']
+    material = Material(material_properties, material_name)
+    material.plot_strain_hardening([20,316, 371, 550])
+    
+main()
