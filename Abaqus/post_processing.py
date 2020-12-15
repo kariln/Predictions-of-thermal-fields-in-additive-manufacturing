@@ -74,7 +74,7 @@ def main():
     temp_raster_corner = [x[1] for x in raster_corner]
     raster_mid = raster.get_node_data('mid')
     time_offset = time_normalize_data(raster_mid)
-    t_raster_mid = [x[0]-time_offset for x in raster_mid]
+    t_raster_mid = [x[0] for x in raster_mid]
     temp_raster_mid = [x[1] for x in raster_mid]
 
     degree_sign= u'\N{DEGREE SIGN}'
