@@ -14,7 +14,7 @@ class Pattern:
     self.road_width = road_width
     self.length = [x_length, y_length,z_length]
     
-    #initializing deposition velocity with default value 0.01 
+    #initializing deposition velocity with default value 0.015
     self.v = 0.015
     
     #initializing the a time intervall between each deposited layer

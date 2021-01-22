@@ -27,7 +27,7 @@ deposition_path = Path('../Deposition_Patterns')
 sys.path.append(str(deposition_path.resolve()))
 
 from create_script import FEA_MODEL
-from get_odb import Odb
+from odb import Odb
 
 """THERMAL MODEL"""
 scripted_part = FEA_MODEL('experiment_3.py')
@@ -41,7 +41,8 @@ thermal = scripted_part.create_model('thermal')
 models.update({thermal.get_model_name():thermal})
 
 #PART
-part1 = scripted_part.create_part('part1', thermal, 'THREE_D','DEFORMABLE_BODY')
+part_name = 'part1'
+part1 = scripted_part.create_part(part_name, thermal, 'THREE_D','DEFORMABLE_BODY')
 scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), 0.02)
 scripted_part.add_extrude(part1,(-0.06,-0.06),(0.06,0.06),0.0092,4)
 
@@ -75,12 +76,15 @@ scripted_part.add_simulation_setup(am_Model)
 
 #JOB
 scripted_part.create_job(thermal, 'experiment1_thermal')
-#scripted_part.submit_job('experiment1_thermal')
+scripted_part.submit_job('experiment1_thermal')
 
 """ MECHANICICAL MODEL"""
 
 """ ODB """
 process_odb = Odb('experiment1_thermal',scripted_part, part1)
 process_odb.clear_variables()
-process_odb.imports(['OdbAccess', 'os'])
+process_odb.imports(['abaqus','abaqusConstants','odbAccess', 'os'])
+process_odb.open_odb()
+process_odb.get_add_elements(part_name)
+process_odb.get_temperature()
 

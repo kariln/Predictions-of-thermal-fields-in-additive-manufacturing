@@ -102,7 +102,7 @@ a.Instance(name='part1', part= part1, dependent=ON)
 thermal.HeatTransferStep(name='heat', previous='Initial', timePeriod=4000, initialInc=0.01, minInc=1e-08, maxInc=1,deltmx=1000,maxNumInc=10000)
 
 #MESH
-part1.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
+part1.seedPart(size=0.0025, deviationFactor=0.1, minSizeFactor=0.1)
 e = part1.edges
 part1.generateMesh()
 elemType1 = mesh.ElemType(elemCode=DC3D8, elemLibrary=STANDARD)
@@ -114,7 +114,7 @@ part1.setElementType(regions=region, elemTypes=(elemType1,elemType2,elemType3))
 
 #BOUNDARY CONDITION
 n = part1.nodes
-origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.0025)
+origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.00125)
 part1.Set(nodes=origo_node, name="origo_node")
 a = thermal.rootAssembly
 region = a.instances["part1"].sets["origo_node"]
@@ -153,7 +153,7 @@ mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat
 #SIMULATION SETUP
 a = thermal.rootAssembly
 e = a.instances['part1'].elements
-add_elements = e.getByBoundingBox(-0.06,-0.06,0.0175,0.06,0.06,0.0317)
+add_elements = e.getByBoundingBox(-0.06,-0.06,0.01875,0.06,0.06,0.03045)
 a.Set(elements=add_elements, name="add_element")
 f = a.instances["part1"].faces
 basement_face = f.findAt(((0.0,0.0,0.0) ,))
@@ -166,3 +166,4 @@ mdb.customData.am.amModels["AM_thermal"].addHeatSourceDefinition(heatSourceName=
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Film', useElementSet=ON, elementSetRegion=('film', ), isConvectionActive=ON, isRadiationActive=OFF, filmDefinition='Embedded Coefficient', filmCoefficient=8.5, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
 mdb.Job(name='experiment1_thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)
+mdb.jobs['experiment1_thermal'].submit(consistencyChecking=OFF)

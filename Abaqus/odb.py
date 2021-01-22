@@ -10,6 +10,8 @@ This is a temporary script file.
 import sys
 import os
 from create_script import FEA_MODEL
+import xlsxwriter
+from part import Part
 
 class Odb:
     def __init__(self, job_name,CAD, part):
@@ -25,6 +27,9 @@ class Odb:
     def get_file_name(self):
         return self.file_name
     
+    def get_job_name(self):
+        return self.job_name
+    
     def get_work_dir(self):
         return self.work_dir
     
@@ -33,6 +38,11 @@ class Odb:
         file_name = self.get_file_name()
         fullPath = os.path.join(path, file_name) 
         return fullPath
+    
+    def get_CAD(self):
+        return self.CAD
+    
+
         
     def write(self, string):
         file = open(self.get_file_name(), 'a')
@@ -64,6 +74,34 @@ class Odb:
         newFolder = "Resultat "+ file_name.split(".")[0]
         if not os.path.exists(newFolder):
             os.makedirs(newFolder)
-        self.write("odb = openOdb('" + file_name + "')\n")
+        self.write("odb = openOdb('" + self.get_job_name() + ".odb')\n")
+        self.seperate_sec()
+        
+    def get_add_elements(self, part_name):
+        CAD = self.get_CAD()
+        self.write("instance = odb.rootAssembly.instances['" + part_name.upper() + "']\n" )
+        self.write("add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']\n")
+        self.seperate_sec()
+        
+    def get_nr_frames(self):
+        self.write("stepName = odb.steps.keys()[0]\n")
+        self.write("numberOfFrames = len(odb.steps[stepName].frames)\n")
+
+    def get_temperature(self):
+        self.write("add_elements = add_set.elements\n")
+        self.write("session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_NODAL, variable=(('TEMP', INTEGRATION_POINT), ), elementSets=(" +'"ADD_ELEMENT", ))\n')
+
+
+
+        
+    def create_excel(self):
+        workbook = xlsxwriter.Workbook('temperatures.xlsx')
+        worksheet = workbook.add_worksheet()
+        
+    def write_excel(self, row, col, data, worksheet):
+        worksheet.write(row, col, data)
+        
+    def end_excel(self, workbook):
+        workbook.close()
 
 
