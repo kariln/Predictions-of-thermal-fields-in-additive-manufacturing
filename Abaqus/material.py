@@ -161,12 +161,12 @@ class Material:
         self.plot_specific_heat()
         self.plot_youngs_module()
         self.plot_expansion()
-        self.plot_strain_hardening(self, temperatures)
+        #self.plot_strain_hardening(self, temperatures)
 
-def main():
-    material_name = 'AA2319'
-    material_properties = ['Conductivity','Density','Elastic','Expansion','LatentHeat', 'Plastic','SpecificHeat']
-    material = Material(material_properties, material_name)
-    material.plot_strain_hardening([20,316, 371, 550])
+#def main():
+    #material_name = 'AA2319'
+    #material_properties = ['Conductivity','Density','Elastic','Expansion','LatentHeat', 'Plastic','SpecificHeat']
+    #material = Material(material_properties, material_name)
+    #material.plot_strain_hardening([20,316, 371, 550])
     
-main()
+#main()

@@ -43,7 +43,7 @@ session.journalOptions.setValues(replayGeometry=COORDINATE,recoverGeometry=COORD
 
 #Include paths
 import sys
-sys.path.append(r'C:\Users\kariln\Documents\GitHub\abagus_plugins\AM plugin\AMModeler\AMModeler')
+sys.path.append(r'C:\Users\kariln\abagus_plugins\AM plugin\AMModeler\AMModeler')
 
 #MODEL
 thermal = mdb.Model(name= 'thermal')
@@ -65,17 +65,17 @@ sketch_UpEdge = e.findAt(((0.0, 0.1, 0.02),))[0]
 sketch_transform = part1.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.02))
 AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=0.08000000000000002,gridSpacing=0.14, transform=sketch_transform)
 AM_sketch.rectangle(point1=(-0.06, -0.06),point2=(0.06, 0.06))
-part1.SolidExtrude(depth=0.0092,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
+part1.SolidExtrude(depth=0.0023,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
 del thermal.sketches['__profile__']
 #partition AM into layers
-nr_layers = 4
+nr_layers = 1
 plane_offset = 0.02
 for i in range(0,nr_layers):
 	datum_id = part1.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id
 	plane = part1.datums[datum_id]
 	plane_offset += 0.0023
 	part1_cells = part1.cells
-	top_cell = part1_cells.findAt(((0.,0.,0.0292),))
+	top_cell = part1_cells.findAt(((0.,0.,0.0223),))
 	part1.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)
 
 #PROPERTY
@@ -102,7 +102,7 @@ a.Instance(name='part1', part= part1, dependent=ON)
 thermal.HeatTransferStep(name='heat', previous='Initial', timePeriod=4000, initialInc=0.01, minInc=1e-08, maxInc=1,deltmx=1000,maxNumInc=10000)
 
 #MESH
-part1.seedPart(size=0.0025, deviationFactor=0.1, minSizeFactor=0.1)
+part1.seedPart(size=0.005, deviationFactor=0.1, minSizeFactor=0.1)
 e = part1.edges
 part1.generateMesh()
 elemType1 = mesh.ElemType(elemCode=DC3D8, elemLibrary=STANDARD)
@@ -114,7 +114,7 @@ part1.setElementType(regions=region, elemTypes=(elemType1,elemType2,elemType3))
 
 #BOUNDARY CONDITION
 n = part1.nodes
-origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.00125)
+origo_node = n.getByBoundingSphere(center = (0.,0.,0.), radius = 0.0025)
 part1.Set(nodes=origo_node, name="origo_node")
 a = thermal.rootAssembly
 region = a.instances["part1"].sets["origo_node"]
@@ -136,8 +136,8 @@ a.regenerate()
 mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
 
 #EVENT SERIES
-mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp3\material_path.txt", isFile=ON)
-mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp3\heat_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\material_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\heat_path.txt", isFile=ON)
 
 #TABLE COLLECTIONS
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Material")
@@ -153,7 +153,7 @@ mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat
 #SIMULATION SETUP
 a = thermal.rootAssembly
 e = a.instances['part1'].elements
-add_elements = e.getByBoundingBox(-0.06,-0.06,0.01875,0.06,0.06,0.03045)
+add_elements = e.getByBoundingBox(-0.06,-0.06,0.0175,0.06,0.06,0.0248)
 a.Set(elements=add_elements, name="add_element")
 f = a.instances["part1"].faces
 basement_face = f.findAt(((0.0,0.0,0.0) ,))
@@ -165,5 +165,4 @@ mdb.customData.am.amModels["AM_thermal"].addMaterialArrival(materialArrivalName=
 mdb.customData.am.amModels["AM_thermal"].addHeatSourceDefinition(heatSourceName='Heat Source -1', dfluxDistribution='Moving-UserDefined', dfluxMagnitude=1, tableCollection='ABQ_AM_Heat', useElementSet=OFF, elementSetRegion=())
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Film', useElementSet=ON, elementSetRegion=('film', ), isConvectionActive=ON, isRadiationActive=OFF, filmDefinition='Embedded Coefficient', filmCoefficient=8.5, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
-mdb.Job(name='experiment1_thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)
-mdb.jobs['experiment1_thermal'].submit(consistencyChecking=OFF)
+mdb.Job(name='one_layer_thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)

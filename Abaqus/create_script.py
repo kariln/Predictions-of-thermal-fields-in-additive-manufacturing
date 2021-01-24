@@ -378,7 +378,7 @@ class FEA_MODEL:
         self.write('basement_face = f.findAt(((0.0,0.0,0.0) ,))\n')
         self.write('a.Set(faces=basement_face, name = "basement")\n')
         self.write('c = a.instances["' + part_name + '"].cells\n')
-        #film contains basement
+        #film contains basement -edit
         self.write('film = c.findAt(((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth + thickness/2) + '), ), ((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth + 3*thickness/2) + '), ),((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth + 5*thickness/2) + '),  ), ((' + str(point1[0]) + ',' + str(point1[1]/3) + ',' + str(base_depth) + '),  ))\n')
         self.write('a.Set(cells = film, name = "film")\n')
         #Material arrival:
