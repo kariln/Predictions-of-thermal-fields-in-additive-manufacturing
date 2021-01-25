@@ -83,13 +83,31 @@ class Odb:
         self.write("add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']\n")
         self.seperate_sec()
         
-    def get_nr_frames(self):
+    def get_step_name(self):
         self.write("stepName = odb.steps.keys()[0]\n")
+        self.seperate_sec()
+        
+    def get_frames(self):
+        self.get_step_name()
+        self.write("frames = odb.steps[stepName].frames\n")
+        
+    def get_nr_frames(self):
+        self.get_step_name(self)
         self.write("numberOfFrames = len(odb.steps[stepName].frames)\n")
+        
+    def get_add_nodes(self):
+        self.write('nodes = []\n')
+        self.write('for element in add_elements[0]:\n')
+        self.write('\ttemp = element.connectivity\n')
+        self.write('\tfor i in temp:\n')
+        self.write('\t\tif i not in nodes:\n')
+        self.write('\t\t\tnodes.append(i)\n')
+        self.seperate_sec()
 
     def get_temperature(self):
         self.write("add_elements = add_set.elements\n")
-        self.write("session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_NODAL, variable=(('TEMP', INTEGRATION_POINT), ), elementSets=(" +'"ADD_ELEMENT", ))\n')
+        self.get_add_nodes()
+        #self.write("session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_NODAL, variable=(('TEMP', INTEGRATION_POINT), ), elementSets=(" +'"ADD_ELEMENT", ))\n')
 
 
 

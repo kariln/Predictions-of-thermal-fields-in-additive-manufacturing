@@ -17,5 +17,14 @@ odb = openOdb('experiment1_thermal.odb')
 instance = odb.rootAssembly.instances['PART1']
 add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
 
+stepName = odb.steps.keys()[0]
+
+frames = odb.steps[stepName].frames
 add_elements = add_set.elements
-session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_NODAL, variable=(('TEMP', INTEGRATION_POINT), ), elementSets=("ADD_ELEMENT", ))
+nodes = []
+for element in add_elements[0]:
+	temp = element.connectivity
+	for i in temp:
+		if i not in nodes:
+			nodes.append(i)
+
