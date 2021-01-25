@@ -406,6 +406,7 @@ class FEA_MODEL:
 
     def submit_job(self,job_name):
         self.write("mdb.jobs['" + job_name + "'].submit(consistencyChecking=OFF)\n")
+        self.write("mdb.jobs['job' + str(j)].waitForCompletion()\n")
         
     def set_work_dir(self, path):
         self.work_dir = path

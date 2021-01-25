@@ -43,7 +43,8 @@ models.update({thermal.get_model_name():thermal})
 #PART
 part_name = 'part1'
 part1 = scripted_part.create_part(part_name, thermal, 'THREE_D','DEFORMABLE_BODY')
-scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), 0.02)
+base_depth = 0.02
+scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), base_depth)
 scripted_part.add_extrude(part1,(-0.06,-0.06),(0.06,0.06),0.0092,4)
 
 #PROPERTY
@@ -76,16 +77,16 @@ scripted_part.add_simulation_setup(am_Model)
 
 #JOB
 scripted_part.create_job(thermal, 'experiment1_thermal')
-scripted_part.submit_job('experiment1_thermal')
+#scripted_part.submit_job('experiment1_thermal')
 
 """ MECHANICICAL MODEL"""
 
 """ ODB """
 process_odb = Odb('experiment1_thermal',scripted_part, part1)
 process_odb.clear_variables()
-process_odb.imports(['abaqus','abaqusConstants','odbAccess', 'os'])
+process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
 process_odb.get_add_elements(part_name)
 process_odb.get_frames()
-process_odb.get_temperature()
+process_odb.get_temperature(base_depth)
 

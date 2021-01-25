@@ -93,7 +93,11 @@ class Odb:
         
     def get_nr_frames(self):
         self.get_step_name(self)
-        self.write("numberOfFrames = len(odb.steps[stepName].frames)\n")
+        self.write("numberOfFrames = len(odb.steps['stepName'].frames)\n")
+        
+    def get_last_frame(self):
+        self.get_step_name()
+        self.write("lastFrame = odb.steps[stepName].frames[-1]\n")
         
     def get_add_nodes(self):
         self.write('nodes = []\n')
@@ -102,15 +106,33 @@ class Odb:
         self.write('\tfor i in temp:\n')
         self.write('\t\tif i not in nodes:\n')
         self.write('\t\t\tnodes.append(i)\n')
+        self.write('assembly=odb.rootAssembly\n')
+        self.write("assembly.NodeSetFromNodeLabels(name='NODE_ADD_SET', nodeLabels=(('PART1',nodes),))\n")
         self.seperate_sec()
 
-    def get_temperature(self):
-        self.write("add_elements = add_set.elements\n")
-        self.get_add_nodes()
-        #self.write("session.xyDataListFromField(odb=odb, outputPosition=ELEMENT_NODAL, variable=(('TEMP', INTEGRATION_POINT), ), elementSets=(" +'"ADD_ELEMENT", ))\n')
-
-
-
+    def get_temperature(self,base_depth):
+        self.write('#GET TEMPERATURE\n')
+        self.write('base_depth = ' + str(base_depth) + '\n')
+        self.write("dispFile = open('disp.txt','w')\n")
+        self.write("dispFile.write('i,t,T,x,y,z\\n')\n")
+        self.get_frames()
+        self.write("for frame in frames:\n")
+        self.write("\ttime = frame.frameValue\n")
+        self.write("\ttemperature = frame.fieldOutputs['NT11']\n")
+        self.write("\tposition = frame.fieldOutputs['COORD']\n")
+        self.write("\tfor i in range(0,len(temperature.values)):\n")
+        self.write("\t\tpos = position.values[i]\n")
+        self.write("\t\tif pos.data[2] > base_depth:\n")
+        self.write("\t\t\ttemp = temperature.values[i]\n")
+        self.write("\t\t\ti = temp.nodeLabel\n")
+        self.write("\t\t\tt = time\n")
+        self.write("\t\t\tT = temp.data\n")
+        self.write("\t\t\tx = pos.data[0]\n")
+        self.write("\t\t\ty = pos.data[1]\n")
+        self.write("\t\t\tz = pos.data[2]\n")
+        self.write("\t\t\tif T != 20.0:\n")
+        self.write("\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + '\\n')\n")
+        self.write("dispFile.close()\n")
         
     def create_excel(self):
         workbook = xlsxwriter.Workbook('temperatures.xlsx')
@@ -121,5 +143,10 @@ class Odb:
         
     def end_excel(self, workbook):
         workbook.close()
+
+
+dispFile = open('disp.txt','w')
+dispFile.write('i,t,T,x,y,z')
+
 
 
