@@ -81,6 +81,7 @@ class Odb:
         CAD = self.get_CAD()
         self.write("instance = odb.rootAssembly.instances['" + part_name.upper() + "']\n" )
         self.write("add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']\n")
+        self.write("add_elements = add_set.elements[0]\n")
         self.seperate_sec()
         
     def get_step_name(self):
@@ -100,40 +101,84 @@ class Odb:
         self.write("lastFrame = odb.steps[stepName].frames[-1]\n")
         
     def get_add_nodes(self):
-        self.write('nodes = []\n')
-        self.write('for element in add_elements[0]:\n')
-        self.write('\ttemp = element.connectivity\n')
-        self.write('\tfor i in temp:\n')
-        self.write('\t\tif i not in nodes:\n')
-        self.write('\t\t\tnodes.append(i)\n')
-        self.write('assembly=odb.rootAssembly\n')
-        self.write("assembly.NodeSetFromNodeLabels(name='NODE_ADD_SET', nodeLabels=(('PART1',nodes),))\n")
+        self.write('\tnodes = []\n')
+        self.write('\tfor element in add_elements:\n')
+        self.write('\t\ttemp = element.connectivity\n')
+        self.write('\t\tfor i in temp:\n')
+        self.write('\t\t\tif i not in nodes:\n')
+        self.write('\t\t\t\tnodes.append(i)\n')
+        #self.write('assembly=odb.rootAssembly\n')
+        #self.write("assembly.NodeSetFromNodeLabels(name='NODE_ADD_SET', nodeLabels=(('PART1',nodes),))\n")
         self.seperate_sec()
 
-    def get_temperature(self,base_depth):
+    def get_temperature(self,base_depth, part_name):
+        self.get_add_elements(part_name)
         self.write('#GET TEMPERATURE\n')
         self.write('base_depth = ' + str(base_depth) + '\n')
         self.write("dispFile = open('disp.txt','w')\n")
-        self.write("dispFile.write('i,t,T,x,y,z\\n')\n")
+        self.write("dispFile.write('i,t,T,x,y,z,Q_x,Q_y_,Q_z\\n')\n")
         self.get_frames()
         self.write("for frame in frames:\n")
         self.write("\ttime = frame.frameValue\n")
+        self.write("\tif time > 2000:\n")
+        self.write("\t\traise SystemExit(0)\n")
+        self.get_active_elements()
+        #self.get_add_nodes()
         self.write("\ttemperature = frame.fieldOutputs['NT11']\n")
         self.write("\tposition = frame.fieldOutputs['COORD']\n")
+        self.get_laser_position()
+        self.get_laser_position()
         self.write("\tfor i in range(0,len(temperature.values)):\n")
         self.write("\t\tpos = position.values[i]\n")
-        self.write("\t\tif pos.data[2] > base_depth:\n")
-        self.write("\t\t\ttemp = temperature.values[i]\n")
+        self.write("\t\ttemp = temperature.values[i]\n")
+        self.write("\t\tif temp.nodeLabel in active_nodes:\n")
         self.write("\t\t\ti = temp.nodeLabel\n")
         self.write("\t\t\tt = time\n")
         self.write("\t\t\tT = temp.data\n")
         self.write("\t\t\tx = pos.data[0]\n")
         self.write("\t\t\ty = pos.data[1]\n")
         self.write("\t\t\tz = pos.data[2]\n")
-        self.write("\t\t\tif T != 20.0:\n")
-        self.write("\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + '\\n')\n")
+        self.write("\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(Q_x) + ',' + str(Q_y) + ',' + str(Q_z) + '\\n')\n")
         self.write("dispFile.close()\n")
         
+    def get_laser_position(self):
+        self.write("#get laser position for frame\n")
+        self.write("\tlast_nodes_labels = active_nodes[-4::]\n")
+        self.write("\tlast_nodes_x = []\n")
+        self.write("\tlast_nodes_y = []\n")
+        self.write("\tlast_nodes_z = []\n")
+        self.write("\tfor j in reversed(range(0,len(position.values))):\n")
+        self.write("\t\tpos = position.values[j]\n")
+        self.write("\t\tif pos.nodeLabel in last_nodes_labels:\n")
+        self.write("\t\t\tx = pos.data[0]\n")
+        self.write("\t\t\ty = pos.data[1]\n")
+        self.write("\t\t\tz = pos.data[2]\n")
+        self.write("\t\t\tlast_nodes_x.append(x)\n")
+        self.write("\t\t\tlast_nodes_y.append(y)\n")
+        self.write("\t\t\tlast_nodes_z.append(z)\n")
+        self.write("\t\t\tif len(last_nodes_x) == 4:\n")
+        self.write("\t\t\t\tbreak\n")
+        self.write("\tif active_nodes != []:\n")
+        self.write("\t\tQ_z = max(last_nodes_z)\n")
+        self.write("\t\tQ_x = sum(last_nodes_x) / len(last_nodes_x)\n")
+        self.write("\t\tQ_y = sum(last_nodes_y) / len(last_nodes_y)\n")
+        
+    def get_active_elements(self):
+        self.write("#find active elements for frame\n")
+        self.write("\tactive = frame.fieldOutputs['EACTIVE'].values\n")
+        self.write("\tactive_elements = []\n")
+        self.write("\tactive_nodes = []\n")
+        self.write("\tfor i in range(0,len(active)):\n")
+        self.write("\t\tif active[i].data == 1.0:\n")
+        self.write("\t\t\tactive_elements.append(active[i].elementLabel)\n")
+        self.write('\t\t\tfor element in add_elements:\n')
+        self.write("\t\t\t\tif element.label in active_elements:\n")
+        self.write('\t\t\t\t\ttemp = element.connectivity\n')
+        self.write('\t\t\t\t\tfor i in temp:\n')
+        self.write('\t\t\t\t\t\tif i not in active_nodes:\n')
+        self.write('\t\t\t\t\t\t\tactive_nodes.append(i)\n')
+        self.seperate_sec()
+
     def create_excel(self):
         workbook = xlsxwriter.Workbook('temperatures.xlsx')
         worksheet = workbook.add_worksheet()
@@ -145,8 +190,90 @@ class Odb:
         workbook.close()
 
 
-dispFile = open('disp.txt','w')
-dispFile.write('i,t,T,x,y,z')
+#import os
+#clear = lambda: os.system('cls')
+#clear()
+#
+##importing modules
+#import abaqus
+#from abaqus import *
+#import abaqusConstants
+#from abaqusConstants import *
+#import odbAccess
+#from odbAccess import *
+#from statistics import mean 
+#
+#odb = openOdb('experiment1_thermal.odb')
+#
+#instance = odb.rootAssembly.instances['PART1']
+#add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
+#add_elements = add_set.elements[0]
+#
+#stepName = odb.steps.keys()[0]
+#
+#frames = odb.steps[stepName].frames
+#instance = odb.rootAssembly.instances['PART1']
+#add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
+#add_elements = add_set.elements[0]
+#
+##GET TEMPERATURE
+#base_depth = 0.02
+#dispFile = open('disp.txt','w')
+#dispFile.write('i,t,T,x,y,z\n')
+#stepName = odb.steps.keys()[0]
+#
+#frames = odb.steps[stepName].frames
+#for frame in frames:
+#	time = frame.frameValue
+#	if time > 2000:
+#		raise SystemExit(0)
+##find active elements for frame
+#	active = frame.fieldOutputs['EACTIVE'].values
+#	active_elements = []
+#	active_nodes = []
+#	for i in range(0,len(active)):
+#		if active[i].data == 1.0:
+#			active_elements.append(active[i].elementLabel)
+#			for element in add_elements:
+#				if element.label in active_elements:
+#					temp = element.connectivity
+#					for i in temp:
+#						if i not in active_nodes:
+#							active_nodes.append(i)
+#
+#	temperature = frame.fieldOutputs['NT11']
+#	position = frame.fieldOutputs['COORD']
+#    #find laser position
+#    last_nodes_labels = active_nodes[-4::]\n")
+#    last_nodes_x = []
+#    last_nodes_y = []
+#    last_nodes_z = []
+#    for j in reversed(range(0,len(position.values))):
+#        pos = position.values[j]
+#        if pos.nodeLabel in last_nodes_labels:
+#            x = pos.data[0]
+#			y = pos.data[1]
+#			z = pos.data[2]
+#            last_nodes_x.append(x)
+#            last_nodes_y.append(y)
+#            last_nodes_z.append(z)
+#            if len(las_nodes_x) == 4:
+#                break:
+#    Q_z = max(last_nodes_z)
+#    Q_x = sum(last_nodes_x) / len(last_nodes_x) 
+#    Q_y = sum(last_nodes_y) / len(last_nodes_y) 
+#	for i in range(0,len(temperature.values)):
+#		pos = position.values[i]
+#		temp = temperature.values[i]
+#		if temp.nodeLabel in active_nodes:
+#			i = temp.nodeLabel
+#			t = time
+#			T = temp.data
+#			x = pos.data[0]
+#			y = pos.data[1]
+#			z = pos.data[2]
+#			dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + '\n')
+#dispFile.close()
 
 
 

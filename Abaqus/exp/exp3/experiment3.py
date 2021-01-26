@@ -88,5 +88,5 @@ process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
 process_odb.get_add_elements(part_name)
 process_odb.get_frames()
-process_odb.get_temperature(base_depth)
+process_odb.get_temperature(base_depth, part_name)
 
