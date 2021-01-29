@@ -110,58 +110,84 @@ class Odb:
         #self.write('assembly=odb.rootAssembly\n')
         #self.write("assembly.NodeSetFromNodeLabels(name='NODE_ADD_SET', nodeLabels=(('PART1',nodes),))\n")
         self.seperate_sec()
+        
+    def get_free_surface_distance(self):
+        self.write("\t\t\t\t\td_top = abs(Q_z-z)\n")
+        self.write("\t\t\t\t\td_bottom = abs(z-base_depth)\n")
+        self.write("\t\t\t\t\td_x1 = abs(point1[0]-x)\n")
+        self.write("\t\t\t\t\td_x2 = abs(point2[0]-x)\n")
+        self.write("\t\t\t\t\td_y1 = abs(point1[1]-y)\n")
+        self.write("\t\t\t\t\td_y2 = abs(point2[1]-y)\n")
+        self.write("\t\t\t\t\tdistances = [d_top,d_bottom,d_x1,d_x2,d_y1,d_y2]\n")
+        self.write("\t\t\t\t\ttmp = distances.count(0)\n")
+        self.write("\t\t\t\t\tif tmp == 0:\n")
+        self.write("\t\t\t\t\t\ttype='mid'\n")
+        self.write("\t\t\t\t\telif tmp == 1:\n")
+        self.write("\t\t\t\t\t\ttype='side'\n")
+        self.write("\t\t\t\t\telse:\n")
+        self.write("\t\t\t\t\t\ttype='corner'\n")
+        self.seperate_sec()
+       
 
-    def get_temperature(self,base_depth, part_name):
+    def get_temperature(self,base_depth, part_name,Q,point1,point2):
         self.get_add_elements(part_name)
+        self.get_frames()
         self.write('#GET TEMPERATURE\n')
         self.write('base_depth = ' + str(base_depth) + '\n')
+        self.write('point1 = ' + str(point1) + '\n')
+        self.write('point2 = ' + str(point2) + '\n')
+        self.write('new_active_nodes = -1\n')
         self.write("dispFile = open('disp.txt','w')\n")
-        self.write("dispFile.write('i,t,T,x,y,z,Q_x,Q_y_,Q_z\\n')\n")
+        self.write("dispFile.write('#i,t,T,x,y,z,Q_x,Q_y_,Q_z,euclidean_d_Q,Q,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,type\\n')\n")
         self.get_frames()
         self.write("for frame in frames:\n")
         self.write("\ttime = frame.frameValue\n")
         self.write("\tif time > 2000:\n")
         self.write("\t\traise SystemExit(0)\n")
         self.get_active_elements()
-        #self.get_add_nodes()
-        self.write("\ttemperature = frame.fieldOutputs['NT11']\n")
-        self.write("\tposition = frame.fieldOutputs['COORD']\n")
+        self.write("\t#checking if deposition has ended\n")
+        self.write("\tif new_active_nodes == len(active_nodes):\n")
+        self.write("\t\tpass\n")
+        self.write("\telse:\n")
+        self.write("\t\tnew_active_nodes = len(active_nodes)\n")
+        self.write("\t\ttemperature = frame.fieldOutputs['NT11']\n")
+        self.write("\t\tposition = frame.fieldOutputs['COORD']\n")
         self.get_laser_position()
-        self.get_laser_position()
-        self.write("\tfor i in range(0,len(temperature.values)):\n")
-        self.write("\t\tpos = position.values[i]\n")
-        self.write("\t\ttemp = temperature.values[i]\n")
-        self.write("\t\tif temp.nodeLabel in active_nodes:\n")
-        self.write("\t\t\ti = temp.nodeLabel\n")
-        self.write("\t\t\tt = time\n")
-        self.write("\t\t\tT = temp.data\n")
-        self.write("\t\t\tx = pos.data[0]\n")
-        self.write("\t\t\ty = pos.data[1]\n")
-        self.write("\t\t\tz = pos.data[2]\n")
-        self.write("\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(Q_x) + ',' + str(Q_y) + ',' + str(Q_z) + '\\n')\n")
+        self.write("\t\t\tfor i in range(0,len(temperature.values)):\n")
+        self.write("\t\t\t\tpos = position.values[i]\n")
+        self.write("\t\t\t\ttemp = temperature.values[i]\n")
+        self.write("\t\t\t\tif temp.nodeLabel in active_nodes:\n")
+        self.write("\t\t\t\t\ti = temp.nodeLabel\n")
+        self.write("\t\t\t\t\tt = time\n")
+        self.write("\t\t\t\t\tT = temp.data\n")
+        self.write("\t\t\t\t\tx = pos.data[0]\n")
+        self.write("\t\t\t\t\ty = pos.data[1]\n")
+        self.write("\t\t\t\t\tz = pos.data[2]\n")
+        self.get_free_surface_distance()
+        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(Q_x) + ',' + str(Q_y) + ',' + str(Q_z) + ',,' + str(" + str(Q) + ") + ',' + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + type + '\\n')\n")
         self.write("dispFile.close()\n")
         
     def get_laser_position(self):
         self.write("#get laser position for frame\n")
-        self.write("\tlast_nodes_labels = active_nodes[-4::]\n")
-        self.write("\tlast_nodes_x = []\n")
-        self.write("\tlast_nodes_y = []\n")
-        self.write("\tlast_nodes_z = []\n")
-        self.write("\tfor j in reversed(range(0,len(position.values))):\n")
-        self.write("\t\tpos = position.values[j]\n")
-        self.write("\t\tif pos.nodeLabel in last_nodes_labels:\n")
-        self.write("\t\t\tx = pos.data[0]\n")
-        self.write("\t\t\ty = pos.data[1]\n")
-        self.write("\t\t\tz = pos.data[2]\n")
-        self.write("\t\t\tlast_nodes_x.append(x)\n")
-        self.write("\t\t\tlast_nodes_y.append(y)\n")
-        self.write("\t\t\tlast_nodes_z.append(z)\n")
-        self.write("\t\t\tif len(last_nodes_x) == 4:\n")
-        self.write("\t\t\t\tbreak\n")
-        self.write("\tif active_nodes != []:\n")
-        self.write("\t\tQ_z = max(last_nodes_z)\n")
-        self.write("\t\tQ_x = sum(last_nodes_x) / len(last_nodes_x)\n")
-        self.write("\t\tQ_y = sum(last_nodes_y) / len(last_nodes_y)\n")
+        self.write("\t\tlast_nodes_labels = active_nodes[-4::]\n")
+        self.write("\t\tlast_nodes_x = []\n")
+        self.write("\t\tlast_nodes_y = []\n")
+        self.write("\t\tlast_nodes_z = []\n")
+        self.write("\t\tfor j in reversed(range(0,len(position.values))):\n")
+        self.write("\t\t\tpos = position.values[j]\n")
+        self.write("\t\t\tif pos.nodeLabel in last_nodes_labels:\n")
+        self.write("\t\t\t\tx = pos.data[0]\n")
+        self.write("\t\t\t\ty = pos.data[1]\n")
+        self.write("\t\t\t\tz = pos.data[2]\n")
+        self.write("\t\t\t\tlast_nodes_x.append(x)\n")
+        self.write("\t\t\t\tlast_nodes_y.append(y)\n")
+        self.write("\t\t\t\tlast_nodes_z.append(z)\n")
+        self.write("\t\t\t\tif len(last_nodes_x) == 4:\n")
+        self.write("\t\t\t\t\tbreak\n")
+        self.write("\t\tif active_nodes != []:\n")
+        self.write("\t\t\tQ_z = max(last_nodes_z)\n")
+        self.write("\t\t\tQ_x = sum(last_nodes_x) / len(last_nodes_x)\n")
+        self.write("\t\t\tQ_y = sum(last_nodes_y) / len(last_nodes_y)\n")
         
     def get_active_elements(self):
         self.write("#find active elements for frame\n")
@@ -188,92 +214,6 @@ class Odb:
         
     def end_excel(self, workbook):
         workbook.close()
-
-
-#import os
-#clear = lambda: os.system('cls')
-#clear()
-#
-##importing modules
-#import abaqus
-#from abaqus import *
-#import abaqusConstants
-#from abaqusConstants import *
-#import odbAccess
-#from odbAccess import *
-#from statistics import mean 
-#
-#odb = openOdb('experiment1_thermal.odb')
-#
-#instance = odb.rootAssembly.instances['PART1']
-#add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
-#add_elements = add_set.elements[0]
-#
-#stepName = odb.steps.keys()[0]
-#
-#frames = odb.steps[stepName].frames
-#instance = odb.rootAssembly.instances['PART1']
-#add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
-#add_elements = add_set.elements[0]
-#
-##GET TEMPERATURE
-#base_depth = 0.02
-#dispFile = open('disp.txt','w')
-#dispFile.write('i,t,T,x,y,z\n')
-#stepName = odb.steps.keys()[0]
-#
-#frames = odb.steps[stepName].frames
-#for frame in frames:
-#	time = frame.frameValue
-#	if time > 2000:
-#		raise SystemExit(0)
-##find active elements for frame
-#	active = frame.fieldOutputs['EACTIVE'].values
-#	active_elements = []
-#	active_nodes = []
-#	for i in range(0,len(active)):
-#		if active[i].data == 1.0:
-#			active_elements.append(active[i].elementLabel)
-#			for element in add_elements:
-#				if element.label in active_elements:
-#					temp = element.connectivity
-#					for i in temp:
-#						if i not in active_nodes:
-#							active_nodes.append(i)
-#
-#	temperature = frame.fieldOutputs['NT11']
-#	position = frame.fieldOutputs['COORD']
-#    #find laser position
-#    last_nodes_labels = active_nodes[-4::]\n")
-#    last_nodes_x = []
-#    last_nodes_y = []
-#    last_nodes_z = []
-#    for j in reversed(range(0,len(position.values))):
-#        pos = position.values[j]
-#        if pos.nodeLabel in last_nodes_labels:
-#            x = pos.data[0]
-#			y = pos.data[1]
-#			z = pos.data[2]
-#            last_nodes_x.append(x)
-#            last_nodes_y.append(y)
-#            last_nodes_z.append(z)
-#            if len(las_nodes_x) == 4:
-#                break:
-#    Q_z = max(last_nodes_z)
-#    Q_x = sum(last_nodes_x) / len(last_nodes_x) 
-#    Q_y = sum(last_nodes_y) / len(last_nodes_y) 
-#	for i in range(0,len(temperature.values)):
-#		pos = position.values[i]
-#		temp = temperature.values[i]
-#		if temp.nodeLabel in active_nodes:
-#			i = temp.nodeLabel
-#			t = time
-#			T = temp.data
-#			x = pos.data[0]
-#			y = pos.data[1]
-#			z = pos.data[2]
-#			dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + '\n')
-#dispFile.close()
 
 
 

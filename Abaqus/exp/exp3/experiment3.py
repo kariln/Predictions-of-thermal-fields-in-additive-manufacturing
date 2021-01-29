@@ -27,7 +27,7 @@ deposition_path = Path('../Deposition_Patterns')
 sys.path.append(str(deposition_path.resolve()))
 
 from create_script import FEA_MODEL
-from odb import Odb
+
 
 """THERMAL MODEL"""
 scripted_part = FEA_MODEL('experiment_3.py')
@@ -45,7 +45,9 @@ part_name = 'part1'
 part1 = scripted_part.create_part(part_name, thermal, 'THREE_D','DEFORMABLE_BODY')
 base_depth = 0.02
 scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), base_depth)
-scripted_part.add_extrude(part1,(-0.06,-0.06),(0.06,0.06),0.0092,4)
+point1 = (-0.06,-0.06)
+point2 = (0.06,0.06)
+scripted_part.add_extrude(part1,point1,point2,0.0092,4)
 
 #PROPERTY
 scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], thermal)
@@ -71,7 +73,8 @@ scripted_part.set_field_output(thermal, ['NT','TEMP'])
 
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
-scripted_part.add_event_series(am_Model, 0.01,'zigzag',5000,10)
+Q = 5000
+scripted_part.add_event_series(am_Model, 0.01,'zigzag',Q,10)
 scripted_part.add_table_collections(am_Model,0.9)
 scripted_part.add_simulation_setup(am_Model)
 
@@ -86,7 +89,5 @@ process_odb = Odb('experiment1_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_add_elements(part_name)
-process_odb.get_frames()
-process_odb.get_temperature(base_depth, part_name)
+process_odb.get_temperature(base_depth, part_name,Q, point1, point2)
 
