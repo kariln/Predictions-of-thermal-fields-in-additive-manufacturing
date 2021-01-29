@@ -89,5 +89,5 @@ process_odb = Odb('experiment1_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_temperature(base_depth, part_name,Q, point1, point2)
+process_odb.get_temperature(base_depth, part_name,point1, point2)
 
