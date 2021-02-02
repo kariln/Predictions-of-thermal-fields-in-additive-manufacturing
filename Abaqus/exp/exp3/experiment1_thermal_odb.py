@@ -76,7 +76,6 @@ for frame in frames:
 							tmp_frame = frames[frame_index-k] #fetching the frame k numbers behind the current frame
 							tmp_temperature = tmp_frame.fieldOutputs['NT11']
 							tmp_temp = tmp_temperature.values[i]
-							print(str(temp.nodeLabel) + ',' +  str(tmp_temp.nodeLabel))
 							hist_temp.append(tmp_temp.data)
 					i = temp.nodeLabel
 					t = time

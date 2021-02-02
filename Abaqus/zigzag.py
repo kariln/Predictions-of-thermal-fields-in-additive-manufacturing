@@ -54,14 +54,15 @@ class Zigzag(pattern.Pattern):
               path.append([time,coord[0],coord[1],coord[2],0,0])
               coord[self.get_transverse_dir()] += self.get_road_width()
               time += up_time
+              P = P*0.995
           coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
           coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
           coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
           time += self.get_layer_break()
         return path
                 
-#def main():        
-#    zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000)
-#    zigzag.generate_heat_path()
-#    zigzag.generate_material_path()
-#main()
+def main():        
+    zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
+    zigzag.generate_heat_path()
+    zigzag.generate_material_path()
+main()
