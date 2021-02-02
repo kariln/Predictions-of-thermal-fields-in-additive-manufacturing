@@ -54,16 +54,16 @@ part1=thermal.Part(dimensionality =THREE_D , name= 'part1' , type = DEFORMABLE_B
 f, e = part1.faces, part1.edges #getting the edges and faces of the part
 
 #extrusion of base
-sketch_name = thermal.ConstrainedSketch(name='__profile__',sheetSize= 0.08000000000000002)
-sketch_name.rectangle(point1=(-0.1, -0.1),point2=((0.1, 0.1)))
+sketch_name = thermal.ConstrainedSketch(name='__profile__',sheetSize= 0.020000000000000004)
+sketch_name.rectangle(point1=(-0.05, -0.05),point2=((0.05, 0.05)))
 part1.BaseSolidExtrude(sketch=sketch_name,depth=0.02)
 e = part1.edges
 del thermal.sketches['__profile__']
 
 substrate_top_plane = f.findAt(((0.0, 0.0, 0.02),))[0]
-sketch_UpEdge = e.findAt(((0.0, 0.1, 0.02),))[0]
+sketch_UpEdge = e.findAt(((0.0, 0.05, 0.02),))[0]
 sketch_transform = part1.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.02))
-AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=0.08000000000000002,gridSpacing=0.14, transform=sketch_transform)
+AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=0.020000000000000004,gridSpacing=0.14, transform=sketch_transform)
 AM_sketch.rectangle(point1=(-0.04, -0.04),point2=(0.04, 0.04))
 part1.SolidExtrude(depth=0.0092,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
 del thermal.sketches['__profile__']
@@ -142,12 +142,12 @@ mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_pa
 #TABLE COLLECTIONS
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Material")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name='_parameterTable_"ABQ_AM.MaterialDeposition.Advanced"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Advanced"', parameterData=(('Full', 0.0, 0.0), ))
-mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.0030666666666666668,0.01,0.005, 'Below'), ))
+mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.0030666666666666668,0.05,0.025, 'Below'), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition"_', parameterTabletype='"ABQ_AM.MaterialDeposition"', parameterData=(('material_path', 'Bead'), ))
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Heat")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].PropertyTable(name='_propertyTable_"ABQ_AM.AbsorptionCoeff"_', propertyTableType='"ABQ_AM.AbsorptionCoeff"', propertyTableData=((0.9, ), ), numDependencies=0, temperatureDependency=OFF)
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource"_', parameterTabletype='"ABQ_AM.MovingHeatSource"', parameterData=(('heat_path', 'Goldak'), ))
-mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.005,0.0030666666666666668, 0.002, 0.004, 0.6, 1.4, 1), ))
+mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.025,0.0030666666666666668, 0.002, 0.004, 0.6, 1.4, 1), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Advanced"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Advanced"', parameterData=(('False', 'False', 'Relative', 0.0, 0.0, -1.0, 1.0), ))
 
 #SIMULATION SETUP
@@ -167,4 +167,104 @@ mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteracti
 mdb.customData.am.amModels["AM_thermal"].addCoolingInteractions(coolingInteractionName='Basement', useElementSet=ON, elementSetRegion=('basement', ), isConvectionActive=ON, isRadiationActive=ON, filmDefinition='Embedded Coefficient', filmCoefficient=167, filmcoefficeintamplitude='Instantaneous', sinkDefinition='Uniform', sinkTemperature=20, sinkAmplitude='Instantaneous', radiationType='toAmbient', emissivityDistribution='Uniform', emissivity=0.8, ambientTemperature=20, ambientTemperatureAmplitude='Instanteneous')
 mdb.Job(name='experiment4_thermal', model='thermal', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2, numDomains=2, numGPUs=0)
 mdb.jobs['experiment4_thermal'].submit(consistencyChecking=OFF)
-mdb.jobs['job' + str(j)].waitForCompletion()
+mdb.jobs['experiment4_thermal'].waitForCompletion()
+#importing modules
+import abaqus
+from abaqus import *
+import abaqusConstants
+from abaqusConstants import *
+import odbAccess
+from odbAccess import *
+
+odb = openOdb('experiment4_thermal.odb')
+
+instance = odb.rootAssembly.instances['PART1']
+add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
+add_elements = add_set.elements[0]
+
+stepName = odb.steps.keys()[0]
+
+frames = odb.steps[stepName].frames
+#GET TEMPERATURE
+base_depth = 0.02
+Q_z = base_depth
+point1 = (-0.04, -0.04)
+point2 = (0.04, 0.04)
+new_active_nodes = -1
+dispFile = open('disp.txt','w')
+stepName = odb.steps.keys()[0]
+
+frames = odb.steps[stepName].frames
+active_elements = []
+active_nodes = []
+active_time = []
+frame_index = -1
+for frame in frames:
+	frame_index += 1
+	time = frame.frameValue
+	if time > 2000:
+		raise SystemExit(0)
+#find active elements for frame
+	active = frame.fieldOutputs['EACTIVE'].values
+	for i in range(0,len(active)):
+		if active[i].data == 1.0 and active[i].elementLabel not in active_elements:
+			active_elements.append(active[i].elementLabel)
+			for element in add_elements:
+				if element.label == active[i].elementLabel:
+					temp = element.connectivity
+					for j in temp:
+						if j not in active_nodes:
+							active_time.append(time)
+							active_nodes.append(j)
+
+	#checking if deposition has ended
+	if new_active_nodes == len(active_nodes):
+		pass
+	else:
+		new_active_nodes = len(active_nodes)
+		temperature = frame.fieldOutputs['NT11']
+		position = frame.fieldOutputs['COORD']
+		#get top of part
+		for j in range(0,len(position.values)):
+			pos = position.values[j]
+			if pos.data[2] > Q_z:
+				Q_z = pos.data[2]
+		if active_nodes != []:
+			for i in range(0,len(temperature.values)):
+				pos = position.values[i]
+				temp = temperature.values[i]
+				if temp.nodeLabel in active_nodes:
+					hist_temp = [] #to store historical temperature values
+					for k in range(1,6):
+						if frame_index-k <1:
+							hist_temp.append(None)
+						else:
+							tmp_frame = frames[frame_index-k] #fetching the frame k numbers behind the current frame
+							tmp_temperature = tmp_frame.fieldOutputs['NT11']
+							tmp_temp = tmp_temperature.values[i]
+							print(temp.nodeLabel + tmp_temp.nodeLabel)
+							hist_temp.append(tmp_temp.data)
+					i = temp.nodeLabel
+					t = time
+					t_i = active_time[active_nodes.index(temp.nodeLabel)]
+					T = temp.data
+					x = pos.data[0]
+					y = pos.data[1]
+					z = pos.data[2]
+					d_top = abs(Q_z-z)
+					d_bottom = abs(z-base_depth)
+					d_x1 = abs(point1[0]-x)
+					d_x2 = abs(point2[0]-x)
+					d_y1 = abs(point1[1]-y)
+					d_y2 = abs(point2[1]-y)
+					distances = [round(d_top,6),round(d_bottom,6),round(d_x1,6),round(d_x2,6),round(d_y1,6),round(d_y2,6)]
+					tmp = distances.count(0)
+					if tmp == 0:
+						category='mid'
+					elif tmp == 1:
+						category='side'
+					else:
+						category='corner'
+
+					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',' + str(raster) +'\n')
+dispFile.close()

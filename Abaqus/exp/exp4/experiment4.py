@@ -37,7 +37,7 @@ models.update({thermal.get_model_name():thermal})
 part_name = 'part1'
 part1 = scripted_part.create_part(part_name, thermal, 'THREE_D','DEFORMABLE_BODY')
 base_depth = 0.02
-scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), base_depth)
+scripted_part.baseExtrude(part1, (-0.05,-0.05), (0.05,0.05), base_depth)
 point1 = (-0.04,-0.04)
 point2 = (0.04,0.04)
 scripted_part.add_extrude(part1,point1,point2,0.0092,3)
@@ -67,7 +67,8 @@ scripted_part.set_field_output(thermal, ['NT','TEMP'])
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
 Q = 5000
-scripted_part.add_event_series(am_Model, 0.01,'raster',Q,10)
+deposition_pattern = 'raster'
+scripted_part.add_event_series(am_Model, 0.05,deposition_pattern,Q,10)
 scripted_part.add_table_collections(am_Model,0.9)
 scripted_part.add_simulation_setup(am_Model)
 
@@ -82,4 +83,4 @@ process_odb = Odb('experiment4_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_temperature(base_depth, part_name,point1, point2)
+process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern)

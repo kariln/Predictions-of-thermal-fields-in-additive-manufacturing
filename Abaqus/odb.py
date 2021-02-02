@@ -129,7 +129,7 @@ class Odb:
         self.seperate_sec()
        
 #Implement for after deposition as well? CHeck if historical variables are correct. Maybe all frames should be included?
-    def get_temperature(self,base_depth, part_name,point1,point2):
+    def get_temperature(self,base_depth, part_name,point1,point2,deposition_pattern):
         self.get_add_elements(part_name)
         self.get_frames()
         self.write('#GET TEMPERATURE\n')
@@ -177,7 +177,7 @@ class Odb:
         self.write("\t\t\t\t\ty = pos.data[1]\n")
         self.write("\t\t\t\t\tz = pos.data[2]\n")
         self.get_free_surface_distance()
-        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) +'\\n')\n")
+        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',' + str(" + deposition_pattern + ") +'\\n')\n")
         self.write("dispFile.close()\n")
 
     def get_active_elements(self):
