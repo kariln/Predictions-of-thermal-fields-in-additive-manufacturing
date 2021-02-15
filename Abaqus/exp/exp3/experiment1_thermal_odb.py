@@ -26,6 +26,7 @@ point1 = (-0.06, -0.06)
 point2 = (0.06, 0.06)
 new_active_nodes = -1
 dispFile = open('disp.txt','w')
+dispFile.write('#i,t,T,x,y,z,Q_x,Q_y,Q_z,d_Q_x,d_Q_y,d_Q_z,t_i,euclidean_d_Q,Q,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5, pattern,v\n')
 stepName = odb.steps.keys()[0]
 
 frames = odb.steps[stepName].frames
@@ -76,6 +77,7 @@ for frame in frames:
 							tmp_frame = frames[frame_index-k] #fetching the frame k numbers behind the current frame
 							tmp_temperature = tmp_frame.fieldOutputs['NT11']
 							tmp_temp = tmp_temperature.values[i]
+							print(temp.nodeLabel + tmp_temp.nodeLabel)
 							hist_temp.append(tmp_temp.data)
 					i = temp.nodeLabel
 					t = time
@@ -99,5 +101,3 @@ for frame in frames:
 					else:
 						category='corner'
 
-					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) +'\n')
-dispFile.close()

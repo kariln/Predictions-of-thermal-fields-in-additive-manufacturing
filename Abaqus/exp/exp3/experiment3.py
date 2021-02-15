@@ -27,6 +27,7 @@ deposition_path = Path('../Deposition_Patterns')
 sys.path.append(str(deposition_path.resolve()))
 
 from create_script import FEA_MODEL
+from odb import Odb
 
 
 """THERMAL MODEL"""
@@ -74,7 +75,8 @@ scripted_part.set_field_output(thermal, ['NT','TEMP'])
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
 Q = 5000
-scripted_part.add_event_series(am_Model, 0.01,'zigzag',Q,10)
+deposition_pattern = 'zigzag'
+scripted_part.add_event_series(am_Model, 0.01,deposition_pattern,Q,10)
 scripted_part.add_table_collections(am_Model,0.9)
 scripted_part.add_simulation_setup(am_Model)
 
@@ -89,5 +91,5 @@ process_odb = Odb('experiment1_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_temperature(base_depth, part_name,point1, point2)
+process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern)
 
