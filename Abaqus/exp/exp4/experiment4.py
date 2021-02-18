@@ -37,10 +37,14 @@ models.update({thermal.get_model_name():thermal})
 part_name = 'part1'
 part1 = scripted_part.create_part(part_name, thermal, 'THREE_D','DEFORMABLE_BODY')
 base_depth = 0.02
-scripted_part.baseExtrude(part1, (-0.05,-0.05), (0.05,0.05), base_depth)
+base_point1 = (-0.05,-0.05)
+base_point2 = (0.05,0.05)
+scripted_part.baseExtrude(part1,base_point1 ,base_point2, base_depth)
 point1 = (-0.04,-0.04)
 point2 = (0.04,0.04)
-scripted_part.add_extrude(part1,point1,point2,0.0092,3)
+add_depth = 0.009
+nr_layer = 3
+scripted_part.add_extrude(part1,point1,point2,add_depth,nr_layer)
 
 #PROPERTY
 scripted_part.assign_material('AA2319',[['Conductivity', 'ON'],['Density', 'OFF'],['Elastic', 'ON'],['Expansion','ON'],['LatentHeat', None],['Plastic','ON'],['SpecificHeat', 'ON']], thermal)
@@ -50,26 +54,36 @@ scripted_part.assign_section('AA2319',part1,'Part_Section')
 scripted_part.create_instance(part1)
 
 #STEP
-scripted_part.create_heat_step('heat','Initial',1000,0.01,1E-8,1,1000, 10000,thermal)
+timePeriod = 1000
+initialInc = 0.01
+minInc = 1E-8
+maxInc = 1
+deltmx = 1000
+maxNumInc = 10000
+scripted_part.create_heat_step('heat','Initial',timePeriod,initialInc,minInc,maxInc,deltmx, maxNumInc,thermal)
 
 #MESH
-scripted_part.create_mesh(part1,0.005)
+road_width = 0.005
+scripted_part.create_mesh(part1,road_width)
 
 #LOAD
 scripted_part.create_node_BC(part1)
 
 #PREDEFINED FIELD
-scripted_part.set_room_temp(part1, 20)
+room_temp = 20
+scripted_part.set_room_temp(part1, room_temp)
 
 #FIELD OUTPUT
-scripted_part.set_field_output(thermal, ['NT','TEMP'])
+scripted_part.set_field_output(thermal, ['NT','TEMP','COORD','EACTIVE'])
 
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
 Q = 5000
 deposition_pattern = 'raster'
-scripted_part.add_event_series(am_Model, 0.05,deposition_pattern,Q,10)
-scripted_part.add_table_collections(am_Model,0.9)
+layer_break = 10
+absorption_coefficient = 0.9
+scripted_part.add_event_series(am_Model, road_width,deposition_pattern,Q,layer_break)
+scripted_part.add_table_collections(am_Model,absorption_coefficient)
 scripted_part.add_simulation_setup(am_Model)
 
 #JOB
