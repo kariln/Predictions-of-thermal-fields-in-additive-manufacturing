@@ -40,7 +40,7 @@ class Pattern:
   
   def generate_heat_path(self):
       path = self.get_path()
-      
+      print(path)
       #creating text files for heat and material path
       heat_path = open("heat_path.txt","w+")
       heat_path.truncate(0)  
@@ -57,10 +57,13 @@ class Pattern:
       for elem in path:
           material_path.write(self.coord_string(elem[0], elem[1], elem[2], elem[3], elem[5]))
 
-      
+
     
   def get_length(self):
       return self.length
+  
+  def set_length(self,x_length,y_length,z_length):
+      self.length = [x_length,y_length,z_length]
 
   def get_z_length(self):
       return self.get_length()[2]

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 15 18:49:06 2021
+Created on Thu Feb 18 14:56:33 2021
 
-@author: Kari Ness
+@author: kariln
 """
+
 
 import pattern
 
-#In-Out deposition pattern
-class In_Out(pattern.Pattern):
+#Out-In deposition pattern
+class Out_In(pattern.Pattern):
     def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break):
         super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break)
 
@@ -31,13 +32,13 @@ class In_Out(pattern.Pattern):
     def get_coord(self):
         coord = [self.get_corner_coord()[0],self.get_corner_coord()[1],self.get_corner_coord()[2]]
         return coord
-
+#NOT WORKING
     def get_path(self):
+        thickness = self.get_thickness() 
         #setting the start coordinate of the inout
-        coord = self.get_print_coord()
+        coord = [0,0,thickness]
         
         #initial conditions:
-        start = self.get_print_coord()
         P = self.get_power()
         A = self.get_area()
         time = 0
@@ -48,25 +49,23 @@ class In_Out(pattern.Pattern):
         road_width = self.get_road_width()
         rounds = self.get_rounds()
         
-        length = self.get_length()
+        length = [0,0,0]
         
         for i in range(0,int(layers)):
             for j in range(0,int(rounds)):
                 path.append([time,coord[0],coord[1], coord[2], P,A])
                 if j == 0:
-                    length[self.get_deposition_dir()] -=self.get_road_width()/2
+                    length[self.get_deposition_dir()] += road_width/2
                 else:
-                    length[self.get_deposition_dir()] -=self.get_road_width()
-                coord[self.get_deposition_dir()] += direction*(self.get_length()[self.get_deposition_dir()])
+                    length[self.get_deposition_dir()] +=road_width
+                coord[self.get_deposition_dir()] += direction*(length[self.get_deposition_dir()])
                 self.set_axis(self.get_transverse_dir(),self.get_deposition_dir(),self.get_stack_dir())
                 pass_time = self.pass_time()
                 time += pass_time
                 if j != 0 and j%2 != 0:
                     direction = direction*(-1)
             P = P*0.995
-            coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
-            coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
-            coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
+            coord=[0,0,thickness*i]
             time += self.get_layer_break()
         return path
 
@@ -81,13 +80,13 @@ class In_Out(pattern.Pattern):
         self.length = [x_length,y_length, self.get_length()[2]]
 
 def main():        
-    inout = In_Out(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
-    path_list = inout.get_path()
+    outin = Out_In(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
+    path_list = outin.get_path()
     print(path_list)
     import matplotlib.pyplot as plt
     x = []
     y = []
-    z = 0.03
+    z = outin.get_thickness()
     for elem in path_list:
         if z != elem[3]:
             break
@@ -99,7 +98,6 @@ def main():
     plt.ylim(-0.03,0.03)
     print(x)
     print(y)
-    inout.generate_heat_path()
-    inout.generate_material_path()
+    outin.generate_heat_path()
+    outin.generate_material_path()
 main()
-    
