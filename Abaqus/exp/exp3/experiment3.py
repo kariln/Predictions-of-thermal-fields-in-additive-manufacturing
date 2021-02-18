@@ -61,7 +61,8 @@ scripted_part.create_instance(part1)
 scripted_part.create_heat_step('heat','Initial',4000,0.01,1E-8,1,1000, 10000,thermal)
 
 #MESH
-scripted_part.create_mesh(part1,0.005)
+road_width = 0.005
+scripted_part.create_mesh(part1,road_width)
 
 #LOAD
 scripted_part.create_node_BC(part1)
@@ -91,5 +92,5 @@ process_odb = Odb('experiment1_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern)
+process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern,road_width)
 
