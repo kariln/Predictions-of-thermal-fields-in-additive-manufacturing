@@ -32,7 +32,7 @@ class Out_In(pattern.Pattern):
     def get_coord(self):
         coord = [self.get_corner_coord()[0],self.get_corner_coord()[1],self.get_corner_coord()[2]]
         return coord
-#NOT WORKING
+
     def get_path(self):
         thickness = self.get_thickness() 
         #setting the start coordinate of the inout
@@ -70,11 +70,6 @@ class Out_In(pattern.Pattern):
         return path
 
     
-    def up_time(self):
-        return (self.get_road_width()/(self.get_velocity()))/10
-    
-    def pass_time(self):
-        return self.get_length()[self.get_deposition_dir()]/self.get_velocity()
     
     def set_length(self,x_length,y_length):
         self.length = [x_length,y_length, self.get_length()[2]]

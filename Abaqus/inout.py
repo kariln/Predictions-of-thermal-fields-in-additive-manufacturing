@@ -54,9 +54,9 @@ class In_Out(pattern.Pattern):
             for j in range(0,int(rounds)):
                 path.append([time,coord[0],coord[1], coord[2], P,A])
                 if j == 0:
-                    length[self.get_deposition_dir()] -=self.get_road_width()/2
+                    length[self.get_deposition_dir()] -=road_width/2
                 else:
-                    length[self.get_deposition_dir()] -=self.get_road_width()
+                    length[self.get_deposition_dir()] -=road_width
                 coord[self.get_deposition_dir()] += direction*(self.get_length()[self.get_deposition_dir()])
                 self.set_axis(self.get_transverse_dir(),self.get_deposition_dir(),self.get_stack_dir())
                 pass_time = self.pass_time()
@@ -68,14 +68,10 @@ class In_Out(pattern.Pattern):
             coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
             coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
             time += self.get_layer_break()
+
         return path
 
-    
-    def up_time(self):
-        return (self.get_road_width()/(self.get_velocity()))/10
-    
-    def pass_time(self):
-        return self.get_length()[self.get_deposition_dir()]/self.get_velocity()
+
     
     def set_length(self,x_length,y_length):
         self.length = [x_length,y_length, self.get_length()[2]]
@@ -84,6 +80,7 @@ def main():
     inout = In_Out(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
     path_list = inout.get_path()
     print(path_list)
+    #print(path_list)
     import matplotlib.pyplot as plt
     x = []
     y = []
