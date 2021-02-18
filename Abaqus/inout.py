@@ -26,6 +26,10 @@ class In_Out(pattern.Pattern):
         coord[self.get_transverse_dir()] += self.get_road_width()/2
         coord[self.get_stack_dir()] += self.get_thickness()
         return coord
+    
+    def get_coord(self):
+        coord = [self.get_corner_coord()[0],self.get_corner_coord()[1],self.get_corner_coord()[2]]
+        return coord
 #NOT WORKING
     def get_path(self):
         #setting the start coordinate of the inout
@@ -40,23 +44,34 @@ class In_Out(pattern.Pattern):
         path = []
         
         layers = self.get_layer_nr()
-        
+        road_width = self.get_road_width()
         rounds = self.get_rounds()
         
         for i in range(0,int(layers)):
-            for j in range(0,int(rounds)):
+            j = 0
+            while abs(self.get_coord()[0]) > road_width/2 and abs(self.get_coord()[1]) > road_width/2:
                 path.append([time,coord[0],coord[1], coord[2], P,A])
-                coord[self.get_deposition_dir()] += direction*(self.get_length()[self.get_deposition_dir()]-self.get_road_width())
+                coord[self.get_deposition_dir()] += direction*(self.get_length()[self.get_deposition_dir()]-self.get_road_width()/2)
                 self.set_axis(self.get_transverse_dir(),self.get_deposition_dir(),self.get_stack_dir())
                 pass_time = self.pass_time()
                 time += pass_time
                 if j != 0 and j%2 == 0:
                     direction = direction*(-1)
+        # for i in range(0,int(layers)):
+        #     for j in range(0,int(rounds)):
+        #         path.append([time,coord[0],coord[1], coord[2], P,A])
+        #         coord[self.get_deposition_dir()] += direction*(self.get_length()[self.get_deposition_dir()]-self.get_road_width())
+        #         self.set_axis(self.get_transverse_dir(),self.get_deposition_dir(),self.get_stack_dir())
+        #         pass_time = self.pass_time()
+        #         time += pass_time
+        #         if j != 0 and j%2 == 0:
+        #             direction = direction*(-1)
             P = P*0.995
             coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
             coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
             coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
             time += self.get_layer_break()
+            j += 1
         return path
 
     
