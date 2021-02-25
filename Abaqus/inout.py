@@ -13,7 +13,7 @@ class In_Out(pattern.Pattern):
         super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break)
 
     def pass_time(self):
-        return self.get_length()[self.get_deposition_dir()]/self.get_velocity()
+        return abs(self.get_length()[self.get_deposition_dir()])/self.get_velocity()
 
     def get_rounds(self):
         lengths = self.get_length()
@@ -60,6 +60,7 @@ class In_Out(pattern.Pattern):
                 coord[self.get_deposition_dir()] += direction*(self.get_length()[self.get_deposition_dir()])
                 self.set_axis(self.get_transverse_dir(),self.get_deposition_dir(),self.get_stack_dir())
                 pass_time = self.pass_time()
+                print(pass_time)
                 time += pass_time
                 if j != 0 and j%2 != 0:
                     direction = direction*(-1)
@@ -77,10 +78,18 @@ class In_Out(pattern.Pattern):
         self.length = [x_length,y_length, self.get_length()[2]]
 
 def main():        
-    inout = In_Out(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
+    inout = In_Out(0.08, 0.009, 0.08, 0.08, -0.04, -0.04, 0.02, 0.005,5000,10)
     path_list = inout.get_path()
-    print(path_list)
-    #print(path_list)
+    heat_path = open("heat_path.txt","w+")
+    heat_path.truncate(0)  
+    for elem in path_list:
+          heat_path.write(inout.coord_string(elem[0], elem[1], elem[2], elem[3], elem[4]))
+          
+    material_path = open("material_path.txt","w+")
+    material_path.truncate(0)  
+
+    for elem in path_list:
+        material_path.write(inout.coord_string(elem[0], elem[1], elem[2], elem[3], elem[5]))
     import matplotlib.pyplot as plt
     x = []
     y = []
@@ -94,9 +103,6 @@ def main():
     plt.plot(x,y)
     plt.xlim(-0.03,0.03)
     plt.ylim(-0.03,0.03)
-    print(x)
-    print(y)
-    inout.generate_heat_path()
-    inout.generate_material_path()
+
 main()
     

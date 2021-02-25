@@ -50,6 +50,7 @@ class Pattern:
           
   def generate_material_path(self):
       path = self.get_path()
+      print(path)
       #creating text files for heat and material path
       material_path = open("material_path.txt","w+")
       material_path.truncate(0)  

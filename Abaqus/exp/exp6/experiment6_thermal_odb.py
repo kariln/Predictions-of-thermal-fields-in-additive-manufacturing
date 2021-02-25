@@ -10,7 +10,7 @@ from abaqusConstants import *
 import odbAccess
 from odbAccess import *
 
-odb = openOdb('experiment4_thermal.odb')
+odb = openOdb('experiment5_thermal.odb')
 
 instance = odb.rootAssembly.instances['PART1']
 add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
@@ -101,5 +101,5 @@ for frame in frames:
 					else:
 						category='corner'
 
-					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',raster,,,,,,0.005\n')
+					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',' + str(inout) + ',,,,,,'+ str(road_width) +'\n')
 dispFile.close()

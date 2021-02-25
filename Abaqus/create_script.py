@@ -30,6 +30,7 @@ from mesh import Mesh
 from sets import Set
 from zigzag import Zigzag
 from raster import Raster
+from inout import In_Out
 from job import Job
 import pathlib
 from amModel import AM
@@ -304,6 +305,9 @@ class FEA_MODEL:
         elif deposition_pattern.lower() == 'zigzag':
             #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
             dp_object = Zigzag(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
+        elif deposition_pattern.lower() == 'inout':
+            #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
+            dp_object = In_Out(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
         else: 
             raise NotImplementedError('This deposition pattern is not implemented');
             

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb  2 17:15:39 2021
+Created on Thu Feb 25 09:56:38 2021
 
 @author: kariln
 """
-
 
 import sys
 from pathlib import Path
@@ -23,7 +22,7 @@ from odb import Odb
 
 
 """THERMAL MODEL"""
-scripted_part = FEA_MODEL('experiment_4.py')
+scripted_part = FEA_MODEL('experiment_6.py')
 scripted_part.clear_variables()
 scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy','os'])
 scripted_part.include_paths([])
@@ -43,7 +42,7 @@ scripted_part.baseExtrude(part1,base_point1 ,base_point2, base_depth)
 point1 = (-0.04,-0.04)
 point2 = (0.04,0.04)
 add_depth = 0.009
-nr_layer = 3
+nr_layer = 2
 scripted_part.add_extrude(part1,point1,point2,add_depth,nr_layer)
 
 #PROPERTY
@@ -87,13 +86,13 @@ scripted_part.add_table_collections(am_Model,absorption_coefficient)
 scripted_part.add_simulation_setup(am_Model)
 
 #JOB
-scripted_part.create_job(thermal, 'experiment4_thermal')
-scripted_part.submit_job('experiment4_thermal')
+scripted_part.create_job(thermal, 'experiment5_thermal')
+scripted_part.submit_job('experiment5_thermal')
 
 """ MECHANICICAL MODEL"""
 
 """ ODB """
-process_odb = Odb('experiment4_thermal',scripted_part, part1)
+process_odb = Odb('experiment5_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()

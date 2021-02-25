@@ -10,7 +10,7 @@ from abaqusConstants import *
 import odbAccess
 from odbAccess import *
 
-odb = openOdb('experiment4_thermal.odb')
+odb = openOdb('experiment5_thermal.odb')
 
 instance = odb.rootAssembly.instances['PART1']
 add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
