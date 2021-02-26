@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Sep 27 20:50:49 2020
+Created on Fri Feb 26 10:30:43 2021
 
-@author: Kari Ness
+@author: kariln
 """
+
 import pattern
 
 #Zig-Zag deposition pattern
@@ -54,15 +55,30 @@ class Zigzag(pattern.Pattern):
               path.append([time,coord[0],coord[1],coord[2],0,0])
               coord[self.get_transverse_dir()] += self.get_road_width()
               time += up_time
-              P = P*0.995
+              P = 0.95*P
           coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
           coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
           coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
           time += self.get_layer_break()
         return path
-                
+
+
 def main():        
     zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
     zigzag.generate_heat_path()
     zigzag.generate_material_path()
+    path_list = zigzag.get_path()
+    import matplotlib.pyplot as plt
+    x = []
+    y = []
+    z = 0.03
+    for elem in path_list:
+        if z != elem[3]:
+            break
+        x.append(elem[1])
+        y.append(elem[2])
+        
+    plt.plot(x,y)
+    plt.xlim(-0.03,0.03)
+    plt.ylim(-0.03,0.03)
 main()
