@@ -24,7 +24,7 @@ from odb import Odb
 """THERMAL MODEL"""
 scripted_part = FEA_MODEL('experiment_5.py')
 scripted_part.clear_variables()
-scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy','os'])
+scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy'])
 scripted_part.include_paths([])
 models = {}
 

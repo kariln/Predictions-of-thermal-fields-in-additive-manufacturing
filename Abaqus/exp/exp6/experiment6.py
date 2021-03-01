@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 25 09:56:38 2021
+Created on Fri Feb 19 17:56:49 2021
 
 @author: kariln
 """
@@ -22,9 +22,9 @@ from odb import Odb
 
 
 """THERMAL MODEL"""
-scripted_part = FEA_MODEL('experiment_6.py')
+scripted_part = FEA_MODEL('experiment_5.py')
 scripted_part.clear_variables()
-scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy','os'])
+scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy'])
 scripted_part.include_paths([])
 models = {}
 
@@ -41,8 +41,8 @@ base_point2 = (0.05,0.05)
 scripted_part.baseExtrude(part1,base_point1 ,base_point2, base_depth)
 point1 = (-0.04,-0.04)
 point2 = (0.04,0.04)
-add_depth = 0.009
-nr_layer = 2
+add_depth = 0.003
+nr_layer = 1
 scripted_part.add_extrude(part1,point1,point2,add_depth,nr_layer)
 
 #PROPERTY
@@ -78,7 +78,7 @@ scripted_part.set_field_output(thermal, ['NT','TEMP','COORD','EACTIVE'])
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
 Q = 5000
-deposition_pattern = 'raster'
+deposition_pattern = 'zigzag'
 layer_break = 10
 absorption_coefficient = 0.9
 scripted_part.add_event_series(am_Model, road_width,deposition_pattern,Q,layer_break)

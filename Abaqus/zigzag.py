@@ -55,11 +55,12 @@ class Zigzag(pattern.Pattern):
               path.append([time,coord[0],coord[1],coord[2],0,0])
               coord[self.get_transverse_dir()] += self.get_road_width()
               time += up_time
-              P = 0.95*P
+              
           coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
           coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
           coord[self.get_stack_dir()] = self.get_thickness() + coord[self.get_stack_dir()]
           time += self.get_layer_break()
+          P = 0.9*P
         return path
 
 
