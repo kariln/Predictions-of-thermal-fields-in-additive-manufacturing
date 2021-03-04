@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Feb 27 13:23:00 2021
+Created on Mon Mar  1 13:10:34 2021
 
 @author: kariln
 """
@@ -42,8 +42,8 @@ base_point2 = (0.05,0.05)
 scripted_part.baseExtrude(part1,base_point1 ,base_point2, base_depth)
 point1 = (-0.04,-0.04)
 point2 = (0.04,0.04)
-add_depth = 0.003
-nr_layer = 1
+add_depth = 0.009
+nr_layer = 3
 scripted_part.add_extrude(part1,point1,point2,add_depth,nr_layer)
 
 #PROPERTY
@@ -78,7 +78,7 @@ scripted_part.set_field_output(thermal, ['NT','TEMP','COORD','EACTIVE'])
 
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
-Q = 4000
+Q = 3000
 deposition_pattern = 'raster'
 layer_break = 10
 absorption_coefficient = 0.9

@@ -38,7 +38,7 @@ class Raster(zigzag.Zigzag):
               coord[self.get_transverse_dir()] += self.get_road_width()
               coord[self.get_deposition_dir()] -= self.get_length()[self.get_deposition_dir()]
               time += up_time
-              P = P*0.995
+              #P = P*0.995
           coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
           coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
           coord[self.get_stack_dir()] += self.get_thickness()

@@ -63,17 +63,17 @@ sketch_UpEdge = e.findAt(((0.0, 0.05, 0.02),))[0]
 sketch_transform = part1.MakeSketchTransform(sketchPlane = substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,origin=(0.0,0.0,0.02))
 AM_sketch = thermal.ConstrainedSketch(name = '__profile__',sheetSize=0.020000000000000004,gridSpacing=0.14, transform=sketch_transform)
 AM_sketch.rectangle(point1=(-0.04, -0.04),point2=(0.04, 0.04))
-part1.SolidExtrude(depth=0.003,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
+part1.SolidExtrude(depth=0.009,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
 del thermal.sketches['__profile__']
 #partition AM into layers
-nr_layers = 1
+nr_layers = 3
 plane_offset = 0.02
 for i in range(0,nr_layers):
 	datum_id = part1.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id
 	plane = part1.datums[datum_id]
-	plane_offset += 0.003
+	plane_offset += 0.0029999999999999996
 	part1_cells = part1.cells
-	top_cell = part1_cells.findAt(((0.,0.,0.023),))
+	top_cell = part1_cells.findAt(((0.,0.,0.028999999999999998),))
 	part1.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)
 
 #PROPERTY
@@ -134,24 +134,24 @@ a.regenerate()
 mdb.customData.am.amModels["AM_thermal"].assignAMPart(amPartsData=(("part1", "Build Part"), ("", ""), ("", ""), ("", ""), ("", "")))
 
 #EVENT SERIES
-mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp7\material_path.txt", isFile=ON)
-mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp7\heat_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="material_path", eventSeriesTypeName='"ABQ_AM.MaterialDeposition"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp8\material_path.txt", isFile=ON)
+mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_path", eventSeriesTypeName='"ABQ_AM.PowerMagnitude"', timeSpan="TOTAL TIME", fileName="C:\Users\kariln\Documents\GitHub\Master\Abaqus\exp\exp8\heat_path.txt", isFile=ON)
 
 #TABLE COLLECTIONS
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Material")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name='_parameterTable_"ABQ_AM.MaterialDeposition.Advanced"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Advanced"', parameterData=(('Full', 0.0, 0.0), ))
-mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.003,0.005,0.0025, 'Below'), ))
+mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.0029999999999999996,0.005,0.0025, 'Below'), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition"_', parameterTabletype='"ABQ_AM.MaterialDeposition"', parameterData=(('material_path', 'Bead'), ))
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Heat")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].PropertyTable(name='_propertyTable_"ABQ_AM.AbsorptionCoeff"_', propertyTableType='"ABQ_AM.AbsorptionCoeff"', propertyTableData=((0.9, ), ), numDependencies=0, temperatureDependency=OFF)
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource"_', parameterTabletype='"ABQ_AM.MovingHeatSource"', parameterData=(('heat_path', 'Goldak'), ))
-mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.0025,0.003, 0.002, 0.004, 0.6, 1.4, 1), ))
+mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.0025,0.0029999999999999996, 0.002, 0.004, 0.6, 1.4, 1), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Advanced"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Advanced"', parameterData=(('False', 'False', 'Relative', 0.0, 0.0, -1.0, 1.0), ))
 
 #SIMULATION SETUP
 a = thermal.rootAssembly
 e = a.instances['part1'].elements
-add_elements = e.getByBoundingBox(-0.04,-0.04,0.01875,0.04,0.04,0.02425)
+add_elements = e.getByBoundingBox(-0.04,-0.04,0.01875,0.04,0.04,0.03025)
 a.Set(elements=add_elements, name="add_element")
 f = a.instances["part1"].faces
 basement_face = f.findAt(((0.0,0.0,0.0) ,))

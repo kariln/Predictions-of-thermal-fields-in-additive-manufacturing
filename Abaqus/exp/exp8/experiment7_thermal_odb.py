@@ -1,3 +1,7 @@
+import os
+clear = lambda: os.system('cls')
+clear()
+clear()
 
 #importing modules
 import abaqus
