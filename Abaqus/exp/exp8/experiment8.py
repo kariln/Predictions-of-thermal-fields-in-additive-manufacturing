@@ -87,13 +87,13 @@ scripted_part.add_table_collections(am_Model,absorption_coefficient)
 scripted_part.add_simulation_setup(am_Model)
 
 #JOB
-scripted_part.create_job(thermal, 'experiment7_thermal')
+scripted_part.create_job(thermal, 'experiment8_thermal')
 scripted_part.submit_job('experiment7_thermal')
 
 """ MECHANICICAL MODEL"""
 
 """ ODB """
-process_odb = Odb('experiment7_thermal',scripted_part, part1)
+process_odb = Odb('experiment8_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
