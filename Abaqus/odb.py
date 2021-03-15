@@ -139,7 +139,7 @@ class Odb:
         self.write('point2 = ' + str(point2) + '\n')
         self.write('new_active_nodes = -1\n')
         self.write("dispFile = open('disp.txt','w')\n")
-        self.write("dispFile.write('#i,t,T,x,y,z,Q_x,Q_y,Q_z,d_Q_x,d_Q_y,d_Q_z,t_i,euclidean_d_Q,Q,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5, pattern,dT_1,dT_2,dT_3,dT_4,road_width\\n')\n")
+        self.write("dispFile.write('#i,t,T,x,y,z,Q_x,Q_y,Q_z,d_Q_x,d_Q_y,d_Q_z,t_i,euclidean_d_Q,Q,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5, pattern,dT_12,dT_23,dT_34,dT_45,road_width\\n')\n")
         self.get_frames()
         self.write("active_elements = []\n")
         self.write("active_nodes = []\n")
