@@ -4,12 +4,11 @@ Created on Thu Sep 24 21:39:34 2020
 
 @author: Kari Ness
 """
-
 import zigzag
 
 class Raster(zigzag.Zigzag):
     
-    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break):
+    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break):
         super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break)
         
     
@@ -39,10 +38,14 @@ class Raster(zigzag.Zigzag):
               coord[self.get_transverse_dir()] += self.get_road_width()
               coord[self.get_deposition_dir()] -= self.get_length()[self.get_deposition_dir()]
               time += up_time
-              P = P*0.995
+              #P = P*0.995
           coord[self.get_deposition_dir()] = start[self.get_deposition_dir()]
           coord[self.get_transverse_dir()] = start[self.get_transverse_dir()]
           coord[self.get_stack_dir()] += self.get_thickness()
-          time += self.get_layer_break()
         return path
                 
+#def main():        
+#    raster = Raster(0.012, 0.002, 0.06, 0.06, -0.03, -0.03, 0.02, 0.002,500)
+#    raster.generate_heat_path()
+#    raster.generate_material_path()
+#main()

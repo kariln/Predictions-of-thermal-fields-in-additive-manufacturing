@@ -65,7 +65,8 @@ class Odb:
         #deleting all variables in Abaqus
         self.write("import os\n")
         self.write("clear = lambda: os.system('cls')\n")
-        self.write("clear()\n")       
+        self.write("clear()\n")      
+        self.write("clear()\n")    
         self.seperate_sec()
         
     def open_odb(self):

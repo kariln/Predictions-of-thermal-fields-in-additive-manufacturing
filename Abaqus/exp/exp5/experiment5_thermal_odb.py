@@ -1,8 +1,5 @@
-import os
-clear = lambda: os.system('cls')
-clear()
-
 #importing modules
+mdb.jobs['experiment5_thermal'].waitForCompletion()
 import abaqus
 from abaqus import *
 import abaqusConstants

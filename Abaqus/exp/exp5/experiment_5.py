@@ -37,8 +37,6 @@ import amConstants
 from amConstants import *
 import copy
 from copy import *
-import os
-from os import *
 session.journalOptions.setValues(replayGeometry=COORDINATE,recoverGeometry=COORDINATE)
 
 #Include paths
