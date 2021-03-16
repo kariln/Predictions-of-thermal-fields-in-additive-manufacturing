@@ -1,0 +1,82 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+sys.path.append( 'c:\\Users\\Kari Ness\\abaqus_plugins\\AM plugin\\AMModeler\\AMModeler' )
+from customKernel import *
+from amModule import *
+mdb.models['Model-1'].setValues(absoluteZero=273.15, stefanBoltzmann=5.67e-08)
+mdb.models.changeKey(fromName='Model-1', toName='thermal')
+mdb.models['thermal'].ConstrainedSketch(name='__profile__', sheetSize=200.0)
+mdb.models['thermal'].sketches['__profile__'].rectangle(point1=(-0.01, -0.01), 
+    point2=(0.01, 0.01))
+mdb.models['thermal'].Part(dimensionality=THREE_D, name='Part-1', type=
+    DEFORMABLE_BODY)
+mdb.models['thermal'].parts['Part-1'].BaseSolidExtrude(depth=0.005, sketch=
+    mdb.models['thermal'].sketches['__profile__'])
+del mdb.models['thermal'].sketches['__profile__']
+mdb.models['thermal'].ConstrainedSketch(gridSpacing=0.001, name='__profile__', 
+    sheetSize=0.057, transform=
+    mdb.models['thermal'].parts['Part-1'].MakeSketchTransform(
+    sketchPlane=mdb.models['thermal'].parts['Part-1'].faces[4], 
+    sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['thermal'].parts['Part-1'].edges[7], 
+    sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.005)))
+mdb.models['thermal'].sketches['__profile__'].sketchOptions.setValues(
+    decimalPlaces=3)
+mdb.models['thermal'].parts['Part-1'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__profile__'])
+mdb.models['thermal'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(0.0, 0.008))
+mdb.models['thermal'].parts['Part-1'].SolidExtrude(depth=0.0023, 
+    flipExtrudeDirection=OFF, sketch=
+    mdb.models['thermal'].sketches['__profile__'], sketchOrientation=RIGHT, 
+    sketchPlane=mdb.models['thermal'].parts['Part-1'].faces[4], 
+    sketchPlaneSide=SIDE1, sketchUpEdge=
+    mdb.models['thermal'].parts['Part-1'].edges[7])
+del mdb.models['thermal'].sketches['__profile__']
+mdb.models['thermal'].ConstrainedSketch(name='__edit__', objectToCopy=
+    mdb.models['thermal'].parts['Part-1'].features['Solid extrude-2'].sketch)
+mdb.models['thermal'].parts['Part-1'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__edit__'], 
+    upToFeature=
+    mdb.models['thermal'].parts['Part-1'].features['Solid extrude-2'])
+del mdb.models['thermal'].sketches['__edit__']
+mdb.models['thermal'].parts['Part-1'].PartitionCellByPlaneThreePoints(cells=
+    mdb.models['thermal'].parts['Part-1'].cells.getSequenceFromMask(('[#1 ]', 
+    ), ), point1=mdb.models['thermal'].parts['Part-1'].vertices[2], point2=
+    mdb.models['thermal'].parts['Part-1'].vertices[8], point3=
+    mdb.models['thermal'].parts['Part-1'].vertices[6])
+mdb.models['thermal'].ConstrainedSketch(gridSpacing=0.001, name='__profile__', 
+    sheetSize=0.056, transform=
+    mdb.models['thermal'].parts['Part-1'].MakeSketchTransform(
+    sketchPlane=mdb.models['thermal'].parts['Part-1'].faces[2], 
+    sketchPlaneSide=SIDE1, 
+    sketchUpEdge=mdb.models['thermal'].parts['Part-1'].edges[9], 
+    sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.0073)))
+mdb.models['thermal'].sketches['__profile__'].sketchOptions.setValues(
+    decimalPlaces=3)
+mdb.models['thermal'].parts['Part-1'].projectReferencesOntoSketch(filter=
+    COPLANAR_EDGES, sketch=mdb.models['thermal'].sketches['__profile__'])
+mdb.models['thermal'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(0.002, 0.0))
+mdb.models['thermal'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(0.004, 0.0))
+mdb.models['thermal'].sketches['__profile__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(0.006, 0.0))
+mdb.models['thermal'].parts['Part-1'].PartitionFaceBySketch(faces=
+    mdb.models['thermal'].parts['Part-1'].faces.getSequenceFromMask(('[#4 ]', 
+    ), ), sketch=mdb.models['thermal'].sketches['__profile__'], sketchUpEdge=
+    mdb.models['thermal'].parts['Part-1'].edges[9])
+del mdb.models['thermal'].sketches['__profile__']
+# Save by Kari Ness on 2021_03_16-09.44.36; build 2019 2018_09_24-20.41.51 157541
