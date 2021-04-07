@@ -88,7 +88,7 @@ scripted_part.add_simulation_setup(am_Model)
 
 #JOB
 scripted_part.create_job(thermal, 'experiment8_thermal')
-scripted_part.submit_job('experiment7_thermal')
+scripted_part.submit_job('experiment8_thermal')
 
 """ MECHANICICAL MODEL"""
 
