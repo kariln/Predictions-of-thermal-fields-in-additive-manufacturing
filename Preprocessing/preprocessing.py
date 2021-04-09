@@ -12,7 +12,7 @@ from functions import dataframe_creation
 from thermal import thermal
 from material import material
 from heat import heat
-from missing import missing_data
+from improve_data import improve
 
 from datetime import datetime
 
@@ -25,7 +25,7 @@ def preprocessing(filename: str, v: float, road_width: float, nr_layers: int, la
     data = thermal(data)
     data = material(data,density,specificHeat,conductivity)
     data = heat(data,seed, base_height)
-    data = missing_data(data)
+    data = improve(data)
     data.to_csv('preprocessed.csv',encoding='utf-8',  index=False) 
     return data
 def main():

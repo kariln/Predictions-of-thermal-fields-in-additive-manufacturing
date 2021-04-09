@@ -51,9 +51,9 @@ def euclid_grad(data):
         if num == 0: 
           data['euclid_grad'].iloc[index] = 0
         else:
-          data['euclid_grad'].iloc[index] = data_i['euclidean_d_Q'].iloc[indexes[num]]-data_i['euclidean_d_Q'].iloc[indexes[num-1]]
+          data['euclid_grad'].iloc[index] = data['euclidean_d_Q'].iloc[indexes[num]]-data['euclidean_d_Q'].iloc[indexes[num-1]]
         num += 1
-    data.to_csv('disp_Pint.csv',encoding='utf-8',  index=False) 
+    data.to_csv('disp_grad.csv',encoding='utf-8',  index=False) 
     return data
 
 def laser_dir(data):
