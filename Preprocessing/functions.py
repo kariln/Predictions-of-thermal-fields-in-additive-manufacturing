@@ -29,3 +29,9 @@ def column_check(data, column_names):
         if name not in data.columns:
             diff = np.setdiff1d(column_names,data.columns) # finds the columns that are not present in dataframe
             raise ValueError('The dataframe does not contain the necessary columns. Add: ' + str(diff))
+
+def frame_creation( filename:str):
+    now = datetime.now()
+    print('Dataframe creation: ' + str(now))
+    data = pd.read_csv(filename, header = 0, sep=',', index_col=False) #dataset
+    return data
