@@ -8,8 +8,8 @@ import zigzag
 
 class Raster(zigzag.Zigzag):
     
-    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break):
-        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break)
+    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break,velocity):
+        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P,layer_break,velocity)
         
     
     def get_path(self):

@@ -58,7 +58,7 @@ def SIZ(data, seed: float, base_height: float):
     column_check(data,['t','road_width','x','y','z'])
     data['SIZ'] = None
     #time_steps = data['t'].unique()
-    SIZ_V = 4/3*math.pi*data['road_width'].iloc[0]**3
+    SIZ_V = 4/3*math.pi*(3*data['road_width'].iloc[0])**3
     SIZ_nodes_tot = SIZ_V/seed**3
     for index,row in data.iterrows(): 
       data_time = data[data['t'] == row['t']]

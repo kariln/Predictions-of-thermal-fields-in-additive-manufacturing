@@ -78,8 +78,9 @@ class Odb:
         self.write("odb = openOdb('" + self.get_job_name() + ".odb')\n")
         self.seperate_sec()
         
-    def get_add_elements(self, part_name):
+    def get_add_elements(self, part_name,model_name):
         CAD = self.get_CAD()
+        self.write("part = mdb.models['" + model_name +"'].parts['" + part_name + "']\n")
         self.write("instance = odb.rootAssembly.instances['" + part_name.upper() + "']\n" )
         self.write("add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']\n")
         self.write("add_elements = add_set.elements[0]\n")
@@ -128,10 +129,16 @@ class Odb:
         self.write("\t\t\t\t\telse:\n")
         self.write("\t\t\t\t\t\tcategory='corner'\n")
         self.seperate_sec()
+    
+    def get_surface_nodes(self):
+        self.write("\tsurf_nodes = []\n")
+        self.write("\tfor face in part.elementFaces:\n")
+        self.write("\t\tif len(face.getElements()) == 1:\n")
+        self.write("\t\t\tsurf_nodes.extend([node for node in face.getNodes() if node not in surf_nodes])\n")
        
-#Implement for after deposition as well? CHeck if historical variables are correct. Maybe all frames should be included?
-    def get_temperature(self,base_depth, part_name,point1,point2,deposition_pattern,road_width):
-        self.get_add_elements(part_name)
+#Implement for after deposition as well? CHeck if historical variables are correct. Maybe all frames should be included? #"full_part"
+    def get_temperature(self,base_depth, part_name,point1,point2,deposition_pattern,road_width,velocity,basedepth,globalseed,model_name):
+        self.get_add_elements(part_name,model_name)
         self.get_frames()
         self.write('#GET TEMPERATURE\n')
         self.write('base_depth = ' + str(base_depth) + '\n')
@@ -140,13 +147,14 @@ class Odb:
         self.write('point2 = ' + str(point2) + '\n')
         self.write('new_active_nodes = -1\n')
         self.write("dispFile = open('disp.txt','w')\n")
-        self.write("dispFile.write('#i,t,T,x,y,z,Q_x,Q_y,Q_z,d_Q_x,d_Q_y,d_Q_z,t_i,euclidean_d_Q,Q,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5, pattern,dT_12,dT_23,dT_34,dT_45,road_width\\n')\n")
+        self.write("dispFile.write('i,t,T,x,y,z,t_i,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5,pattern,road_width,v,basedepth,globalseed,surface,nr_surf_nodes\\n')\n")
         self.get_frames()
         self.write("active_elements = []\n")
         self.write("active_nodes = []\n")
         self.write("active_time = []\n")
         self.write("frame_index = -1\n")
         self.write("for frame in frames:\n")
+        self.get_surface_nodes()
         self.write("\tframe_index += 1\n")
         self.write("\ttime = frame.frameValue\n")
         self.write("\tif time > 2000:\n")
@@ -178,12 +186,24 @@ class Odb:
         self.write("\t\t\t\t\ty = pos.data[1]\n")
         self.write("\t\t\t\t\tz = pos.data[2]\n")
         self.get_free_surface_distance()
-        #self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',,,,,,,' + str(t_i) + ',,,'  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + '," + deposition_pattern + ",,,,,,'" + str(road_width) +"\\n'\n)")
-        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ','  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + '," + deposition_pattern + ","+ str(road_width) +"\\n')\n")
+        self.get_surface()
+        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ','  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + '," + deposition_pattern + ","+ str(road_width) + ","+ str(velocity) + ","+ str(basedepth)+ ","+ str(globalseed) + ",' + str(surface)',' + str(nr_surf_nodes)"+ "+'\\n')\n")
         self.write("dispFile.close()\n")
+        
+    def get_surface(self):
+        self.write("\t\t\t\t\tif i in surf_nodes:\n")
+        self.write("\t\t\t\t\t\tsurface = 1\n")
+        self.write("\t\t\t\t\telse:\n")
+        self.write("\t\t\t\t\t\tsurface = 0\n")
+        self.write("\t\t\t\t\tnr_surf_nodes = 0\n")
+        self.write("\t\t\t\t\tfor elem in surf_nodes:\n")
+        self.write("\t\t\t\t\t\tfor i in range(0,len(elem.coordinates)):\n")
+        self.write("\t\t\t\t\t\t\tif abs(elem.coordinates[i] - pos.data[i]) < 3*road_width:\n")
+        self.write("\t\t\t\t\t\t\t\tnr_surf_nodes += 1\n")
+        self.write("\t\t\t\t\t\t\t\tbreak\n")
 
     def get_active_elements(self):
-        self.write("#find active elements for frame\n")
+        self.write("\t#find active elements for frame\n")
         self.write("\tactive = frame.fieldOutputs['EACTIVE'].values\n")
         self.write("\tfor i in range(0,len(active)):\n")
         self.write("\t\tif active[i].data == 1.0 and active[i].elementLabel not in active_elements:\n")

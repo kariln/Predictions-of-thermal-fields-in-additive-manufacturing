@@ -9,8 +9,8 @@ import pattern
 
 #In-Out deposition pattern
 class In_Out(pattern.Pattern):
-    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break):
-        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break)
+    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break,velocity):
+        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break,velocity)
 
     def pass_time(self):
         return abs(self.get_length()[self.get_deposition_dir()])/self.get_velocity()
@@ -77,32 +77,32 @@ class In_Out(pattern.Pattern):
     def set_length(self,x_length,y_length):
         self.length = [x_length,y_length, self.get_length()[2]]
 
-def main():        
-    inout = In_Out(0.08, 0.009, 0.08, 0.08, -0.04, -0.04, 0.02, 0.005,5000,10)
-    path_list = inout.get_path()
-    heat_path = open("heat_path.txt","w+")
-    heat_path.truncate(0)  
-    for elem in path_list:
-          heat_path.write(inout.coord_string(elem[0], elem[1], elem[2], elem[3], elem[4]))
+# def main():        
+#     inout = In_Out(0.08, 0.009, 0.08, 0.08, -0.04, -0.04, 0.02, 0.005,5000,10)
+#     path_list = inout.get_path()
+#     heat_path = open("heat_path.txt","w+")
+#     heat_path.truncate(0)  
+#     for elem in path_list:
+#           heat_path.write(inout.coord_string(elem[0], elem[1], elem[2], elem[3], elem[4]))
           
-    material_path = open("material_path.txt","w+")
-    material_path.truncate(0)  
+#     material_path = open("material_path.txt","w+")
+#     material_path.truncate(0)  
 
-    for elem in path_list:
-        material_path.write(inout.coord_string(elem[0], elem[1], elem[2], elem[3], elem[5]))
-    import matplotlib.pyplot as plt
-    x = []
-    y = []
-    z = 0.03
-    for elem in path_list:
-        if z != elem[3]:
-            break
-        x.append(elem[1])
-        y.append(elem[2])
+#     for elem in path_list:
+#         material_path.write(inout.coord_string(elem[0], elem[1], elem[2], elem[3], elem[5]))
+#     import matplotlib.pyplot as plt
+#     x = []
+#     y = []
+#     z = 0.03
+#     for elem in path_list:
+#         if z != elem[3]:
+#             break
+#         x.append(elem[1])
+#         y.append(elem[2])
         
-    plt.plot(x,y)
-    plt.xlim(-0.03,0.03)
-    plt.ylim(-0.03,0.03)
+#     plt.plot(x,y)
+#     plt.xlim(-0.03,0.03)
+#     plt.ylim(-0.03,0.03)
 
-main()
+# main()
     

@@ -9,8 +9,8 @@ import pattern
 
 #Zig-Zag deposition pattern
 class Zigzag(pattern.Pattern):
-    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break):
-        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break)
+    def __init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break,velocity):
+        super().__init__(z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P, layer_break,velocity)
 
     def pass_time(self):
         return self.get_length()[self.get_deposition_dir()]/self.get_velocity()
@@ -64,22 +64,22 @@ class Zigzag(pattern.Pattern):
         return path
 
 
-def main():        
-    zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
-    zigzag.generate_heat_path()
-    zigzag.generate_material_path()
-    path_list = zigzag.get_path()
-    import matplotlib.pyplot as plt
-    x = []
-    y = []
-    z = 0.03
-    for elem in path_list:
-        if z != elem[3]:
-            break
-        x.append(elem[1])
-        y.append(elem[2])
+# def main():        
+#     zigzag = Zigzag(0.06, 0.01, 0.06, 0.06, -0.03, -0.03, 0.02, 0.01,5000,10)
+#     zigzag.generate_heat_path()
+#     zigzag.generate_material_path()
+#     path_list = zigzag.get_path()
+#     import matplotlib.pyplot as plt
+#     x = []
+#     y = []
+#     z = 0.03
+#     for elem in path_list:
+#         if z != elem[3]:
+#             break
+#         x.append(elem[1])
+#         y.append(elem[2])
         
-    plt.plot(x,y)
-    plt.xlim(-0.03,0.03)
-    plt.ylim(-0.03,0.03)
-main()
+#     plt.plot(x,y)
+#     plt.xlim(-0.03,0.03)
+#     plt.ylim(-0.03,0.03)
+# main()

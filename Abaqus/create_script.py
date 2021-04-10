@@ -270,7 +270,7 @@ class FEA_MODEL:
         self.seperate_sec()
         return am_Model
         
-    def add_event_series(self,am_Model, road_width, deposition_pattern, power, layer_break):
+    def add_event_series(self,am_Model, road_width, deposition_pattern, power, layer_break,velocity):
         self.write('#EVENT SERIES\n')
         part = am_Model.get_part()
         amModel_name = am_Model.get_amModel_name()
@@ -301,13 +301,13 @@ class FEA_MODEL:
 
         if deposition_pattern.lower() == 'raster':
             #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
-            dp_object = Raster(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
+            dp_object = Raster(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break,velocity)
         elif deposition_pattern.lower() == 'zigzag':
             #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
-            dp_object = Zigzag(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
+            dp_object = Zigzag(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break,velocity)
         elif deposition_pattern.lower() == 'inout':
             #__init__(self, z_length, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,P):
-            dp_object = In_Out(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break)
+            dp_object = In_Out(depth, thickness, x_length, y_length, corner_x, corner_y, corner_z, road_width,power, layer_break,velocity)
         else: 
             raise NotImplementedError('This deposition pattern is not implemented');
             
