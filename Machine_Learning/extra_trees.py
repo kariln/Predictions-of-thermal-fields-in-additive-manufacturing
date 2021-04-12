@@ -9,12 +9,13 @@ from sklearn.model_selection import cross_val_score
 import scikitplot as skplt
 import matplotlib.pyplot as plt
 
-def extra_trees(nr_estimators: int, train_X, train_Y, test_X, X,Y, metric: str):
+def extra_trees(nr_estimators: int, train_X, train_Y, test_X, test_Y, metric: str):
     et_500 = ExtraTreesRegressor(n_estimators=nr_estimators, n_jobs=-1, random_state=300)
     et_500.fit(train_X,train_Y)
     predicted = et_500.predict(test_X)
-    scores = cross_val_score(et_500, X, Y, cv=5, scoring=metric)
-    return predicted, scores
+    train_scores = cross_val_score(et_500, train_X, train_Y, cv=5, scoring=metric)
+    test_scores = cross_val_score(et_500, test_X, test_Y, cv=5, scoring=metric)
+    return predicted, train_scores, test_scores
 
 def feature_importance(model, train_X):
     nr_features = train_X.shape[1]
