@@ -90,7 +90,7 @@ def node_predict(df_X, model):
       df_X['new'].iloc[i]  = 0
     
     #updating features dependent on T_1
-    sub_dataframe = [df_X.iloc[[i], :] for i in range(len(df_X))]
+    sub_dataframe = df_X.iloc[[i], :]#PROBLEM PGA EN DATAFRAME RAD
     df_X.iloc[i,:] = material(sub_dataframe,density,specificHeat,conductivity)
     #df_X.iloc[i,:] = material(row.values.reshape(1,-1),density,specificHeat,conductivity)
     df_X.iloc[i,:] = beta(row.values.reshape(1,-1))
