@@ -7,12 +7,13 @@ MATERIAL
 """
 from functions import interpolate, column_check
 from datetime import datetime
+import numpy as np
 
 #DENSITY
 def rho(data,density):
     now = datetime.now()
     print('Density: ' + str(now))
-    data['density'] = density['rho'].iloc[0]
+    data['density'] = density['rho'].iloc[np.int(0)]
     return data
 
 #SPECIFIC HEAT

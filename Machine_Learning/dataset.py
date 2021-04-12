@@ -12,9 +12,10 @@ from sklearn.model_selection import train_test_split
 def data_frame(filename: str):
     return pd.read_csv(filename, header = 0, sep=',', index_col=False)
 
-def data_split(data, Y_col):
+def data_split(data):
+    Y_col = ['T']
     X = data.drop(Y_col, axis=1) #Input dataframe, X
-    Y = pd.DataFrame(data, columns=[Y_col]) #Output dataframe, Y
+    Y = pd.DataFrame(data, columns=Y_col) #Output dataframe, Y
 
     train_X, test_X, train_Y, test_Y = train_test_split(X, Y, 
                                                         train_size=0.8,
@@ -22,9 +23,10 @@ def data_split(data, Y_col):
                                                         random_state=42)
     return X,Y,train_X, test_X, train_Y, test_Y
 
-def X_Y_split(data, Y_col:str):
-    X = data.drop([Y_col], axis=1) #Input dataframe, X
-    Y = pd.DataFrame(data, columns=[Y_col]) #Output dataframe, Y
+def X_Y_split(data):
+    Y_col = ['T']
+    X = data.drop(Y_col, axis=1) #Input dataframe, X
+    Y = pd.DataFrame(data, columns=Y_col) #Output dataframe, Y
     return X,Y
 
 #SEPARATION ON SPECIFIC LAYER NUMBER
@@ -48,8 +50,8 @@ def layer_split(data, layernum: int):
     test_Y = pd.DataFrame(test, columns=Y_col)
     return train_X, test_X, train_Y, test_Y
     
-def column_drop(data, column):
-    return data.drop(column, axis = 1)
+def column_drop(data, columns):
+    return data.drop(columns = columns)
 
 def equal_data_size(data1,data2):
     drop_columns_1 = np.setdiff1d(data1.columns.tolist(),data2.columns.tolist())
@@ -89,3 +91,18 @@ def sep_layer_split(data):#must find out how to return the generated dataframes
       globals()['X_layer%s' % j] = globals()['layer%s' % j].drop(Y_col, axis=1)
       globals()['Y_layer%s' % j] = pd.DataFrame(globals()['layer%s' % j], columns=Y_col)
     return datasets
+
+def label_test_split(data, labels):
+    Y_col = ['T']
+    df = data.loc[data['i'].isin(labels)]
+    df = df.reset_index()
+    df = df.drop(['index'], axis = 1)
+    df_X = df.drop(Y_col, axis = 1)
+    df_Y = pd.DataFrame(df, columns=Y_col)
+    
+    #train and validation dataset
+    dt = data[data['i'] != 1]
+    
+    X,Y,train_X, test_X, train_Y, test_Y = data_split(dt)
+    return X,Y,train_X, test_X, train_Y, test_Y, df, df_X,df_Y
+

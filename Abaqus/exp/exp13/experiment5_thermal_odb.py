@@ -11,7 +11,7 @@ from abaqusConstants import *
 import odbAccess
 from odbAccess import *
 
-odb = openOdb('experiment13_thermal.odb')
+odb = openOdb('experiment5_thermal.odb')
 
 part = mdb.models['thermal'].parts['part1']
 instance = odb.rootAssembly.instances['PART1']

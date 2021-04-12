@@ -142,6 +142,7 @@ class Odb:
         self.get_frames()
         self.write('#GET TEMPERATURE\n')
         self.write('base_depth = ' + str(base_depth) + '\n')
+        self.write('road_width = ' + str(road_width) + '\n')
         self.write('Q_z = base_depth\n')
         self.write('point1 = ' + str(point1) + '\n')
         self.write('point2 = ' + str(point2) + '\n')

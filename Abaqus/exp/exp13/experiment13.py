@@ -7,6 +7,7 @@ Created on Sat Apr 10 13:53:12 2021
 
 import sys
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 abaqus_path = Path('../../')
 sys.path.append(str(abaqus_path.resolve()))
@@ -95,7 +96,7 @@ scripted_part.submit_job('experiment13_thermal')
 """ MECHANICICAL MODEL"""
 
 """ ODB """
-process_odb = Odb('experiment13_thermal',scripted_part, part1)
+process_odb = Odb('experiment5_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
