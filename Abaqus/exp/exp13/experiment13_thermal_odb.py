@@ -1,8 +1,3 @@
-import os
-clear = lambda: os.system('cls')
-clear()
-clear()
-
 #importing modules
 import abaqus
 from abaqus import *
@@ -11,7 +6,7 @@ from abaqusConstants import *
 import odbAccess
 from odbAccess import *
 
-odb = openOdb('experiment13_thermal.odb')
+odb = openOdb('experiment5_thermal.odb')
 
 part = mdb.models['thermal'].parts['part1']
 instance = odb.rootAssembly.instances['PART1']
@@ -117,5 +112,5 @@ for frame in frames:
 							if abs(elem.coordinates[i] - pos.data[i]) < 3*road_width:
 								nr_surf_nodes += 1
 								break
-					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ','  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',zigzag,0.005,0.02,0.02,0.0025,' + str(surface)',' + str(nr_surf_nodes)+'\n')
+					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ','  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',zigzag,0.005,0.02,0.02,0.0025,' + str(surface)+',' + str(nr_surf_nodes)+'\n')
 dispFile.close()
