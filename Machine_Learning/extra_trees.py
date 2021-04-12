@@ -90,7 +90,9 @@ def node_predict(df_X, model):
       df_X['new'].iloc[i]  = 0
     
     #updating features dependent on T_1
-    df_X.iloc[i,:] = material(row.values.reshape(1,-1),density,specificHeat,conductivity)
+    sub_dataframe = [df_X.iloc[[i], :] for i in range(len(df_X))]
+    df_X.iloc[i,:] = material(sub_dataframe,density,specificHeat,conductivity)
+    #df_X.iloc[i,:] = material(row.values.reshape(1,-1),density,specificHeat,conductivity)
     df_X.iloc[i,:] = beta(row.values.reshape(1,-1))
     df_X.iloc[i,:] = P_inst(row.values.reshape(1,-1))
     df_X.iloc[i,:] = P_inf(row.values.reshape(1,-1))
@@ -121,7 +123,7 @@ def test_predict(df_X,model):
         df_X['T_pred'].iloc[index] = predicted[i]
     return df_X
 
-def node_predict_plot(predicted,df_Y):
+def node_predict_plot(predicted,df_Y,df_X):
     delta = []
     for i in range(0,len(df_Y.values.tolist())):
       delta.append((df_Y.values.tolist()[i]-predicted[i]))
