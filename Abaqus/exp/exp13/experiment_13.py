@@ -68,12 +68,12 @@ AM_sketch.rectangle(point1=(-0.04, -0.04),point2=(0.04, 0.04))
 part1.SolidExtrude(depth=0.003,sketchPlane=substrate_top_plane,sketchUpEdge=sketch_UpEdge,sketchPlaneSide=SIDE1,sketchOrientation=RIGHT,sketch = AM_sketch,flipExtrudeDirection=OFF)
 del thermal.sketches['__profile__']
 #partition AM into layers
-nr_layers = 1
+nr_layers = 2
 plane_offset = 0.02
 for i in range(0,nr_layers):
 	datum_id = part1.DatumPlaneByPrincipalPlane(principalPlane=XYPLANE, offset=plane_offset).id
 	plane = part1.datums[datum_id]
-	plane_offset += 0.003
+	plane_offset += 0.0015
 	part1_cells = part1.cells
 	top_cell = part1_cells.findAt(((0.,0.,0.023),))
 	part1.PartitionCellByDatumPlane(datumPlane = plane,cells=top_cell)
@@ -142,12 +142,12 @@ mdb.customData.am.amModels["AM_thermal"].addEventSeries(eventSeriesName="heat_pa
 #TABLE COLLECTIONS
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Material")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name='_parameterTable_"ABQ_AM.MaterialDeposition.Advanced"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Advanced"', parameterData=(('Full', 0.0, 0.0), ))
-mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.003,0.005,0.0025, 'Below'), ))
+mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition.Bead"_', parameterTabletype='"ABQ_AM.MaterialDeposition.Bead"', parameterData=(('Z', 0.0015,0.005,0.0025, 'Below'), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections["ABQ_AM_Material"].ParameterTable(name = '_parameterTable_"ABQ_AM.MaterialDeposition"_', parameterTabletype='"ABQ_AM.MaterialDeposition"', parameterData=(('material_path', 'Bead'), ))
 mdb.customData.am.amModels["AM_thermal"].addTableCollection(tableCollectionName="ABQ_AM_Heat")
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].PropertyTable(name='_propertyTable_"ABQ_AM.AbsorptionCoeff"_', propertyTableType='"ABQ_AM.AbsorptionCoeff"', propertyTableData=((0.9, ), ), numDependencies=0, temperatureDependency=OFF)
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource"_', parameterTabletype='"ABQ_AM.MovingHeatSource"', parameterData=(('heat_path', 'Goldak'), ))
-mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.0025,0.003, 0.002, 0.004, 0.6, 1.4, 1), ))
+mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Goldak"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Goldak"', parameterData=(('9', '9', '9', 0.0025,0.0015, 0.002, 0.004, 0.6, 1.4, 1), ))
 mdb.customData.am.amModels["AM_thermal"].dataSetup.tableCollections['ABQ_AM_Heat'].ParameterTable(name='_parameterTable_"ABQ_AM.MovingHeatSource.Advanced"_', parameterTabletype='"ABQ_AM.MovingHeatSource.Advanced"', parameterData=(('False', 'False', 'Relative', 0.0, 0.0, -1.0, 1.0), ))
 
 #SIMULATION SETUP
@@ -159,7 +159,7 @@ f = a.instances["part1"].faces
 basement_face = f.findAt(((0.0,0.0,0.0) ,))
 a.Set(faces=basement_face, name = "basement")
 c = a.instances["part1"].cells
-film = c.findAt(((-0.04,-0.013333333333333334,0.021500000000000002), ), ((-0.04,-0.013333333333333334,0.0245), ),((-0.04,-0.013333333333333334,0.0275),  ), ((-0.04,-0.013333333333333334,0.02),  ))
+film = c.findAt(((-0.04,-0.013333333333333334,0.02075), ), ((-0.04,-0.013333333333333334,0.02225), ),((-0.04,-0.013333333333333334,0.02375),  ), ((-0.04,-0.013333333333333334,0.02),  ))
 a.Set(cells = film, name = "film")
 mdb.customData.am.amModels["AM_thermal"].addMaterialArrival(materialArrivalName='Material Source -1', tableCollection='ABQ_AM_Material', followDeformation=OFF, useElementSet=ON, elementSetRegion=('add_element', ))
 mdb.customData.am.amModels["AM_thermal"].addHeatSourceDefinition(heatSourceName='Heat Source -1', dfluxDistribution='Moving-UserDefined', dfluxMagnitude=1, tableCollection='ABQ_AM_Heat', useElementSet=OFF, elementSetRegion=())

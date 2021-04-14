@@ -44,7 +44,8 @@ scripted_part.baseExtrude(part1,base_point1 ,base_point2, base_depth)
 point1 = (-0.04,-0.04)
 point2 = (0.04,0.04)
 add_depth = 0.003
-nr_layer = 1
+nr_layer = 2
+layer_thickness = add_depth/nr_layer
 scripted_part.add_extrude(part1,point1,point2,add_depth,nr_layer)
 
 #PROPERTY
@@ -80,7 +81,7 @@ scripted_part.set_field_output(thermal, ['NT','TEMP','COORD','EACTIVE'])
 
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
-Q = 5000
+Q = 4000
 deposition_pattern = 'zigzag'
 layer_break = 10
 absorption_coefficient = 0.9
@@ -96,8 +97,8 @@ scripted_part.submit_job('experiment13_thermal')
 """ MECHANICICAL MODEL"""
 
 """ ODB """
-process_odb = Odb('experiment5_thermal',scripted_part, part1)
+process_odb = Odb('experiment13_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern,road_width,velocity,base_depth,globalseed,model_name)#include: SIZ_A
+process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern,road_width,velocity,base_depth,globalseed,model_name,layer_thickness)#include: SIZ_A

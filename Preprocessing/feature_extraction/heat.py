@@ -44,7 +44,7 @@ def P_inst(data):
 def P_inf(data):
     now = datetime.now()
     print('Power influence: ' + str(now))
-    column_check(data,['I','euclidean_d_Q','density'])
+    column_check(data,['I','euclidean_d_Q'])
     data['P_inf'] = None
     for index,row in data.iterrows():
       data['P_inf'].iloc[index] = row['I']/row['euclidean_d_Q'].real

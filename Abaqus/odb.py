@@ -137,7 +137,7 @@ class Odb:
         self.write("\t\t\tsurf_nodes.extend([node for node in face.getNodes() if node not in surf_nodes])\n")
        
 #Implement for after deposition as well? CHeck if historical variables are correct. Maybe all frames should be included? #"full_part"
-    def get_temperature(self,base_depth, part_name,point1,point2,deposition_pattern,road_width,velocity,basedepth,globalseed,model_name):
+    def get_temperature(self,base_depth, part_name,point1,point2,deposition_pattern,road_width,velocity,basedepth,globalseed,model_name,layer_thickness):
         self.get_add_elements(part_name,model_name)
         self.get_frames()
         self.write('#GET TEMPERATURE\n')
@@ -148,7 +148,7 @@ class Odb:
         self.write('point2 = ' + str(point2) + '\n')
         self.write('new_active_nodes = -1\n')
         self.write("dispFile = open('disp.txt','w')\n")
-        self.write("dispFile.write('i,t,T,x,y,z,t_i,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5,pattern,road_width,v,basedepth,globalseed,surface,nr_surf_nodes\\n')\n")
+        self.write("dispFile.write('i,t,T,x,y,z,t_i,d_top,d_bottom,d_x1,d_x2,d_y1,d_y2,category,T_1,T_2,T_3,T_4,T_5,pattern,road_width,v,basedepth,layer_thickness,globalseed,surface,nr_surf_nodes\\n')\n")
         self.get_frames()
         self.write("active_elements = []\n")
         self.write("active_nodes = []\n")
@@ -188,7 +188,7 @@ class Odb:
         self.write("\t\t\t\t\tz = pos.data[2]\n")
         self.get_free_surface_distance()
         self.get_surface()
-        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ','  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + '," + deposition_pattern + ","+ str(road_width) + ","+ str(velocity) + ","+ str(basedepth)+ ","+ str(globalseed) + ",' + str(surface)+',' + str(nr_surf_nodes)"+ "+'\\n')\n")
+        self.write("\t\t\t\t\tdispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ','  + str(d_top) + ',' + str(d_bottom)+ ',' + str(d_x1) + ',' + str(d_x2) + ',' + str(d_y1) + ',' + str(d_y2) + ',' + category + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + '," + deposition_pattern + ","+ str(road_width) + ","+ str(velocity) + ","+ str(basedepth)+ ","+ str(layer_thickness)+ ","+str(globalseed) + ",' + str(surface)+',' + str(nr_surf_nodes)"+ "+'\\n')\n")
         self.write("dispFile.close()\n")
         
     def get_surface(self):

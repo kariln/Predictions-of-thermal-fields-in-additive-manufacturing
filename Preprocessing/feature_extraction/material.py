@@ -21,7 +21,7 @@ def specific_heat(data,specificHeat):
     now = datetime.now()
     print('Specific heat: ' + str(now))
     column_check(data,['T_1'])
-    data['cp'] = None
+    data['cp'] = -99
     for index,row in data.iterrows():
       prev_temp = row['T_1']
       for i,r in specificHeat.iterrows():
