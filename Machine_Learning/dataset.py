@@ -96,12 +96,15 @@ def label_test_split(data, labels):
     Y_col = ['T']
     df = data.loc[data['i'].isin(labels)]
     df = df.reset_index()
-    df = df.drop(['index'], axis = 1)
+    df = df.drop(columns=['index'])
     df_X = df.drop(Y_col, axis = 1)
     df_Y = pd.DataFrame(df, columns=Y_col)
     
     #train and validation dataset
     dt = data[data['i'] != 1]
+    dt = dt.reset_index()
+    dt = dt.drop(columns=['index'])
+    dt = dt.drop(columns=['i'])
     
     X,Y,train_X, test_X, train_Y, test_Y = data_split(dt)
     return X,Y,train_X, test_X, train_Y, test_Y, df, df_X,df_Y

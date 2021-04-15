@@ -51,6 +51,25 @@ def rmse(y_true,y_pred):
     return mse(y_true,y_pred)
 
 
-def nrmse(actual: np.ndarray, predicted: np.ndarray):
+def nrmse(actual, predicted):
     """ Normalized Root Mean Squared Error """
     return rmse(actual, predicted) / (actual.max() - actual.min())
+
+def results(y_true,y_pred, test_X):
+    R2 = r2(y_true,y_pred)
+    print('R2: ' + str(R2))
+    R2_adjust = r2_adjust(test_X,R2)
+    print('R2_adjust: ' + str(R2_adjust))
+    MAE = mae(y_true,y_pred)
+    print('MAE: ' + str(MAE))
+    MAPE = mean_absolute_percentage_error(y_true, y_pred)
+    print('MAPE: ' + str(MAPE))
+    MSE = mse(y_true, y_pred)
+    print('MSE: ' + str(MSE))
+    NMSE = nmse(y_true, y_pred)
+    print('NMSE: ' + str(NMSE))
+    RMSE = rmse(y_true, y_pred)
+    print('RMSE: ' + str(RMSE))
+    NRMSE = nrmse(y_true,y_pred)
+    print('NRMSE: ' + str(NRMSE))
+    return R2, R2_adjust,MAE,MAPE,MSE,NMSE,RMSE,NRMSE
