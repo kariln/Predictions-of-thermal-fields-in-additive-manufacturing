@@ -29,15 +29,14 @@ def highly_correlated_features(feature: str, limit: float, X, data):
     X = X[highly_correlated_features]
     correlation_heatmap(X)  
 
-def shearman_correlation_heatmap(train, data):
+def shearman_correlation_heatmap(train):
     train = constant_removal(train)
-    data = constant_removal(data)
     
     corr = spearmanr(train).correlation
     corr_linkage = ward(corr)
     #Plot dendrogram
     fig=  plt.figure(figsize=(20,20))
-    dendro = dendrogram(corr_linkage, labels=data.columns, leaf_rotation=90)
+    dendro = dendrogram(corr_linkage, labels=list(train.columns), leaf_rotation=90)
     dendro_idx = np.arange(0, len(dendro['ivl']))
     fig.tight_layout()
     plt.savefig('dendrogram', bbox_inches = "tight")

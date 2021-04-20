@@ -36,6 +36,20 @@ def manhattan(data):
     data.to_csv('disp_Pint.csv',encoding='utf-8',  index=False) 
     return data
 
+def laser_distance(data):
+    now = datetime.now()
+    print('Laser distance: ' + str(now))
+    column_check(data,['Q_x','Q_y','Q_z','x','y','z','road_width','layer_thickness'])
+    data['d_Q_x'] = None
+    data['d_Q_y'] = None
+    data['d_Q_z'] = None
+    for index, row in data.iterrows():
+      data['d_Q_x'].iloc[index] = abs(row['Q_x']-row['x'])/row['road_width']
+      data['d_Q_y'].iloc[index] = abs(row['Q_y']-row['y'])/row['road_width']
+      data['d_Q_z'].iloc[index] = abs(row['Q_z']-row['z'])/row['layer_thickness']
+    data.to_csv('disp_d_Q.csv',encoding='utf-8',  index=False) 
+    return data
+
 def euclid_grad(data):
     now = datetime.now()
     print('Euclidean gradient: ' + str(now))
@@ -105,4 +119,5 @@ def spatial(data, nr_layers: int, layer_thickness: float, base_height: float):
     data = manhattan(data)
     data = euclid_grad(data)
     data = laser_dir(data)
+    data = laser_distance(data)
     return data

@@ -20,6 +20,7 @@ from sklearn.metrics import mean_squared_error
 from functions import column_check
 import numpy as np
 from metrics import results
+from sklearn.inspection import permutation_importance
 
 def extra_trees(nr_estimators: int, train_X, train_Y, test_X, test_Y, metric: str):
     et_500 = ExtraTreesRegressor(n_estimators=nr_estimators, n_jobs=-1, random_state=300)
@@ -41,6 +42,14 @@ def feature_importance(model, train_X):
     plt.yticks(fontsize = 20)
     plt.title('Feature importance', fontsize = 30)
     plt.savefig('feature_importance', bbox_inches = "tight")
+    plt.show()
+
+def permutation_feature_importance(model, test_X,test_Y):
+    sorted_idx = model.feature_importances_.argsort()
+    perm_importance = permutation_importance(model, test_X, test_Y)
+    sorted_idx = perm_importance.importances_mean.argsort()
+    plt.barh(test_X.columns[sorted_idx], perm_importance.importances_mean[sorted_idx])
+    plt.xlabel("Permutation Importance")
     plt.show()
 
 def test_predict(df_X,model):

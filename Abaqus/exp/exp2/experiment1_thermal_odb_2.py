@@ -7,7 +7,7 @@ from abaqusConstants import *
 import odbAccess
 from odbAccess import *
 
-odb = openOdb('experiment1_thermal.odb')
+odb = openOdb('experiment2_thermal.odb')
 
 part = mdb.models['thermal'].parts['part1']
 instance = odb.rootAssembly.instances['PART1']
@@ -15,17 +15,6 @@ add_set = odb.rootAssembly.elementSets['ADD_ELEMENT']
 add_elements = add_set.elements[0]
 
 stepName = odb.steps.keys()[0]
-
-frames = odb.steps[stepName].frames
-#GET TEMPERATURE
-base_depth = 0.02
-road_width = 0.005
-layer_thickness = 0.0015
-point1 = (-0.04, -0.04)
-point2 = (0.04, 0.04)
-new_active_nodes = -1
-dispFile = open('disp.txt','w')
-dispFile.write('i,t,T,x,y,z,t_i,T_1,T_2,T_3,T_4,T_5,pattern,road_width,v,basedepth,layer_thickness,globalseed\n')
 
 surf_nodes = []
 for face in part.elementFaces:
@@ -40,7 +29,15 @@ for elem in surf_nodes:
     z = elem.coordinates[2]
     surf_file.write(str(i) + ',' + str(x) + ',' + str(y) + ',' + str(z)+'\n')
 surf_file.close()
-
+dispFile = open('disp.txt','w')
+dispFile.write('i,t,T,x,y,z,t_i,T_1,T_2,T_3,T_4,T_5,road_width,globalseed,v,basedepth,layer_thickness,layerNum,surface,nr_surf,pattern\n')
+#GET TEMPERATURE
+base_depth = 0.02
+road_width = 0.005
+layer_thickness = 0.0015
+point1 = (-0.04, -0.04)
+point2 = (0.04, 0.04)
+new_active_nodes = -1
 frames = odb.steps[stepName].frames
 active_elements = []
 active_nodes = []
@@ -94,5 +91,11 @@ for frame in frames:
 					x = pos.data[0]
 					y = pos.data[1]
 					z = pos.data[2]
-					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',zigzag,0.005,0.02,0.02,0.0015,0.0025,' +'\n')
+					height = base_depth
+					while z > height:
+						height += layer_thickness
+					layerNum = (height-base_depth)/layer_thickness
+					if layerNum > current_layer:
+						current_layer = layerNum
+					dispFile.write(str(i) + ',' + str(t) + ',' + str(T) + ',' + str(x) + ',' + str(y) + ',' + str(z) + ',' + str(t_i) + ',' + str(hist_temp[0]) + ',' + str(hist_temp[1]) + ',' + str(hist_temp[2]) + ',' + str(hist_temp[3]) + ',' + str(hist_temp[4]) + ',raster,0.01,0.015,0.02,0.0023,0.005,' + str(layerNum)+'\n')
 dispFile.close()

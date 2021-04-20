@@ -16,8 +16,8 @@ def roundup(a, digits=4):
     n = 10**-digits
     return round(math.ceil(a / n) * n, digits)
 
-def r2_adjust(test_X,r2_score):
-  return 1-(1-r2_score)*((test_X.shape[0]-1)/(test_X.shape[0]-test_X.shape[1]-1))
+def r2_adjust(train_X,r2_score):
+  return 1-(1-r2_score)*((train_X.shape[0]-1)/(train_X.shape[0]-train_X.shape[1]-1))
 
 def average(lst): 
     return sum(lst) / len(lst) 

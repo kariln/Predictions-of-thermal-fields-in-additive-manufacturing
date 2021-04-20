@@ -107,5 +107,5 @@ def label_test_split(data, labels):
     dt = dt.drop(columns=['i'])
     
     X,Y,train_X, test_X, train_Y, test_Y = data_split(dt)
-    return X,Y,train_X, test_X, train_Y, test_Y, df, df_X,df_Y
+    return dt,X,Y,train_X, test_X, train_Y, test_Y, df, df_X,df_Y
 
