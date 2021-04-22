@@ -9,6 +9,8 @@ from functions import column_check
 from datetime import datetime
 import pandas as pd
 import numpy as np
+from scipy.spatial import distance
+import math
 
 def on_surface(data, surf):
     now = datetime.now()
@@ -22,12 +24,11 @@ def on_surface(data, surf):
             if r['i'] == row['i']:
                 on_surface.append(r['i'])
                 break
-    print(on_surface)
     data['surface'] = 0
     for index,row in data.iterrows():
         if row['i'] in on_surface:
             data['surface'].iloc[index] = 1
-    data.to_csv('disp_surface.csv',encoding='utf-8',  index=False) 
+    #data.to_csv('disp_surface.csv',encoding='utf-8',  index=False) 
     return data
 
 def surface_nodes(data, surf):#må fikses
@@ -37,19 +38,27 @@ def surface_nodes(data, surf):#må fikses
     i_unique = data[['i', 'x','y','z','road_width']]
     i_unique = i_unique.drop_duplicates()
     lim = 3*i_unique['road_width'].iloc[0]
-    on_surface = pd.DataFrame(columns = ['i', 'surf_nr'])
+    on_surface = pd.DataFrame(columns = ['i', 'surf_nr','surf_dst'])
     data['surf_nr'] = None
+    data['surf_dist'] = None
+    a = data['road_width'].iloc[0]
     for index,row in i_unique.iterrows():
         nr_nodes = 0
+        dist = 0
         for i,r in surf.iterrows():
             if abs(r['x']-row['x'])<lim and abs(r['y']-row['y'])<lim and abs(r['z']-row['z'])<lim:
                 nr_nodes += 1
-        on_surface = on_surface.append({'i' : row['i'],'surf_nr' : nr_nodes} , ignore_index=True)
+                c = (r['x'], r['y'], r['z'])
+                b = (row['x'], row['y'], row['z'])
+                d = distance.euclidean(a, b)
+                dist += math.exp(-d**2).real
+        on_surface = on_surface.append({'i' : row['i'],'surf_nr' : nr_nodes,'surf_dst': dist} , ignore_index=True)
     for index,row in data.iterrows():
         for i,r in on_surface.iterrows():
             if row['i'] == r['i']:
                 data['surf_nr'].iloc[index] = r['surf_nr']
-    data.to_csv('disp_surface_nr.csv',encoding='utf-8',  index=False) 
+                data['surf_dist'].iloc[index] = r['surf_dst']
+    #data.to_csv('disp_surface_nr.csv',encoding='utf-8',  index=False) 
     return data
 
 def SIZ_nodes(data):
@@ -71,7 +80,7 @@ def SIZ_nodes(data):
         for i,r in in_volume.iterrows():
             if row['i'] == r['i']:
                 data['vol_nr'].iloc[index] = r['vol_nr']
-    data.to_csv('disp_volume_nr.csv',encoding='utf-8',  index=False) 
+    #data.to_csv('disp_volume_nr.csv',encoding='utf-8',  index=False) 
     return data
 
 
@@ -83,7 +92,14 @@ def SAV(data):
     approx_seed = (2*data['globalseed'].iloc[0]*data['layerNum'].iloc[0])
     for index,row in data.iterrows():
         data['SAV'].iloc[index] = row['surf_nr']/row['vol_nr']*approx_seed
-    data.to_csv('disp_SAV.csv',encoding='utf-8',  index=False) 
+    #data.to_csv('disp_SAV.csv',encoding='utf-8',  index=False) 
+    return data
+
+def surface(data,surf):
+    data = on_surface(data,surf)
+    data = surface_nodes(data, surf)
+    data = SIZ_nodes(data)
+    data = SAV(data)
     return data
 
     

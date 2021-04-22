@@ -140,14 +140,12 @@ def HIZ(data):
     return data
 
     
-def deposition_properties(data,dp,dm,v: float, road_width: float):
+def deposition_properties(data,dp,dm):
     now = datetime.now()
     print('Deposition properties: ' + str(now))
     data = laser_position(data,dp)
     data = laser_d(data)
     data = bead_area(data,dm)
-    data = velocity(data,v)
-    #data = roadWidth(data, road_width) #already included in disp_file
     data = intensity(data)
     data = P_density(data)
     data = HIZ(data)

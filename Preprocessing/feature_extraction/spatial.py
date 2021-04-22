@@ -83,11 +83,13 @@ def laser_dir(data):
     data.to_csv('disp_dir.csv',encoding='utf-8',  index=False) 
     return data
 
-def layerNum(data, nr_layers: int, layer_thickness: float, base_height: float):
+def layerNum(data, nr_layers: int):
     now = datetime.now()
     print('Layer number: ' + str(now))
-    column_check(data,['z'])
+    column_check(data,['z','layer_thickness','basedepth'])
     data['layerNum'] = None
+    layer_thickness = data['layer_thickness'].iloc[0]
+    base_height = data['basedepth'].iloc[0]
     
     #Finding layer numbers and heights
     layers = []
@@ -95,26 +97,26 @@ def layerNum(data, nr_layers: int, layer_thickness: float, base_height: float):
     height = base_height
     for i in range(1,nr_layers + 1): 
         layers.append(i)
-        height = height+layer_thickness
+        height = round(height+layer_thickness,4)
         heights.append(height)
-        
     #Inserting layer numbers
     for index,row in data.iterrows():
-        if row['z'] == base_height:
+        if round(row['z'],4) == base_height:
             data['layerNum'].iloc[index] = 1
-        layer = 0
-        for height in heights:
-            if row['z'] == height:
-                layer += 1
-                data['layerNum'].iloc[index] = layer
-                break
+        else:
+            layer = 0
+            for height in heights:
+                if round(row['z'],4) == height:
+                    layer += 1
+                    data['layerNum'].iloc[index] = layer
+                    break
     data.to_csv('disp_layer.csv',encoding='utf-8',  index=False) 
     return data
 
-def spatial(data, nr_layers: int, layer_thickness: float, base_height: float):
+def spatial(data, nr_layers: int):
     now = datetime.now()
     print('Spatial: ' + str(now))
-    data = layerNum(data, nr_layers, layer_thickness, base_height)
+    data = layerNum(data, nr_layers)
     data = euclidean(data)
     data = manhattan(data)
     data = euclid_grad(data)

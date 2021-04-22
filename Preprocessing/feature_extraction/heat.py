@@ -44,22 +44,29 @@ def P_inst(data):
 def P_inf(data):
     now = datetime.now()
     print('Power influence: ' + str(now))
-    column_check(data,['I','euclidean_d_Q'])
+    column_check(data,['I','euclidean_d_Q','v','road_width'])
     data['P_inf'] = None
     for index,row in data.iterrows():
-      data['P_inf'].iloc[index] = row['I']/row['euclidean_d_Q'].real
+          I = row['I']
+          v = row['v']
+          d = row['euclidean_d_Q']
+          a = row['road_width']
+          data['P_inf'].iloc[index] =  I/v*math.exp(-d**2/a**2).real
     data.to_csv('disp_Pinf.csv',encoding='utf-8',  index=False) 
     return data
 
 #SURFACE INFLUENZE ZONE
-def SIZ(data, seed: float, base_height: float):
+def SIZ(data):
     now = datetime.now()
     print('Power influence: ' + str(now))
-    column_check(data,['t','road_width','x','y','z'])
+    column_check(data,['t','road_width','x','y','z','basedepth','globalseed'])
     data['SIZ'] = None
     #time_steps = data['t'].unique()
+    seed = data['globalseed'].iloc[0]
     SIZ_V = 4/3*math.pi*(3*data['road_width'].iloc[0])**3
     SIZ_nodes_tot = SIZ_V/seed**3
+    base_height = data['basedepth'].iloc[0]
+    
     for index,row in data.iterrows(): 
       data_time = data[data['t'] == row['t']]
       n_nodes = 0
@@ -82,12 +89,10 @@ def SIZ(data, seed: float, base_height: float):
     data.to_csv('disp_SIZ.csv',encoding='utf-8',  index=False) 
     return data
 
-def heat(data, seed: float, base_height: float):
+def heat(data):
     now = datetime.now()
     print('Heat: ' + str(now))
-    data = beta(data)
-    data = P_inst(data)
     data = P_inf(data)
-    data = SIZ(data, seed)
+    data = SIZ(data)
     return data
     
