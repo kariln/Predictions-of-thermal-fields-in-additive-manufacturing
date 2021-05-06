@@ -59,6 +59,10 @@ minInc = 1E-8
 maxInc = 1
 deltmx = 1000
 maxNumInc = 10000
+velocity = 0.015
+globalseed = 0.0025
+model_name = 'thermal'
+layer_thickness = 0.003
 scripted_part.create_heat_step('heat','Initial',timePeriod,initialInc,minInc,maxInc,deltmx, maxNumInc,thermal)
 
 #MESH
@@ -81,7 +85,7 @@ Q = 5000
 deposition_pattern = 'zigzag'
 layer_break = 10
 absorption_coefficient = 0.9
-scripted_part.add_event_series(am_Model, road_width,deposition_pattern,Q,layer_break)
+scripted_part.add_event_series(am_Model, road_width,deposition_pattern,Q,layer_break,velocity)
 scripted_part.add_table_collections(am_Model,absorption_coefficient)
 scripted_part.add_simulation_setup(am_Model)
 
@@ -96,4 +100,4 @@ process_odb = Odb('experiment5_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()
-process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern,road_width)
+process_odb.get_temperature(base_depth, part_name,point1, point2,deposition_pattern,road_width,velocity,base_depth,globalseed,model_name,layer_thickness)

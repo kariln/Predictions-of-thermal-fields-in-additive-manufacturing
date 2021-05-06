@@ -14,7 +14,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-def laser_position(data, dp):
+def laser_position(data, dp,dm):
     now = datetime.now()
     print('Laser position: ' + str(now))
     column_check(data,['t','x','y','z'])
@@ -22,12 +22,17 @@ def laser_position(data, dp):
     data['Q_x'] = None
     data['Q_y'] = None
     data['Q_z'] = None 
+    data['A'] = None
+    data['Q_tot'] = None
     time = 0
     Q = None
     Q_x = None
     Q_y = None
     Q_z = None
-    for index,row in data.iterrows():
+    Q_tot = 0
+    dp['A'] = dm['A']
+    index = 0
+    for j,row in data.iterrows():
       time = row['t']
       for i,r in dp.iterrows():
         if float(time) < float(r['t']) and i != 0:
@@ -36,19 +41,26 @@ def laser_position(data, dp):
           Q_y = interpolate(prev_r['t'],r['t'],prev_r['y'],r['y'],time)
           Q_z = interpolate(prev_r['t'],r['t'],prev_r['z'],r['z'],time)
           Q = prev_r['Q']
+          A = prev_r['A']
+          Q_tot += prev_r['Q']*(r['t']-prev_r['t'])
           break
         elif float(time) < float(r['t']) and i == 0:
           Q_x = r['x']
           Q_y = r['y']
           Q_z = r['z']
           Q = r['Q']
+          A = r['A']
           break
         else:
           continue
+      print(index)
       data['Q'].iloc[index] = Q
       data['Q_x'].iloc[index] = Q_x
       data['Q_y'].iloc[index] = Q_y
-      data['Q_z'].iloc[index] = Q_z   
+      data['Q_z'].iloc[index] = Q_z  
+      data['A'].iloc[index] = A
+      data['Q_tot'].iloc[index] = Q_tot
+      index +=1
     data.to_csv('disp_laser_pos.csv',encoding='utf-8',  index=False) 
     return data
 
@@ -75,10 +87,10 @@ def bead_area(data,dm):
         if float(time) < float(r['t']) and i != 0:
           prev_r = dm.loc[ i-1 , : ]
           A = prev_r['A']
-          pass
+          break
         elif float(time) < float(r['t']) and i == 0:
           A = r['A']
-          pass
+          break
         else:
           continue
       data['A'].iloc[index] = A
@@ -143,10 +155,7 @@ def HIZ(data):
 def deposition_properties(data,dp,dm):
     now = datetime.now()
     print('Deposition properties: ' + str(now))
-    data = laser_position(data,dp)
+    data = laser_position(data,dp,dm)
     data = laser_d(data)
-    data = bead_area(data,dm)
-    data = intensity(data)
-    data = P_density(data)
     data = HIZ(data)
     return data

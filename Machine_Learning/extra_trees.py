@@ -21,14 +21,16 @@ from functions import column_check
 import numpy as np
 from metrics import results
 from sklearn.inspection import permutation_importance
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
+import seaborn as sns
 
 def extra_trees(nr_estimators: int, train_X, train_Y, test_X, test_Y, metric: str):
     et_500 = ExtraTreesRegressor(n_estimators=nr_estimators, n_jobs=-1, random_state=300)
     et_500.fit(train_X,train_Y)
     predicted = et_500.predict(test_X)
     train_scores = cross_val_score(et_500, train_X, train_Y, cv=5, scoring=metric)
-    test_scores = cross_val_score(et_500, test_X, test_Y, cv=5, scoring=metric)
-    return predicted, train_scores, test_scores
+    return predicted, train_scores
 
 def extra_tree_model(nr_estimators: int, train_X, train_Y):
     et_500 = ExtraTreesRegressor(n_estimators=nr_estimators, n_jobs=-1, random_state=300)
@@ -42,14 +44,17 @@ def feature_importance(model, train_X):
     plt.yticks(fontsize = 20)
     plt.title('Feature importance', fontsize = 30)
     plt.savefig('feature_importance', bbox_inches = "tight")
+    plt.savefig('feature_imp.png')
     plt.show()
 
 def permutation_feature_importance(model, test_X,test_Y):
+    fig = plt.figure(figsize=(18,9))
     sorted_idx = model.feature_importances_.argsort()
     perm_importance = permutation_importance(model, test_X, test_Y)
     sorted_idx = perm_importance.importances_mean.argsort()
     plt.barh(test_X.columns[sorted_idx], perm_importance.importances_mean[sorted_idx])
     plt.xlabel("Permutation Importance")
+    plt.savefig('permutation', bbox_inches = "tight")
     plt.show()
 
 def test_predict(df_X,model):
@@ -83,6 +88,7 @@ def node_predict_plot(df):
     ax2.plot(df['t'], delta, color = "r", label="Delta = true value - predicted value")
     ax2.set_ylabel('Temperature[$C^\circ$]')
     ax2.legend()
+    plt.savefig('node_{:d}'.format(label), bbox_inches = "tight")
     plt.show()
     
 def nodes_plot(df_Y,df_X):#virker ikke på flere nodes
@@ -94,6 +100,19 @@ def nodes_plot(df_Y,df_X):#virker ikke på flere nodes
         predicted = label_set['T_pred']
         true = label_set['T']
         node_predict_plot(predicted,true,label_set)
+        
+        plt.savefig('node_{:d}'.format(label), bbox_inches = "tight")
+        
+def predicted_plot(predicted,true):
+    fig, ax1 = plt.subplots(1, 1, figsize=(10, 10))
+    sns.color_palette()
+    plt.scatter(predicted,true, label = 'Predicted samples', color = 'tab:blue')
+    xpoints = ypoints = plt.gca().get_xlim()
+    plt.plot(xpoints, ypoints, lw=3, color = 'black', linestyle='dashed',scalex=False,scaley=False, label = 'Perfect prediction')
+    plt.title('Predicted versus true values')
+    plt.xlabel('Predicted values')
+    plt.ylabel('True values')
+    plt.legend()
 
 def nodes_predict(df,model):
     labels = df['i'].unique()
@@ -122,6 +141,78 @@ def node_performance(df):
     R2, R2_adjust,MAE,MAPE,MSE,NMSE,RMSE,NRMSE = results(y_true,y_pred, test_X)
     data = data.append({'i' : label,'R2' : R2,'R2_adjust' : R2_adjust,'MAE' : MAE,'MAPE' : MAPE,'MSE' : MSE,'NMSE' : NMSE,'RMSE' : RMSE,'NRMSE' : NRMSE}, ignore_index = True)
     return data
+
+def performance(test_X,test_Y,predicted):
+    data = pd.DataFrame(columns=['R2','R2_adjust','MAE','MAPE','MSE','NMSE','RMSE','NRMSE'])
+    y_pred = predicted
+    y_true = test_Y
+    R2, R2_adjust,MAE,MAPE,MSE,NMSE,RMSE,NRMSE = results(y_true,y_pred, test_X)
+    data = data.append({'R2' : R2,'R2_adjust' : R2_adjust,'MAE' : MAE,'MAPE' : MAPE,'MSE' : MSE,'NMSE' : NMSE,'RMSE' : RMSE,'NRMSE' : NRMSE}, ignore_index = True)
+    return data
+
+def grid_search_tree_size(data):
+    sns.color_palette("Paired")
+    sns.set(font_scale=4)
+    Y_col = ['T']
+    X = data.drop(Y_col, axis=1) #Input dataframe, X
+    Y = pd.DataFrame(data, columns=Y_col) #Output dataframe, Y
+
+    train_X, test_X, train_Y, test_Y = train_test_split(X, Y, 
+                                                    train_size=0.8,
+                                                    test_size=0.2,
+                                                    random_state=42)
+    # grid search
+    et_500 = ExtraTreesRegressor()
+    n_estimators = range(5,110,10)
+    param_grid = dict(n_estimators=n_estimators)
+    grid_search = GridSearchCV(et_500, param_grid, scoring="r2", n_jobs=-1, cv=5)
+    grid_result = grid_search.fit(train_X, train_Y)
+    # summarize results
+    print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+    means = grid_result.cv_results_['mean_test_score']
+    stds = grid_result.cv_results_['std_test_score']
+    params = grid_result.cv_results_['params']
+    fit_time = grid_result.cv_results_['mean_fit_time']
+    score_time = grid_result.cv_results_['mean_score_time']
+    for mean, stdev, param, f_t,s_t in zip(means, stds, params, fit_time,score_time):
+        print("%f (%f) with: %r, fit time: %f, score time: %f" % (mean, stdev, param,f_t,s_t))
+        # plot accuracy
+    fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+    plt.errorbar(n_estimators, means, color = 'tab:blue')
+    plt.title("Grid search of nr. of trees in forrest")
+    plt.xlabel('Number of trees')
+    plt.ylabel('R2')
+    plt.savefig('n_estimators.png')
+
+    # plot time
+    fig, host = plt.subplots(1, 1, figsize=(20, 10))
+    fig.subplots_adjust(right=0.75)
+
+    par1 = host.twinx()
+
+    p1, = host.plot(n_estimators, fit_time, "b-", label="Fit time")
+    p2, = par1.plot(n_estimators, score_time, "orange", label="Score time")
+    
+    host.title('Time consumption based on number of trees')
+    host.set_xlabel('Number of trees')
+    host.set_ylabel("Fit time")
+    par1.set_ylabel("Score time")
+
+    host.yaxis.label.set_color(p1.get_color())
+    par1.yaxis.label.set_color(p2.get_color())
+
+    tkw = dict(size=4, width=1.5)
+    host.tick_params(axis='y', colors=p1.get_color(), **tkw)
+    par1.tick_params(axis='y', colors=p2.get_color(), **tkw)
+    host.tick_params(axis='x', **tkw)
+
+
+    lines = [p1, p2]
+
+    host.legend(lines, [l.get_label() for l in lines])
+    host.savefig('time.png')
+    plt.show()
+    return means, fit_time, score_time
  
     
 # def node_predict(df_X_pred, model):  

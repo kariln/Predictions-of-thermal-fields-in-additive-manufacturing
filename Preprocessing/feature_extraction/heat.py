@@ -55,44 +55,81 @@ def P_inf(data):
     data.to_csv('disp_Pinf.csv',encoding='utf-8',  index=False) 
     return data
 
-#SURFACE INFLUENZE ZONE
-def SIZ(data):
+# def goldak(data):
+#     now = datetime.now()
+#     print('Goldak: ' + str(now))
+#     column_check(data,['Q','road_width','layer_thickness','euclid_grad'])
+#     data['goldak'] = None
+#     ff = 0.6
+#     fr = 1.4
+#     af = 0.002
+#     ar = 0.004
+#     for index,row in data.iterrows():
+#           d = row['euclidean_d_Q']
+#           b = row['road_width']/2
+#           c = row['layer_thickness']
+#           Q = row['Q']
+#           if row['euclid_grad'] > 0:
+#               a = ar
+#               f = fr
+#           else:
+#               a = af
+#               f = ff
+#           data['goldak'].iloc[index] =  6*math.sqrt(3)*f*Q/(a*b*c*math.pi**(3/2))
+#     data.to_csv('disp_goldak.csv',encoding='utf-8',  index=False) 
+#     return data
+
+def goldak(data):
     now = datetime.now()
-    print('Power influence: ' + str(now))
-    column_check(data,['t','road_width','x','y','z','basedepth','globalseed'])
-    data['SIZ'] = None
-    #time_steps = data['t'].unique()
-    seed = data['globalseed'].iloc[0]
-    SIZ_V = 4/3*math.pi*(3*data['road_width'].iloc[0])**3
-    SIZ_nodes_tot = SIZ_V/seed**3
-    base_height = data['basedepth'].iloc[0]
-    
-    for index,row in data.iterrows(): 
-      data_time = data[data['t'] == row['t']]
-      n_nodes = 0
-      for i,r in data_time.iterrows(): 
-        dx = abs(row['x']-r['x'])
-        dy = abs(row['y']-r['y'])
-        dz = abs(row['z']-r['z'])
-        if dx< 3*row['road_width'] and dy< 3*row['road_width'] and dz< 3*row['road_width']:
-          n_nodes += 1
-        else:
-          pass
-      if abs(row['z'] - base_height) < 3*row['road_width']: #checking if the substrate is within the SIZ
-        h = row['road_width'] - row['z'] - base_height # height of spherical cap
-        r = row['road_width']
-        sub_V = math.pi*h**2/3*(3*r-h)
-        sub_nodes = sub_V/seed**3
-        n_nodes += sub_nodes
-      data['SIZ'].iloc[index] = n_nodes/SIZ_nodes_tot
-      print('SIZ:'+ str(index))
-    data.to_csv('disp_SIZ.csv',encoding='utf-8',  index=False) 
+    print('Goldak: ' + str(now))
+    column_check(data,['Q','road_width','layer_thickness','euclid_grad'])
+    data['P_g'] = None
+    ff = 0.6
+    fr = 1.4
+    af = 0.002
+    ar = 0.004
+    for index,row in data.iterrows():
+          d = row['euclidean_d_Q']
+          b = row['road_width']/2
+          c = row['layer_thickness']
+          Q = row['Q']
+          if row['grad_x'] > row['grad_y']:
+              x = row['x']-row['Q_x']
+              y = row['y']-row['Q_y']
+          else:
+              y = row['x']-row['Q_x']
+              x = row['y']-row['Q_y']
+          z = row['z']-row['Q_z']
+          if row['euclid_grad'] > 0:
+              a = ar
+              f = fr
+          else:
+              a = af
+              f = ff
+          data['P_g'].iloc[index] =  6*math.sqrt(3)*f*Q/(a*b*c*math.pi**(3/2))*math.exp(-3*(x**2/a**2+y**2/b**2+z**2/c**2)).real
+    data.to_csv('disp_goldak.csv',encoding='utf-8',  index=False) 
     return data
+
+def intensity(data):
+    now = datetime.now()
+    print('Intensity: ' + str(now))
+    column_check(data,['Q','A'])
+    data['I'] = None
+    for index,row in data.iterrows():
+      if row['A'] == 0:
+        data['I'].iloc[index] = 0
+      else:
+        data['I'].iloc[index] = row['Q']/row['A']
+    data.to_csv('disp_intensity.csv',encoding='utf-8',  index=False) 
+    return data
+    
+
 
 def heat(data):
     now = datetime.now()
     print('Heat: ' + str(now))
+    data = intensity(data)
     data = P_inf(data)
-    data = SIZ(data)
+    data = goldak(data)
     return data
     

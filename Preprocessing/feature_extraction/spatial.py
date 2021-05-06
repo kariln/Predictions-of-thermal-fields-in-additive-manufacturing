@@ -70,6 +70,32 @@ def euclid_grad(data):
     data.to_csv('disp_grad.csv',encoding='utf-8',  index=False) 
     return data
 
+def dist_grad(data):
+    now = datetime.now()
+    print('Distance gradient: ' + str(now))
+    column_check(data,['euclidean_d_Q'])
+    data['grad_x'] = None
+    data['grad_y'] = None
+    data['grad_z'] = None
+    num_i = data['i'].nunique()
+    i = data['i'].unique()
+    for j in range(0,num_i):
+      data_i = data[data['i'] == i[j]] 
+      indexes = data_i.index
+      num = 0
+      for index,row in data_i.iterrows():
+        if num == 0: 
+          data['grad_x'].iloc[index] = 0
+          data['grad_y'].iloc[index] = 0
+          data['grad_z'].iloc[index] = 0
+        else:
+          data['grad_x'].iloc[index] = abs(data['d_Q_x'].iloc[indexes[num]]-data['d_Q_x'].iloc[indexes[num-1]])
+          data['grad_y'].iloc[index] = abs(data['d_Q_y'].iloc[indexes[num]]-data['d_Q_y'].iloc[indexes[num-1]])
+          data['grad_z'].iloc[index] = abs(data['d_Q_z'].iloc[indexes[num]]-data['d_Q_z'].iloc[indexes[num-1]])
+        num += 1
+    data.to_csv('disp_graddist.csv',encoding='utf-8',  index=False) 
+    return data
+
 def laser_dir(data):
     now = datetime.now()
     print('Laser direction: ' + str(now))
@@ -122,4 +148,5 @@ def spatial(data, nr_layers: int):
     data = euclid_grad(data)
     data = laser_dir(data)
     data = laser_distance(data)
+    data =  dist_grad(data)
     return data
