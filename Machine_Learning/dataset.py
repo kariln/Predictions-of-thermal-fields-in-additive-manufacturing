@@ -31,6 +31,7 @@ def X_Y_split(data):
 
 #SEPARATION ON SPECIFIC LAYER NUMBER
 def layer_split(data, layernum: int):
+    t=0
     for index, row in data.iterrows():
         if row['layerNum'] == layernum:
           t = row['t']

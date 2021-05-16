@@ -9,6 +9,7 @@ SPATIAL FEATURES
 from scipy.spatial import distance
 from datetime import datetime
 from functions import column_check
+import numpy as np
 
 def euclidean(data):
     now = datetime.now()
@@ -118,26 +119,49 @@ def layerNum(data, nr_layers: int):
     base_height = data['basedepth'].iloc[0]
     
     #Finding layer numbers and heights
-    layers = []
-    heights = []
-    height = base_height
-    for i in range(1,nr_layers + 1): 
-        layers.append(i)
-        height = round(height+layer_thickness,4)
-        heights.append(height)
-    #Inserting layer numbers
+    layer_num = data['z'].nunique()
+    layers = np.linspace(0, layer_num, layer_num, endpoint=False)
+    heights = data['z'].unique()
     for index,row in data.iterrows():
-        if round(row['z'],4) == base_height:
-            data['layerNum'].iloc[index] = 1
-        else:
-            layer = 0
-            for height in heights:
-                if round(row['z'],4) == height:
-                    layer += 1
-                    data['layerNum'].iloc[index] = layer
-                    break
+        i = 0
+        for height in heights:
+            if height == row['z']:
+                data['layerNum'].iloc[index] = layers[i]
+                break
+            i += 1
     data.to_csv('disp_layer.csv',encoding='utf-8',  index=False) 
     return data
+
+def neighbor(data):
+    now = datetime.now()
+    print('Neighbor: ' + str(now))
+    data['t_n'] = None
+    data['t_HIZ'] = None
+    column_check(data,['t','x','y','z','road_width','d_Q_x','d_Q_y','d_Q_z','HIZ'])
+    i_unique = data[['i', 'x','y','z','road_width','t_n','t_HIZ']]
+    i_unique = i_unique.drop_duplicates()
+    i_unique = i_unique.reset_index()
+    i_unique['t_n']= 0
+    i_unique['t_n']= 0
+    a = data['road_width'].iloc[0]
+    for j,row in data.iterrows():
+        print('index: ' + str(index))
+        if row['d_Q_x'] < 1 or row['d_Q_y'] < 1 or row['d_Q_z'] < 1:
+            for i,r in i_unique.iterrows():
+                if row['i'] == r['i']:
+                    i_unique['t_n'].iloc[i] = 0
+            data['t_n'].iloc[index] = 0
+            data['t_HIZ'].iloc[index] = 0
+        elif row['HIZ'] == 1:
+            data['t_HIZ'].iloc[index] = 0
+        else:
+            for i,r in i_unique.iterrows():
+                if row['i'] == r['i']:
+                    data['VR'].iloc[index] = r['VR']
+    data.to_csv('disp_SIZ_V.csv',encoding='utf-8',  index=False) 
+    return data
+
+
 
 def spatial(data, nr_layers: int):
     now = datetime.now()

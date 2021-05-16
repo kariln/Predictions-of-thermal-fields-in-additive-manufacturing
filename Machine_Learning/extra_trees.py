@@ -37,6 +37,24 @@ def extra_tree_model(nr_estimators: int, train_X, train_Y):
     et_500.fit(train_X,train_Y)
     return et_500
 
+def extra_time(nr_estimators:int,train_X,train_Y,test_X):
+    t_unique = test_X['t'].unique()
+    temp_X = train_X
+    temp_Y = train_Y
+    et_500 = ExtraTreesRegressor(n_estimators=nr_estimators, n_jobs=-1, random_state=300)
+    predicted = []
+    for t in t_unique:
+        et_500.fit(temp_X,temp_Y)
+        tmp_X = test_X[test_X['t'] == t]
+        test_X = test_X[test_X['t'] != t]
+        pred = et_500.predict(tmp_X)
+        pred = pd.DataFrame(pred, columns = ['T'])
+        for index,row in pred.iterrows():
+            predicted.append(row['T'])
+        temp_X.append(tmp_X)
+        temp_Y.append(pred)
+    return predicted,temp_Y,et_500
+
 def feature_importance(model, train_X):
     nr_features = train_X.shape[1]
     skplt.estimators.plot_feature_importances(model,text_fontsize=16,max_num_features=nr_features,figsize=(30,4),feature_names=train_X.columns)
@@ -71,21 +89,22 @@ def test_predict(df_X,model):
     return df_X
     
 def node_predict_plot(df):
+    sns.set(font_scale=2)
     column_check(df,['T_pred'])
     delta = []
     label = df['i'].iloc[0]
     for i in range(0,len(df.values.tolist())):
       delta.append((df['T'].values.tolist()[i]-df['T_pred'].values.tolist()[i]))
     
-    fig, (ax1,ax2) = plt.subplots(2,1,figsize=(9, 9))
-    fig.suptitle('Prediction of thermal profile, node' + str(label), fontsize=16)
+    fig, (ax1,ax2) = plt.subplots(2,1,figsize=(9, 12))
+    #fig.suptitle('Prediction of thermal profile, node' + str(label))
     ax1.plot(df['t'], df['T_pred'], label='Predicted', color = 'blue')
     ax1.scatter(df['t'], df['T'], label = 'True', color = 'orange')
     ax1.legend()
     ax1.set_xlabel('Time [s]')
     ax1.set_ylabel('Temperature[$C^\circ$]')
     
-    ax2.plot(df['t'], delta, color = "r", label="Delta = true value - predicted value")
+    ax2.plot(df['t'], delta, color = "r", label="$r_t = y_i - \hat{y}_i$")
     ax2.set_ylabel('Temperature[$C^\circ$]')
     ax2.legend()
     plt.savefig('node_{:d}'.format(label), bbox_inches = "tight")
@@ -104,6 +123,7 @@ def nodes_plot(df_Y,df_X):#virker ikke på flere nodes
         plt.savefig('node_{:d}'.format(label), bbox_inches = "tight")
         
 def predicted_plot(predicted,true):
+    sns.set(font_scale=2.5)
     fig, ax1 = plt.subplots(1, 1, figsize=(10, 10))
     sns.color_palette()
     plt.scatter(predicted,true, label = 'Predicted samples', color = 'tab:blue')

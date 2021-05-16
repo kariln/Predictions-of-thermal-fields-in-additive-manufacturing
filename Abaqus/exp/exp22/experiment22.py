@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May  3 10:00:01 2021
+Created on Fri Oct 30 10:05:13 2020
 
 @author: kariln
+Thermal experiment with raster
 """
-
 import sys
 from pathlib import Path
 
@@ -22,7 +22,7 @@ from odb import Odb
 
 
 """THERMAL MODEL"""
-scripted_part = FEA_MODEL('experiment_20.py')
+scripted_part = FEA_MODEL('experiment_19.py')
 scripted_part.clear_variables()
 scripted_part.imports(['part','material','section','assembly','step','interaction','load','mesh','job','sketch','visualization','connectorBehavior', 'customKernel','amModule', 'amKernelInit', 'amConstants', 'copy','os'])
 scripted_part.include_paths([])
@@ -41,8 +41,8 @@ road_width = 0.005
 layer_thickness = 0.0015
 globalseed = 0.005
 scripted_part.baseExtrude(part1, (-0.1,-0.1), (0.1,0.1), base_depth)
-point1 = (-0.06,-0.08)
-point2 = (0.06,0.08)
+point1 = (-0.095,-0.095)
+point2 = (0.095,0.095)
 scripted_part.add_extrude(part1,point1,point2,0.0092,4)
 
 #PROPERTY
@@ -66,7 +66,7 @@ scripted_part.create_node_BC(part1)
 scripted_part.set_room_temp(part1, 20)
 
 #FIELD OUTPUT
-scripted_part.set_field_output(thermal, ['NT','TEMP','COORD'])
+scripted_part.set_field_output(thermal, ['NT','TEMP'])
 
 #AM MODEL
 am_Model = scripted_part.create_thermal_AM_model(part1,'AM_thermal')
@@ -78,13 +78,13 @@ scripted_part.add_table_collections(am_Model,0.9)
 scripted_part.add_simulation_setup(am_Model)
 
 #JOB
-scripted_part.create_job(thermal, 'experiment20_thermal')
+scripted_part.create_job(thermal, 'experiment19_thermal')
 #scripted_part.submit_job('experiment1_thermal')
 
 """ MECHANICICAL MODEL"""
 
 """ ODB """
-process_odb = Odb('experiment20_thermal',scripted_part, part1)
+process_odb = Odb('experiment19_thermal',scripted_part, part1)
 process_odb.clear_variables()
 process_odb.imports(['abaqus','abaqusConstants','odbAccess'])
 process_odb.open_odb()

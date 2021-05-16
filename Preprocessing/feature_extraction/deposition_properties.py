@@ -13,6 +13,7 @@ from functions import interpolate, column_check
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import math
 
 def laser_position(data, dp,dm):
     now = datetime.now()
@@ -144,18 +145,97 @@ def HIZ(data):
     column_check(data,['d_Q_x','d_Q_y','d_Q_z','road_width'])
     data['HIZ'] = None
     for index,row in data.iterrows():
-      if row['d_Q_x']< 3*row['road_width'] and row['d_Q_y']< 3*row['road_width'] and row['d_Q_z']< 3*row['road_width']:
+      if row['d_Q_x']<= 3 and row['d_Q_y']<= 3 and row['d_Q_z']<= 3:
         data['HIZ'].iloc[index] = True
       else:
         data['HIZ'].iloc[index] = False
     data.to_csv('disp_HIZ.csv',encoding='utf-8',  index=False) 
     return data
 
+def neighbor(data):
+    now = datetime.now()
+    print('Neighbor: ' + str(now))
+    column_check(data,['d_Q_x','d_Q_y','d_Q_z','road_width'])
+    data['n'] = None
+    for index,row in data.iterrows():
+      if row['d_Q_x']<= 1 and row['d_Q_y']<= 1 and row['d_Q_z']<= 1:
+        data['n'].iloc[index] = True
+      else:
+        data['n'].iloc[index] = False
+    data.to_csv('disp_neighbor.csv',encoding='utf-8',  index=False) 
+    return data
+
+def neighbor_time(data):
+    now = datetime.now()
+    print('Neighbor time: ' + str(now))
+    data['t_n'] = None
+    data['t_HIZ'] = None
+    column_check(data,['t','x','y','z','road_width','HIZ','n', 'road_width','v'])
+    i_unique = data[['i', 't_n','t_HIZ']]
+    i_unique = i_unique.drop_duplicates()
+    i_unique = i_unique.reset_index()
+    i_unique['t_n']= 0
+    i_unique['t_HIZ']= 0
+    a = data['road_width'].iloc[0]
+    t = 0
+    prev_t = 0
+    for index,row in data.iterrows():
+        print('index: ' + str(index))
+        v = data['v'].iloc[index]
+        if row['t'] > t:
+            prev_t = t
+            t = row['t']
+        if row['n'] == True:
+            for i,r in i_unique.iterrows():
+                if row['i'] == r['i']:
+                    i_unique['t_n'].iloc[i] = 0
+                    i_unique['t_HIZ'].iloc[i] = 0
+                    break
+            data['t_n'].iloc[index] = 0
+            data['t_HIZ'].iloc[index] = 0
+        elif row['HIZ'] == True:
+            for i,r in i_unique.iterrows():
+                if row['i'] == r['i']:
+                    i_unique['t_n'].iloc[i] += (t-prev_t)*v
+                    data['t_n'].iloc[index] = r['t_n']
+                    i_unique['t_HIZ'].iloc[i] = 0
+                    break
+            data['t_HIZ'].iloc[index] = 0
+        else:
+            for i,r in i_unique.iterrows():
+                if row['i'] == r['i']:
+                    i_unique['t_n'].iloc[i] += (t-prev_t)*v
+                    data['t_n'].iloc[index] = r['t_n']
+                    i_unique['t_HIZ'].iloc[i] += (t-prev_t)*v
+                    data['t_HIZ'].iloc[index] = r['t_HIZ']
+                    break
+    data.to_csv('disp_neighbor_time.csv',encoding='utf-8',  index=False) 
+    return data
+
+def weighted_time(data):
+    now = datetime.now()
+    print('Weighted time: ' + str(now))
+    column_check(data,['I','euclidean_d_Q','v','road_width','t_n','t_HIZ'])
+    data['t_n_w'] = None
+    data['t_HIZ_w'] = None
+    for index,row in data.iterrows():
+          I = row['I']
+          t_n = row['t_n']
+          t_HIZ = row['t_HIZ']
+          data['t_n_w'].iloc[index] =  I*math.exp(t_n).real
+          data['t_HIZ_w'].iloc[index] =  I*math.exp(t_HIZ).real
+    data.to_csv('disp_weighted_time.csv',encoding='utf-8',  index=False) 
+    return data
+
     
+
 def deposition_properties(data,dp,dm):
     now = datetime.now()
     print('Deposition properties: ' + str(now))
     data = laser_position(data,dp,dm)
     data = laser_d(data)
     data = HIZ(data)
+    data = neighbor(data)
+    data = neighbor_time(data)
+    data = weighted_time(data)
     return data
