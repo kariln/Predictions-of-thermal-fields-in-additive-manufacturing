@@ -144,8 +144,9 @@ def HIZ(data):
     print('HIZ: ' + str(now))
     column_check(data,['d_Q_x','d_Q_y','d_Q_z','road_width'])
     data['HIZ'] = None
+    a = data['road_width'].iloc[-1] 
     for index,row in data.iterrows():
-      if row['d_Q_x']<= 3 and row['d_Q_y']<= 3 and row['d_Q_z']<= 3:
+      if row['d_Q_x']<= 3*a and row['d_Q_y']<= 3*a and row['d_Q_z']<= 3*a:
         data['HIZ'].iloc[index] = True
       else:
         data['HIZ'].iloc[index] = False
@@ -157,8 +158,9 @@ def neighbor(data):
     print('Neighbor: ' + str(now))
     column_check(data,['d_Q_x','d_Q_y','d_Q_z','road_width'])
     data['n'] = None
+    a = data['road_width'].iloc[-1] 
     for index,row in data.iterrows():
-      if row['d_Q_x']<= 1 and row['d_Q_y']<= 1 and row['d_Q_z']<= 1:
+      if row['d_Q_x']<= 1*a and row['d_Q_y']<= 1*a and row['d_Q_z']<= 1*a:
         data['n'].iloc[index] = True
       else:
         data['n'].iloc[index] = False
@@ -227,15 +229,24 @@ def weighted_time(data):
     data.to_csv('disp_weighted_time.csv',encoding='utf-8',  index=False) 
     return data
 
-    
+def init_time(data):
+    now = datetime.now()
+    print('Initialization time: ' + str(now))
+    column_check(data,['t','t_i'])
+    data['dt_i'] = None
+    for index,row in data.iterrows():
+          data['dt_i'].iloc[index] =  (row['t']-row['t_i'])/row['t']
+    data.to_csv('disp_init_time.csv',encoding='utf-8',  index=False) 
+    return data
 
 def deposition_properties(data,dp,dm):
     now = datetime.now()
     print('Deposition properties: ' + str(now))
     data = laser_position(data,dp,dm)
     data = laser_d(data)
-    data = HIZ(data)
+    #data = HIZ(data)
     data = neighbor(data)
     data = neighbor_time(data)
-    data = weighted_time(data)
+    #data = weighted_time(data)
+    #data = init_time(data)
     return data

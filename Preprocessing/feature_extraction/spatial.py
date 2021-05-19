@@ -168,9 +168,9 @@ def spatial(data, nr_layers: int):
     print('Spatial: ' + str(now))
     data = layerNum(data, nr_layers)
     data = euclidean(data)
-    data = manhattan(data)
+    #data = manhattan(data)
     data = euclid_grad(data)
     data = laser_dir(data)
-    data = laser_distance(data)
-    data =  dist_grad(data)
+    #data = laser_distance(data)
+    #data =  dist_grad(data)
     return data

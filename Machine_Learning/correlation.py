@@ -71,7 +71,7 @@ def shearman_dendrogram(train):
     fig, ax1 = plt.subplots(1, 1, figsize=(20, 10))
     corr = spearmanr(train).correlation
     corr_linkage = ward(corr)
-    dendro = dendrogram(corr_linkage, labels=list(train.columns), leaf_rotation=90, ax = ax1, leaf_font_size=20,color_threshold = 2)
+    dendro = dendrogram(corr_linkage, labels=list(train.columns), leaf_rotation=90, ax = ax1, leaf_font_size=20,color_threshold = 1)
     dendro_idx = np.arange(0, len(dendro['ivl']))
     ax1.set_title('Spearman correlation clustering',fontsize = 25,pad = 20)
     ax1.set_ylabel('Feature dissimilarity',fontsize = 20, labelpad = 20)
@@ -81,6 +81,7 @@ def shearman_dendrogram(train):
     ax1.yaxis.set_tick_params(fontsize = 20)
     ax1.tick_params(labelsize = 'large')
     ax1.tick_params(axis='x', which='major', labelsize=15)
+    ax1.axhline(y=1, c='grey', lw=1, linestyle='dashed')
     plt.savefig('dendrogram', bbox_inches = "tight")
     plt.show()
     

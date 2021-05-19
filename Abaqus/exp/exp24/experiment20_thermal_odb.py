@@ -11,7 +11,7 @@ from abaqusConstants import *
 import odbAccess
 from odbAccess import *
 
-odb = openOdb('experiment20_thermal.odb')
+odb = openOdb('experiment1_thermal.odb')
 
 part = mdb.models['thermal'].parts['part1']
 instance = odb.rootAssembly.instances['PART1']
@@ -24,7 +24,7 @@ frames = odb.steps[stepName].frames
 #GET TEMPERATURE
 base_depth = 0.02
 road_width = 0.005
-layer_thickness = 0.0015
+layer_thickness = 0.0023
 point1 = (-0.08, -0.06)
 point2 = (0.08, 0.06)
 new_active_nodes = -1

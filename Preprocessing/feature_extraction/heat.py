@@ -130,6 +130,6 @@ def heat(data):
     print('Heat: ' + str(now))
     data = intensity(data)
     data = P_inf(data)
-    data = goldak(data)
+    #data = goldak(data)
     return data
     
