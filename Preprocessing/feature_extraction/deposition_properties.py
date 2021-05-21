@@ -244,7 +244,7 @@ def deposition_properties(data,dp,dm):
     print('Deposition properties: ' + str(now))
     data = laser_position(data,dp,dm)
     data = laser_d(data)
-    #data = HIZ(data)
+    data = HIZ(data)
     data = neighbor(data)
     data = neighbor_time(data)
     #data = weighted_time(data)
