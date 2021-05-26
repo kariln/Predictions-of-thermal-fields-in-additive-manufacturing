@@ -103,3 +103,4 @@ def shearman_dendrogram2(train):
     ax1.axhline(y=3.5, c='grey', lw=1, linestyle='dashed')
     plt.savefig('dendrogram', bbox_inches = "tight")
     plt.show()
+    

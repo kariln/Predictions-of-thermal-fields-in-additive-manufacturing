@@ -66,6 +66,36 @@ def SIZ_volume(data):
     data.to_csv('disp_SIZ_V.csv',encoding='utf-8',  index=False) 
     return data
 
+def SIZ_volume2(data):
+    now = datetime.now()
+    print('Surface nodes: ' + str(now))
+    data['VR'] = None
+    column_check(data,['t','x','y','z','road_width'])
+    i_unique = data[['i', 'x','y','z','road_width','VR']]
+    i_unique = i_unique.drop_duplicates()
+    i_unique = i_unique.reset_index()
+    a = data['road_width'].iloc[0]
+    lim = 3*a
+    SIZ_V = 4/3*math.pi*(3*data['road_width'].iloc[0])**3
+    base_height = data['basedepth'].iloc[0]
+    label_nr = i_unique.shape[0]
+    for index,row in i_unique.iterrows():
+        print('label: ' + str(index) + ' of ' + str(label_nr))
+        sub_V = 0
+        SIZ_nodes = []
+        for i,r in i_unique.iterrows():
+            if abs(r['x']-row['x'])<lim and abs(r['y']-row['y'])<lim and abs(r['z']-row['z'])<lim:
+                SIZ_nodes.append([r['x'],r['y'],r['z']])
+        volume = convex_hull_volume_bis(SIZ_nodes)
+        if abs(row['z'] - base_height) < lim: #checking if the substrate is within the SIZ
+            h = 3*row['road_width'] - row['z'] + base_height # height of spherical cap
+            sub_V = math.pi*h**2/3*(3*lim-h)
+        i_unique['VR'].iloc[index] = (volume+sub_V)/SIZ_V
+        data.loc[data['i'] == row['i'], 'VR'] = (volume+sub_V)/SIZ_V
+        print(data['VR'].isnull().sum())
+    data.to_csv('disp_SIZ_V2.csv',encoding='utf-8',  index=False) 
+    return data
+
 
 
 # def SIZ_volume(data):

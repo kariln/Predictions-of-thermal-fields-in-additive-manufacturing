@@ -183,6 +183,8 @@ def neighbor_time(data):
     prev_t = 0
     for index,row in data.iterrows():
         print('index: ' + str(index))
+        if row['t_n'] != None and row['t_HIZ'] != None:
+            continue
         v = data['v'].iloc[index]
         if row['t'] > t:
             prev_t = t

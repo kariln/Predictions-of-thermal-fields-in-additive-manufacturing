@@ -21,7 +21,7 @@ def euclidean(data):
       b = (row['x'], row['y'], row['z'])
       dst = distance.euclidean(a, b)
       data['euclidean_d_Q'].iloc[index] = dst
-    data.to_csv('disp_Pint.csv',encoding='utf-8',  index=False) 
+    data.to_csv('disp_euclidean.csv',encoding='utf-8',  index=False) 
     return data
 
 def manhattan(data):
@@ -169,8 +169,8 @@ def spatial(data, nr_layers: int):
     data = layerNum(data, nr_layers)
     data = euclidean(data)
     #data = manhattan(data)
-    data = euclid_grad(data)
-    data = laser_dir(data)
+    #data = euclid_grad(data)
+    #data = laser_dir(data)
     #data = laser_distance(data)
     #data =  dist_grad(data)
     return data
