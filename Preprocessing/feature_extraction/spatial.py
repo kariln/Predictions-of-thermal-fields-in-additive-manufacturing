@@ -132,6 +132,23 @@ def layerNum(data, nr_layers: int):
     data.to_csv('disp_layer.csv',encoding='utf-8',  index=False) 
     return data
 
+def layerNum2(data, nr_layers: int):
+    now = datetime.now()
+    print('Layer number: ' + str(now))
+    column_check(data,['z','layer_thickness','basedepth'])
+    data['layerNum'] = None
+    layer_thickness = data['layer_thickness'].iloc[0]
+    base_height = data['basedepth'].iloc[0]
+    
+    #Finding layer numbers and heights
+    layer_num = data['z'].nunique()
+    layers = np.linspace(0, layer_num, layer_num, endpoint=False)
+    heights = data['z'].unique()
+    for i in range(len(heights)):
+        data.loc[data['z'] == heights[i], 'layerNum'] = layers[i]
+    data.to_csv('disp_layer.csv',encoding='utf-8',  index=False) 
+    return data
+
 def neighbor(data):
     now = datetime.now()
     print('Neighbor: ' + str(now))
@@ -166,7 +183,7 @@ def neighbor(data):
 def spatial(data, nr_layers: int):
     now = datetime.now()
     print('Spatial: ' + str(now))
-    data = layerNum(data, nr_layers)
+    data = layerNum2(data, nr_layers)
     data = euclidean(data)
     #data = manhattan(data)
     #data = euclid_grad(data)
