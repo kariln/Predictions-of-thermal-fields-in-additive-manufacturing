@@ -15,14 +15,14 @@ The provided files entailes code for machine learning on data collected from FEM
 ## File structure
 The provided code has the following folder structure, where the files are structured based on the stage of the pipeline. 
 
-─Abaqus
-    ─exp
-─Figurer
-─Machine_Learning
-─Materials
-─Preprocessing
-    ─feature_extraction
-    ─feature_improvement
+─ Abaqus
+    ─ exp
+─ Figurer
+─ Machine_Learning
+─ Materials
+─ Preprocessing
+    ─ feature_extraction
+    ─ feature_improvement
 
 * The Abaqus folder contains the files to generate FEM models and to extract the relevant data from the models after the simulations has been completed. The methods are combined to create a script adapted to be run in Abaqus Python as the files in the Abaqus/exp folder.
 * The Machine_Learning folder contains the code used for the machine learning process.
