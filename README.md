@@ -24,10 +24,10 @@ The provided code has the following folder structure, where the files are struct
    - feature_extraction
    - feature_improvement
 
-* The Abaqus folder contains the files to generate FEM models and to extract the relevant data from the models after the simulations has been completed. The methods are combined to create a script adapted to be run in Abaqus Python as the files in the Abaqus/exp folder.
-* The Machine_Learning folder contains the code used for the machine learning process.
-* The Materials folder contains the material information imported in the Abaqus scripts.
-* The Preprocessing folder contains code for the feature engineering process of the project. 
+The Abaqus folder contains the files to generate FEM models and to extract the relevant data from the models after the simulations has been completed. The methods are combined to create a script adapted to be run in Abaqus Python as the files in the Abaqus/exp folder.
+The Machine_Learning folder contains the code used for the machine learning process.
+The Materials folder contains the material information imported in the Abaqus scripts.
+The Preprocessing folder contains code for the feature engineering process of the project. 
 
 ## Data
 The generated datasets are available at: https://cutt.ly/QnqXV9Z
