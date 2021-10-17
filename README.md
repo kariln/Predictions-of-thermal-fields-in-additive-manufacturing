@@ -16,7 +16,7 @@ The provided files entailes code for machine learning on data collected from FEM
 The provided code has the following folder structure, where the files are structured based on the stage of the pipeline. 
 
 <p> ─ Abaqus <p/> <br/>
-    ─ exp
+<p>    ─ exp <p/>
 ─ Figurer
 ─ Machine_Learning
 ─ Materials
